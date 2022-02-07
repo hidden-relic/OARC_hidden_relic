@@ -1,3 +1,5 @@
+local spy = require('addons/spy')
+
 local console = {
     name = 'Console',
     admin = true,
@@ -102,7 +104,7 @@ local color = require 'utils.color_presets'
 --
 -- Feel free to re-use anything you want. It would be nice to give me credit
 -- if you can.
--- To keep the scenario more manageable (for myself) I have done the following:
+-- To keep the scenario more manageable (for myself) I have done the stalkinging:
 --      1. Keep all event calls in control.lua (here)
 --      2. Put all config options in config.lua and provided an example-config.lua file too.
 --      3. Put other stuff into their own files where possible.
@@ -127,6 +129,7 @@ require("lib/auto_decon_miners")
 
 require("lib/bonuses_gui")
 require("lib/find_patch")
+require("addons/tools")
 
 -- For Philip. I currently do not use this and need to add proper support for
 -- commands like this in the future.
@@ -227,7 +230,6 @@ script.on_event(defines.events.on_rocket_launched,
 -- Surface Generation
 ----------------------------------------
 
-
 ----------------------------------------
 -- Chunk Generation
 ----------------------------------------
@@ -291,18 +293,18 @@ script.on_event(defines.events.on_player_joined_game, function(event)
                         " joined the game." .. "\n")
     -- this is part of a much larger TODO
     -- global.permissions[event.player_index] =
-        -- global.permissions[event.player_index] or {}
+    -- global.permissions[event.player_index] or {}
     -- p_c.on_player_joined_game(event)
 
     -- Handle hot-patching into active games
     local player = game.players[event.player_index]
     -- local group = AUTO_PERMISSION_USERS[player.name]
     -- if player.admin and not group then
-        -- game.permissions.get_group(DEFAULT_ADMIN_GROUP).add_player(player)
+    -- game.permissions.get_group(DEFAULT_ADMIN_GROUP).add_player(player)
     -- elseif group then
-        -- game.permissions.get_group(group).add_player(player)
+    -- game.permissions.get_group(group).add_player(player)
     -- else
-        -- game.permissions.get_group('Default').add_player(player)
+    -- game.permissions.get_group('Default').add_player(player)
     -- end
 end)
 
@@ -310,8 +312,8 @@ script.on_event(defines.events.on_player_created, function(event)
     local player = game.players[event.player_index]
     -- Handle local hosting auto-promote
     -- if game.players[event.player_index].admin then
-        -- game.permissions.get_group(DEFAULT_ADMIN_GROUP).add_player(
-            -- event.player_index);
+    -- game.permissions.get_group(DEFAULT_ADMIN_GROUP).add_player(
+    -- event.player_index);
     -- end
 
     -- Move the player to the game surface immediately.
@@ -348,8 +350,8 @@ end)
 -- end)
 
 -- script.on_event(defines.events.on_player_demoted, function(e)
-    --  auto-remove
-    -- game.permissions.get_group('Default').add_player(e.player_index);
+--  auto-remove
+-- game.permissions.get_group('Default').add_player(e.player_index);
 -- end)
 
 script.on_event(defines.events.on_player_left_game, function(event)
@@ -367,6 +369,16 @@ script.on_event(defines.events.on_player_left_game, function(event)
                              global.ocfg.minimum_online_time ..
                              " minutes of joining.")
         RemoveOrResetPlayer(player, true, true, true, true)
+    end
+end)
+
+script.on_event(defines.events.on_pre_player_left_game, function(event)
+    local player = game.players[event.player_index]
+    spy.stop_stalking(player)
+    for _, data in pairs(global.ocore.spy.stalking) do
+        if data[2] == player then
+            spy.stop_stalking(data[1])
+        end
     end
 end)
 
@@ -434,6 +446,7 @@ script.on_event(defines.events.on_tick, function(event)
     if global.ocfg.enable_miner_decon then OarcAutoDeconOnTick() end
 
     RechargePlayersOnTick()
+    spy.update_all()
 end)
 
 script.on_event(defines.events.on_sector_scanned, function(event)
@@ -703,6 +716,35 @@ end)
 -- On enemies killed
 -- For coin generation and stuff
 ----------------------------------------
+script.on_event(defines.events.on_entity_damaged, function(event)
+    local entity = event.entity
+    local cause = event.cause
+    local damage = math.floor(event.original_damage_amount)
+    local health = math.floor(entity.health)
+    local health_percentage = entity.get_health_ratio()
+    local text_color = {r = 1 - health_percentage, g = health_percentage, b = 0}
+
+    -- Gets the location of the text
+    local size = entity.get_radius()
+    if size < 1 then size = 1 end
+    local r = (math.random() - 0.5) * size * 0.75
+    local p = entity.position
+    local position = {x = p.x + r, y = p.y - size}
+
+    local message
+    if entity.name == 'character' then
+        message = {'damage-popup.player-health', health}
+    elseif entity.name ~= 'character' and cause and cause.name == 'character' then
+        message = {'damage-popup.player-damage', damage}
+    end
+
+    -- Outputs the message as floating text
+    if message then
+        tools.floating_text(entity.surface, position, message, text_color)
+    end
+
+end)
+
 script.on_event(defines.events.on_post_entity_died, function(event)
     if (game.surfaces[event.surface_index].name ~= GAME_SURFACE_NAME) then
         return

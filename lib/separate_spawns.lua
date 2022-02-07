@@ -25,6 +25,12 @@ function InitSpawnGlobalsAndForces()
         global.ocore = {}
     end
 
+    if (global.ocore.spy == nil) then
+        global.ocore.spy = {}
+        global.ocore.spy.stalking = {}
+        global.ocore.spy.watching = {}
+    end
+
     -- This contains each player's spawn point. Literally where they will respawn.
     -- There is a way in game to change this under one of the little menu features I added.
     if (global.ocore.playerSpawns == nil) then

@@ -2,67 +2,135 @@
 -- May 2019
 -- 
 -- Yay, admin commands!
+require("addons/tools")
 require("lib/oarc_utils")
-
+local Colors = require("util/Colors")
+local spy = require("addons/spy")
 -- name :: string: Name of the command.
 -- tick :: uint: Tick the command was used.
 -- player_index :: uint (optional): The player who used the command. It will be missing if run from the server console.
 -- parameter :: string (optional): The parameter passed after the command, separated from the command by 1 space.
 
-commands.add_command("reset", "reset a player by name", function(command)
+commands.add_command("reset", "reset player", function(command)
     local player = game.players[command.player_index]
-    if player.admin then ResetPlayer(command.parameter) end
+    local target = player.name
+    if command.parameter and game.players[command.parameter] and player.admin then
+        target = command.parameter
+    end
+    if target.valid then ResetPlayer(target) end
 end)
 
-local function split(s, sep, pattern)
-    sep = sep or "."
-    sep = sep ~= "" and sep or "."
-    sep = not pattern and string.gsub(sep, "([^%w])", "%%%1") or sep
-
-    local fields = {}
-    local start_idx, end_idx = string.find(s, sep)
-    local last_find = 1
-    while start_idx do
-        local substr = string.sub(s, last_find, start_idx - 1)
-        if string.len(substr) > 0 then
-            table.insert(fields, string.sub(s, last_find, start_idx - 1))
-        end
-        last_find = end_idx + 1
-        start_idx, end_idx = string.find(s, sep, end_idx + 1)
-    end
-    local substr = string.sub(s, last_find)
-    if string.len(substr) > 0 then
-        table.insert(fields, string.sub(s, last_find))
-    end
-    return fields
+local function format_chat_colour(message, color)
+color = color or Colors.white
+local color_tag = '[color='..tools.round(color.r, 3)..', '..tools.round(color.g, 3)..', '..tools.round(color.b, 3)..']'
+return string.format('%s%s[/color]', color_tag, message)
 end
 
+local function step_component(c1, c2)
+    if c1 < 0 then
+        return 0, c2+c1
+    elseif c1 > 1 then
+        return 1, c2-c1+1
+    else
+        return c1, c2
+    end
+end
 
--- commands.add_command("addto", "adds something to shared pot", function(command)
---     local player = game.players[command.player_index]
---     if player.admin then
---         local name = ""
---         local count = 1
---         local args = split(command.parameter, " ")
+local function step_color(color)
+    color.r, color.g = step_component(color.r, color.g)
+    color.g, color.b = step_component(color.g, color.b)
+    color.b, color.r = step_component(color.b, color.r)
+    color.r = step_component(color.r, 0)
+    return color
+end
 
---         if not args[1] then
---             player.print("supply an item name")
---             return
---         else
---             name = args[1]
---         end
---         if args[2] then
---             count = args[2]
---         end
---         if not game.item_prototypes[name] then
---             player.print("not a valid item")
---             return
---         else
---         SharedChestUploadItem(name, count)
---         end
---     end
--- end)
+local function next_color(color, step)
+    step = step  or 0.1
+    local new_color = {r=0, g=0, b=0}
+    if color.b == 0 and color.r ~= 0 then
+        new_color.r = color.r-step
+        new_color.g = color.g+step
+    elseif color.r == 0 and color.g ~= 0 then
+        new_color.g = color.g-step
+        new_color.b = color.b+step
+    elseif color.g == 0 and color.b ~= 0 then
+        new_color.b = color.b-step
+        new_color.r = color.r+step
+    end
+    return step_color(new_color)
+end
 
+commands.add_command("rainbow", "Rainbow chat", function(command)
+    local player = game.players[command.player_index]
+    if not command.parameter then
+        player.print("Supply a message!")
+        return
+    end
+    local message = command.parameter
+    local player_name = player and player.name or '<Server>'
+    local player_color = player and player.color or nil
+    local color_step = 3/message:len()
+    if color_step > 1 then color_step = 1 end
+    local current_color = {r=1, g=0, b=0}
+    local output = format_chat_colour(player_name..': ', player_color)
+    output = output..message:gsub('%S', function(letter)
+        local rtn = format_chat_colour(letter, current_color)
+        current_color = next_color(current_color, color_step)
+        return rtn
+    end)
+    game.print(output)
+end)
+
+commands.add_command("look", "Look at a player", function(command)
+    local player = game.players[command.player_index]
+    if not command.parameter then
+        player.print("Supply a player name!")
+        return
+    end
+    local target = command.parameter
+    if game.players[target] and target.valid then
+        player.zoom_to_world(target.position, 1.75)
+    end
+end)
+
+commands.add_command('spy', 'Spy on a player', function(command)
+    local player = game.players[command.player_index]
+    if not command.parameter then
+        player.print("Supply a player name!")
+        return
+    end
+    if spy.is_watching(player) then
+        spy.stop_watching(player)
+    else
+        spy.start_watching(player)
+    end
+end)
+
+commands.add_command('stalk', 'Stalk a player', function(command)
+    local player = game.players[command.player_index]
+    if not command.parameter then
+        player.print("Supply a player name!")
+        return
+    end
+    local target = tools.get_player(command.parameter)
+    if player == target then
+       return tools.error("Cannot stalk yourself")
+    else
+        spy.start_follow(player, action_player)
+    end
+end)
+
+commands.add_command("me", "Perform an 'action' in chat", function(command)
+    local player = game.players[command.player_index]
+    if not command.parameter then
+        player.print("Supply an action!")
+        return
+    end
+    local action = command.parameter
+local player_name = player and player.name or '<Server>'
+game.print(string.format('* %s %s *', player_name, action), player.chat_color)
+end)
+    
 commands.add_command("repair",
                      "Repairs all destroyed and damaged entities in an area",
                      function(command)
@@ -125,6 +193,7 @@ commands.add_command("repair",
                 " entities were healed.")
     end
 end)
+
 local function Modules(moduleInventory) -- returns the multiplier of the modules
     local effect1 = moduleInventory.get_item_count("productivity-module") -- type 1
     local effect2 = moduleInventory.get_item_count("productivity-module-2") -- type 2
@@ -415,23 +484,3 @@ commands.add_command("load-logistics", "Pre-load logistic requests",
     for i, item in pairs(items) do p.set_personal_logistic_slot(i, item) end
     items = ""
 end)
-
--- commands.add_command("evict", "removes nearby biters",
---                      function(command)
-
---                         local player = game.players[command.player_index]
---     if player ~= nil and player.admin then
---         local range = 10
---         local max_range = 100
---         if (command.parameter ~= nil) then
---             range = tonumber(command.parameter)
---         end
---         if not range or max_range and range > max_range then
---             player.print('Maximum Range is 100.')
---             return
---         end
-
---         for __, bug in pairs(player.surface.find_entities_filtered{force="enemy", position=player.position, radius=range}) do bug.damage(bug.health/2, player.force, "fire")
---         end
---     end
--- end)

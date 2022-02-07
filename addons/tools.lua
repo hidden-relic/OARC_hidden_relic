@@ -1,6 +1,54 @@
 require('stdlib/string')
+local Color = require('util/Colors')
 
 local tools = {}
+
+function tools.error(error_message, play_sound)
+    error_message = error_message or ''
+    game.player.print({'error.wrong_type', error_message})
+    if play_sound ~= false then
+        play_sound = play_sound or 'utility/wire_pickup'
+        if game.player then game.player.play_sound{path=play_sound} end
+    end
+end
+
+function tools.get_player(o)
+    local o_type, p = type(o)
+    if o_type == 'table' then
+        p = o
+    elseif o_type == 'string' or o_type == 'number' then
+        p = game.players[o]
+    end
+
+    if p and p.valid and p.is_player() then
+        return p
+    end
+end
+
+function tools.floating_text(surface, position, text, color)
+    color = color or Color.white
+    return surface.create_entity {
+        name = 'tutorial-flying-text',
+        color = color,
+        text = text,
+        position = position
+    }
+end
+
+function tools.floating_text_on_player(player, text, color)
+    tools.floating_text_on_player_offset(player, text, color, 0, -1.5)
+end
+
+function tools.floating_text_on_player_offset(player, text, color, x_offset, y_offset)
+    player = tools.get_player(player)
+    if not player or not player.valid then
+        return
+    end
+
+    local position = player.position
+    return tools.floating_text(player.surface, {x = position.x + x_offset, y = position.y + y_offset}, text, color)
+end
+
 function tools.protect_entity(entity)
     entity.minable = false
     entity.destructible = false
@@ -65,47 +113,6 @@ commands.add_command("replace",
     end
     tools.replace(player, args[1], args[2])
 end)
-
---[[
-commands.add_command("layout", "save entity layout to file", function(command)
-    local player = game.players[command.player_index]
-    local area = command.parameter
-    tools.save_layout(player, area)
-end)
-
-function tools.save_layout(player, area)
-    local p = player.print
-    if not player.admin then
-        p("[ERROR] You're not admin!")
-        return
-    end
-    local surface = player.surface
-    game.write_file('layout.lua', '', false, player.index)
-    if not area.left_top then
-        local l_t = {x = area[1].x or area[1][1], y = area[1].y or area[1][2]}
-    end
-    if not area.right_bottom then
-        local r_b = {x = area[2].x or area[2][1], y = area[2].y or area[2][2]}
-    end
-    local area = area or {left_top = l_t, right_bottom = r_b}
-
-    local entities = surface.find_entities_filtered {area = area}
-
-    local data = {position = {}, name = {}, direction = {}, force = {}}
-    for _, e in pairs(entities) do
-        if e.name ~= 'character' then
-            table.insert(data.position, e.position)
-            table.insert(data.name, e.name)
-            table.insert(data.direction, tostring(e.direction))
-            table.insert(data.force, player.force.name)
-        end
-    end
-    game.write_file('layout.lua', "layout = " .. serpent.block(data) .. '\n',
-                    false, player.index)
-    p("Done.\n" .. data.name.count() ..
-          " entities logged to \\script-output\\layout.lua")
-end
---]]
 
 function tools.make(player, sharedobject, flow)
     local p = player.print
@@ -229,8 +236,7 @@ function tools.make(player, sharedobject, flow)
                                                  {x = pos.x, y = pos.y + 1})
                     return true
                 else
-                    p(
-                        "Failed to place the special combinators. Please check there is enough space in the surrounding tiles!")
+                    p("Failed to place the special combinators. Please check there is enough space in the surrounding tiles!")
                 end
             end
             if sharedobject == "water" then
@@ -296,6 +302,11 @@ function tools.run_tests(player, cursor_stack)
             log(msg)
         end
     end
+end
+
+function tools.round(num, dp)
+    local mult = 10 ^ (dp or 0)
+    return math.floor(num * mult + 0.5) / mult
 end
 
 function tools.replace(player, e1, e2)

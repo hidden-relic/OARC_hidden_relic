@@ -32,9 +32,6 @@ CHARGE_ENERGY = 100000
 
 local charging_station_multiplier = 1
 
-function stack_size(item)
-	return game.item_prototypes[item].stack_size end
-
 function ResetPlayer(playername)
     if (game.players[playername] ~= nil) then
         RemoveOrResetPlayer(game.players[playername], false, true, true, true)

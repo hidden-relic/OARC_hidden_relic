@@ -1,13 +1,11 @@
+require("addons.tools")
+
 local find_patch = {}
 
 find_patch.MAX_INT32 = 2147483647
 
 find_patch.range = 10000
 
-local function round(num, dp)
-    local mult = 10 ^ (dp or 0)
-    return math.floor(num * mult + 0.5) / mult
-end
 
 function find_patch.getDistance(pos1, pos2)
     local pos1 = {x = pos1.x or pos1[1], y = pos1.y or pos1[2]}
@@ -57,7 +55,7 @@ function find_patch.findPatch(res_name, range, player)
         player.print("No " .. res_name .. " patch found")
         return
     end
-    player.print(res_name .. " found " .. round(found.distance, 2) ..
+    player.print(res_name .. " found " .. tools.round(found.distance, 2) ..
                      " tiles away")
     res_name = res_name:gsub("-", "_")
     local line = rendering.draw_line {
