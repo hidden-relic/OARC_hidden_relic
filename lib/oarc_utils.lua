@@ -1933,13 +1933,13 @@ function AutofillTurret(player, turret)
     -- Check the result and print the right text to inform the user what happened.
     if (ret > 0) then
         -- Inserted ammo successfully
-        -- FlyingText("Inserted ammo x" .. ret, turret.position, color.dark_orange, player.surface)
+        -- FlyingText("Inserted ammo x" .. ret, turret.position, colors.dark_orange, player.surface)
     elseif (ret == -1) then
-        FlyingText("Out of ammo!", turret.position, color.dark_orange,
+        FlyingText("Out of ammo!", turret.position, colors.dark_orange,
                    player.surface)
     elseif (ret == -2) then
         FlyingText("Autofill ERROR! - Report this bug!", turret.position,
-                   color.dark_orange, player.surface)
+                   colors.dark_orange, player.surface)
     end
 end
 
