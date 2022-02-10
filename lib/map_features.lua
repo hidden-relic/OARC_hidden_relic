@@ -4,6 +4,7 @@
 
 -- Generic Utility Includes
 require("lib/oarc_utils")
+local tools = require("addons/tools")
 
 
 -- Used to generate placement of buildings.
@@ -174,8 +175,8 @@ function MagicFactoryChunkGenerator()
             local theta = ((math.pi * 2) / num_positions_for_circle);
             local angle = (theta * i) + random_angle_offset;
 
-            local chunk_x = MathRound((r * math.cos(angle)) + math.random(-2, 2))
-            local chunk_y = MathRound((r * math.sin(angle)) + math.random(-2, 2))
+            local chunk_x = tools.round((r * math.cos(angle)) + math.random(-2, 2))
+            local chunk_y = tools.round((r * math.sin(angle)) + math.random(-2, 2))
 
             if (not game.surfaces[GAME_SURFACE_NAME].is_chunk_generated({chunk_x,chunk_y})) then
                 

@@ -2,6 +2,7 @@
 -- Feb 2020
 -- Oarc's silly idea for a scripted item sharing solution.
 -- Buffer size is the limit of joules/tick so multiply by 60 to get /sec.
+local tools = require("addons.tools")
 SHARED_ELEC_OUTPUT_BUFFER_SIZE = 1000000000
 SHARED_ELEC_INPUT_BUFFER_SIZE = 1000000001
 
@@ -202,12 +203,37 @@ function SharedEnergyDistributeOutputOnTick()
                                                             .energy_stored
 end
 
+function GetWoodenChestFromCursor(player)
+    local sel = player.selected
+    if not sel then
+        tools.error("Can't find an empty wooden chest under the cursor. Resorting to searching for wooden chest nearest to player.")
+        return FindClosestWoodenChestAndDestroy(player)
+    end
+    if sel.name == "wooden-chest" then
+        if (not sel.get_inventory(defines.inventory.chest).is_empty()) then
+            tools.error("Empty the chest first")
+            return nil
+        end
+    
+        local pos = sel.position
+        if (not sel.destroy()) then
+            tools.error("Can't destroy wooden chest")
+            return nil
+        end
+    
+        return {x = math.floor(pos.x), y = math.floor(pos.y)}
+    else
+        tools.error("This is not an empty wooden chest..")
+end
+end
+
+
 -- Returns NIL or position of destroyed chest.
 function FindClosestWoodenChestAndDestroy(player)
     local target_chest =
         FindClosestPlayerOwnedEntity(player, "wooden-chest", 16)
     if (not target_chest) then
-        player.print("Failed to find wooden-chest?")
+        tools.error("Failed to find empty wooden chest")
         return nil
     end
 
