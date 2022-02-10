@@ -434,6 +434,12 @@ commands.add_command("load-quickbar", "Pre-load quickbar shortcuts",
         p.set_quick_bar_slot(70, nil); ]] --
 end)
 
+local function stack_size(item)
+    if game.item_prototypes[item] then
+        return game.item_prototypes[item].stack_size
+    end
+end
+
 commands.add_command("load-logistics", "Pre-load logistic requests",
                      function(command)
     local p = game.players[command.player_index]
