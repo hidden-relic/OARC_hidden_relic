@@ -325,7 +325,7 @@ OARC_CFG = {
         ["crude-oil"] =
         {
             num_patches = 4,
-            amount = 540000,
+            amount = 1080000,
             x_offset_start = -8,
             y_offset_start = 78,
             x_offset_next = 6,
