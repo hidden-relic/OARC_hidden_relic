@@ -252,7 +252,7 @@ commands.add_command("ratio",
 
         local ips = item.amount / recipe.energy * machine.crafting_speed *
                         amountOfMachines -- math on the items/fluids per second
-        player.print {sprite, round(ips, 3), item.name} -- full string
+        player.print {sprite, tools.round(ips, 3), item.name} -- full string
     end
     ----------------------------products----------------------------
 
@@ -267,7 +267,7 @@ commands.add_command("ratio",
 
         local output = 1 / recipe.energy * machine.crafting_speed *
                            product.amount * multi -- math on the outputs per second
-        player.print {sprite, round(output * amountOfMachines, 3), product.name} -- full string
+        player.print {sprite, tools.round(output * amountOfMachines, 3), product.name} -- full string
 
     end
 
@@ -490,7 +490,7 @@ end)
 commands.add_command("make", "magic", function(command)
     local player = game.players[command.player_index]
     if not command.parameter then
-        tools.error(player, "You're gonna need more than that..try /help make")
+        tools.notify(player, "You're gonna need more than that..try /make help")
         return
     end
     local args = string.split(command.parameter, " ")
