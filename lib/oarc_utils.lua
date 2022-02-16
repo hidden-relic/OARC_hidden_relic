@@ -50,7 +50,7 @@ function ResetPlayer(playername)
 end
 
 function RechargePlayersOnTick()
-    for each, player in pairs(game.connected_players) do charge(player) end
+    for each, player in pairs(game.connected_players) do Charge(player) end
 end
 
 function DischargeAccumulators(surface, position, force, power_needs)
@@ -81,7 +81,7 @@ function DischargeAccumulators(surface, position, force, power_needs)
     return power_drained / charging_station_multiplier
 end
 
-function charge(player)
+function Charge(player)
     if player == nil then player = game.player end
     if not player.character then return end
     local armor_inventory = player.get_inventory(defines.inventory
@@ -1136,8 +1136,8 @@ end
 function ShareChatBetweenForces(player, msg)
     for _, force in pairs(game.forces) do
         if (force ~= nil) then
-            if ((force.name ~= enemy) and (force.name ~= neutral) and
-                (force.name ~= player) and (force ~= player.force)) then
+            if ((force.name ~= "enemy") and (force.name ~= "neutral") and
+                (force.name ~= "player") and (force ~= player.force)) then
                 force.print(player.name .. ": " .. msg)
             end
         end
@@ -1936,11 +1936,11 @@ function AutofillTurret(player, turret)
         -- Inserted ammo successfully
         -- FlyingText("Inserted ammo x" .. ret, turret.position, color.dark_orange, player.surface)
     elseif (ret == -1) then
-        FlyingText("Out of ammo!", turret.position, color.dark_orange,
+        FlyingText("Out of ammo!", turret.position, colors.dark_orange,
                    player.surface)
     elseif (ret == -2) then
         FlyingText("Autofill ERROR! - Report this bug!", turret.position,
-                   color.dark_orange, player.surface)
+                   colors.dark_orange, player.surface)
     end
 end
 
@@ -2129,7 +2129,7 @@ function CreateWall(surface, pos)
     local wall = surface.create_entity({
         name = "stone-wall",
         position = pos,
-        force = MAIN_TEAM
+        force = "neutral"
     })
     if wall then
         wall.destructible = false

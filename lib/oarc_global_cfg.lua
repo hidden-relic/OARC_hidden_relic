@@ -84,8 +84,6 @@ function InitOarcConfig()
     
     --
 
-    global.ocfg.enable_continuous_autofill = ENABLE_CONTINUOUS_AUTOFILL
-
     -----------------------
     -- VALIDATION CHECKS --
     -----------------------
