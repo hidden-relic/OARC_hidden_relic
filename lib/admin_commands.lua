@@ -2,10 +2,10 @@
 -- May 2019
 -- 
 -- Yay, admin commands!
-require("addons/tools")
 require("lib/oarc_utils")
 local Colors = require("util/Colors")
-local spy = require("addons/spy")
+-- local spy = require("addons/spy")
+local tools = require("addons.tools")
 -- name :: string: Name of the command.
 -- tick :: uint: Tick the command was used.
 -- player_index :: uint (optional): The player who used the command. It will be missing if run from the server console.
@@ -14,10 +14,18 @@ local spy = require("addons/spy")
 commands.add_command("reset", "reset player", function(command)
     local player = game.players[command.player_index]
     local target = player.name
-    if command.parameter and game.players[command.parameter] and player.admin then
+    if command.parameter then
+        if game.players[command.parameter] and player.admin then
         target = command.parameter
+        elseif game.players[command.parameter] and not player.admin then
+            target = nil
+            tools.error(player, "You are not admin")
+        elseif not game.players[command.parameter] then
+            target = nil
+            tools.error(player, "Couldn't find player '"..command.parameter.."'")
+        end
     end
-    if target.valid then ResetPlayer(target) end
+    if target and game.players[target].valid then ResetPlayer(target) end
 end)
 
 local function format_chat_colour(message, color)
@@ -88,37 +96,25 @@ commands.add_command("look", "Look at a player", function(command)
         return
     end
     local target = command.parameter
-    if game.players[target] and target.valid then
+    target = tools.get_player(target)
+    if target.valid then
         player.zoom_to_world(target.position, 1.75)
     end
 end)
 
-commands.add_command('spy', 'Spy on a player', function(command)
-    local player = game.players[command.player_index]
-    if not command.parameter then
-        player.print("Supply a player name!")
-        return
-    end
-    if spy.is_watching(player) then
-        spy.stop_watching(player)
-    else
-        spy.start_watching(player)
-    end
-end)
-
-commands.add_command('stalk', 'Stalk a player', function(command)
-    local player = game.players[command.player_index]
-    if not command.parameter then
-        player.print("Supply a player name!")
-        return
-    end
-    local target = tools.get_player(command.parameter)
-    if player == target then
-       return tools.error("Cannot stalk yourself")
-    else
-        spy.start_follow(player, action_player)
-    end
-end)
+-- commands.add_command('watch', 'Watch a player', function(command)
+--     local player = game.players[command.player_index]
+--     if not command.parameter then
+--         player.print("Supply a player name!")
+--         return
+--     end
+--     local target = tools.get_player(command.parameter)
+--     if player == target then
+--        return tools.error(player, "Cannot watch yourself")
+--     else
+--         spy.start_watching(player, action_player)
+--     end
+-- end)
 
 commands.add_command("me", "Perform an 'action' in chat", function(command)
     local player = game.players[command.player_index]
@@ -446,6 +442,12 @@ commands.add_command("load-quickbar", "Pre-load quickbar shortcuts",
         p.set_quick_bar_slot(70, nil); ]] --
 end)
 
+local function stack_size(item)
+    if game.item_prototypes[item] then
+        return game.item_prototypes[item].stack_size
+    end
+end
+
 commands.add_command("load-logistics", "Pre-load logistic requests",
                      function(command)
     local p = game.players[command.player_index]
@@ -484,3 +486,30 @@ commands.add_command("load-logistics", "Pre-load logistic requests",
     for i, item in pairs(items) do p.set_personal_logistic_slot(i, item) end
     items = ""
 end)
+
+commands.add_command("make", "magic", function(command)
+    local player = game.players[command.player_index]
+    if not command.parameter then
+        tools.error(player, "You're gonna need more than that..try /help make")
+        return
+    end
+    local args = string.split(command.parameter, " ")
+
+    if not args[1] then args[1] = false end
+    if not args[2] then args[2] = false end
+    tools.make(player, args[1], args[2])
+end)   
+
+-- commands.add_command("replace",
+--                      "attempts to replace entities in the held blueprint",
+--                      function(command)
+--     local player = game.players[command.player_index]
+--     local args = string.split(command.parameter, " ")
+
+--     args[1], args[2] = args[1] or false, args[2] or false
+--     if not args[1] or not args[2] then
+--         player.print("No source and/or replacement entity given.")
+--         return
+--     end
+--     tools.replace(player, args[1], args[2])
+-- end)

@@ -1,4 +1,4 @@
-local spy = require('addons/spy')
+-- local spy = require('addons/spy')
 
 local console = {
     name = 'Console',
@@ -129,7 +129,7 @@ require("lib/auto_decon_miners")
 
 require("lib/bonuses_gui")
 require("lib/find_patch")
-require("addons/tools")
+local tools = require("addons/tools")
 
 -- For Philip. I currently do not use this and need to add proper support for
 -- commands like this in the future.
@@ -306,6 +306,9 @@ script.on_event(defines.events.on_player_joined_game, function(event)
     -- else
     -- game.permissions.get_group('Default').add_player(player)
     -- end
+    if (global.oarc_players[player.name] == nil) then
+        global.oarc_players[player.name] = {}
+    end
 end)
 
 script.on_event(defines.events.on_player_created, function(event)
@@ -372,15 +375,15 @@ script.on_event(defines.events.on_player_left_game, function(event)
     end
 end)
 
-script.on_event(defines.events.on_pre_player_left_game, function(event)
-    local player = game.players[event.player_index]
-    spy.stop_stalking(player)
-    for _, data in pairs(global.ocore.spy.stalking) do
-        if data[2] == player then
-            spy.stop_stalking(data[1])
-        end
-    end
-end)
+-- script.on_event(defines.events.on_pre_player_left_game, function(event)
+--     local player = game.players[event.player_index]
+--     spy.stop_stalking(player)
+--     for _, data in pairs(global.ocore..stalking) do
+--         if data[2] == player then
+--             spy.stop_stalking(data[1])
+--         end
+--     end
+-- end)
 
 -- script.on_event(defines.events.on_player_deconstructed_area, function(event)
 --     local player = game.get_player(event.player_index)
@@ -430,7 +433,13 @@ script.on_event(defines.events.on_tick, function(event)
 
     DelayedSpawnOnTick()
 
-    UpdatePlayerBuffsOnTick()
+    if (event.tick % 60) == 1 then
+    tools.FlyingTime(event.tick)
+    end
+    
+    if (event.tick >= (TICKS_PER_MINUTE * PLAYER_BUFF_MINUTES)) then
+    UpdatePlayerBuffsOnTick(event.tick)
+    end
 
     ReportPlayerBuffsOnTick()
 
@@ -446,7 +455,7 @@ script.on_event(defines.events.on_tick, function(event)
     if global.ocfg.enable_miner_decon then OarcAutoDeconOnTick() end
 
     RechargePlayersOnTick()
-    spy.update_all()
+    -- spy.update_all()
 end)
 
 script.on_event(defines.events.on_sector_scanned, function(event)

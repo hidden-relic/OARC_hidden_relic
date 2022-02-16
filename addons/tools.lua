@@ -3,13 +3,55 @@ local Color = require('util/Colors')
 
 local tools = {}
 
-function tools.error(error_message, play_sound)
+function tools.FlyingTime(this_tick)
+    if not global.oarc_timers then global.oarc_timers = {} end
+    local time = tools.formatTimeMinsSecs(this_tick)
+    for __, player in pairs(global.oarc_timers) do
+    FlyingText(time, player.position, {r=1, g=0, b=0}, player.surface)
+    end
+end
+
+function tools.error(player, error_message, play_sound)
     error_message = error_message or ''
-    game.player.print({'error.wrong_type', error_message})
+    player.print({'error.msg', error_message})
     if play_sound ~= false then
         play_sound = play_sound or 'utility/wire_pickup'
-        if game.player then game.player.play_sound{path=play_sound} end
+        if player then player.play_sound {path = play_sound} end
     end
+end
+
+function tools.success(player, success_message, play_sound)
+    success_message = success_message or ''
+    player.print({'success.msg', success_message})
+    if play_sound ~= false then
+        play_sound = play_sound or 'utility/confirm'
+        if player then player.play_sound {path = play_sound} end
+    end
+end
+
+function tools.notify(player, notify_message, play_sound)
+    notify_message = notify_message or ''
+    player.print({'notification.msg', notify_message})
+    if play_sound ~= false then
+        play_sound = play_sound or 'utility/wire_connect_pole'
+        if player then player.play_sound {path = play_sound} end
+    end
+end
+
+function tools.formatTimeMinsSecs(ticks)
+    local seconds = ticks / 60
+    local minutes = math.floor((seconds) / 60)
+    local seconds = math.floor(seconds - 60 * minutes)
+    return string.format("%dm:%02ds", minutes, seconds)
+end
+
+-- Useful for displaying game time in mins:secs format
+function tools.formatTimeHoursMins(ticks)
+    local seconds = ticks / 60
+    local minutes = math.floor((seconds) / 60)
+    local hours = math.floor((minutes) / 60)
+    local minutes = math.floor(minutes - 60 * hours)
+    return string.format("%dh:%02dm", hours, minutes)
 end
 
 function tools.get_player(o)
@@ -20,9 +62,7 @@ function tools.get_player(o)
         p = game.players[o]
     end
 
-    if p and p.valid and p.is_player() then
-        return p
-    end
+    if p and p.valid and p.is_player() then return p end
 end
 
 function tools.floating_text(surface, position, text, color)
@@ -39,14 +79,16 @@ function tools.floating_text_on_player(player, text, color)
     tools.floating_text_on_player_offset(player, text, color, 0, -1.5)
 end
 
-function tools.floating_text_on_player_offset(player, text, color, x_offset, y_offset)
+function tools.floating_text_on_player_offset(player, text, color, x_offset,
+                                              y_offset)
     player = tools.get_player(player)
-    if not player or not player.valid then
-        return
-    end
+    if not player or not player.valid then return end
 
     local position = player.position
-    return tools.floating_text(player.surface, {x = position.x + x_offset, y = position.y + y_offset}, text, color)
+    return tools.floating_text(player.surface, {
+        x = position.x + x_offset,
+        y = position.y + y_offset
+    }, text, color)
 end
 
 function tools.protect_entity(entity)
@@ -75,65 +117,57 @@ function tools.link_out_spawn(pos)
 end
 
 function tools.link_belts(player, inp, outp)
-    local p = player.print
     if inp.valid and outp.valid then
         inp.connect_linked_belts(outp)
-        if inp.linked_belt_neighbour == out then
-            p("Success")
+        if inp.linked_belt_neighbour == outp then
+            tools.success(player, "Success")
             tools.protect_entity(inp)
             tools.protect_entity(outp)
+            inp = nil
+            outp = nil
         elseif inp.linked_belt_neighbour ~= outp then
-            p("Couldn't make link")
+            tools.error(player, "Couldn't make link")
             return
         end
     else
-        p("Invalid")
+        tools.error(player, "Invalid")
     end
 end
 
-commands.add_command("make", "magic", function(command)
-    local player = game.players[command.player_index]
-    local args = string.split(command.parameter, " ")
-
-    if not args[1] then args[1] = false end
-    if not args[2] then args[2] = false end
-    tools.make(player, args[1], args[2])
-end)
-
-commands.add_command("replace",
-                     "attempts to replace entities in the held blueprint",
-                     function(command)
-    local player = game.players[command.player_index]
-    local args = string.split(command.parameter, " ")
-
-    args[1], args[2] = args[1] or false, args[2] or false
-    if not args[1] or not args[2] then
-        player.print("No source and/or replacement entity given.")
-        return
-    end
-    tools.replace(player, args[1], args[2])
-end)
-
 function tools.make(player, sharedobject, flow)
-    local p = player.print
+    local shared_objects = {
+        ["chest"] = true,
+        ["belt"] = true,
+        ["belts"] = true,
+        ["power"] = true,
+        ["energy"] = true,
+        ["accumulator"] = true
+    }
+    local flows = {["in"] = true, ["out"] = true}
+    
     if not player.admin then
-        p("[ERROR] You're not admin!")
+        tools.error(player, "You're not admin!")
         return
     end
     if sharedobject == "link" then
         local link_in = global.oarc_players[player.name].link_in or nil
         local link_out = global.oarc_players[player.name].link_out or nil
-        if link_in == link_out then
-            p(
-                "[ERROR] Last logged input belt is the same as last logged output belt. Specify a new belt with /make mode <in/out>")
+        if link_in and link_out then
+            if link_in == link_out then
+                tools.notify(
+                    "Last logged input belt is the same as last logged output belt. Specify a new belt with /make mode <in/out>")
+                return false
+            else
+                tools.link_belts(player, link_in, link_out)
+            end
+        else
+            tools.error(player, "Missing a link")
             return false
         end
-        tools.link_belts(player, link_in, link_out)
-    end
-    if sharedobject == "mode" then
+    elseif sharedobject == "mode" then
         local sel = player.selected
         if not sel then
-            p("[ERROR] Place your cursor over the target linked belt.")
+            tools.error(player, "Place your cursor over the target linked belt.")
             return false
         end
         if sel.name == "linked-belt" then
@@ -141,12 +175,12 @@ function tools.make(player, sharedobject, flow)
                 global.oarc_players[player.name].link_in = sel
                 local link_in = global.oarc_players[player.name].link_in
                 if link_in.linked_belt_type == "input" then
-                    p(
+                    tools.notify(
                         "MODE already set to INPUT. '/make mode output' to link an OUTPUT belt. '/make link' to connect.")
                     return link_in
                 else
                     link_in.linked_belt_type = "input"
-                    p(
+                    tools.notify(
                         "MODE set to INPUT. '/make mode output' to link an OUTPUT belt. '/make link' to connect.")
                     return link_in
                 end
@@ -154,102 +188,103 @@ function tools.make(player, sharedobject, flow)
                 global.oarc_players[player.name].link_out = sel
                 local link_out = global.oarc_players[player.name].link_out
                 if link_out.linked_belt_type == "output" then
-                    p(
+                    tools.notify(
                         "MODE already set to OUTPUT. '/make mode input' to link an INPUT belt. '/make link' to connect.")
                     return link_out
                 else
                     link_out.linked_belt_type = "output"
-                    p(
+                    tools.notify(
                         "MODE set to OUTPUT. '/make mode input' to link an INPUT belt. '/make link' to connect.")
                     return link_out
                 end
+            end
+        else
+            tools.error(player, "Not a linked belt type.")
+            return false
+        end
+    elseif sharedobject == "water" then
+        local pos = GetWoodenChestFromCursor(player)
+            if pos and (getDistance(pos, player.position) > 2) then
+            player.surface.set_tiles({[1] = {name = "water", position = pos}})
+            return true
+        else
+            tools.error(player, "Failed to place waterfill. Don't stand so close!")
+            return false
+        end
+    elseif sharedobject == "combinator" or sharedobject == "combinators" then
+        local pos = GetWoodenChestFromCursor(player)
+            if pos and (player.surface.can_place_entity {
+            name = "constant-combinator",
+            position = {pos.x, pos.y - 1}
+        }) and (player.surface.can_place_entity {
+            name = "constant-combinator",
+            position = {pos.x, pos.y + 1}
+        }) then
+            SharedChestsSpawnCombinators(player, {x = pos.x, y = pos.y - 1},
+                                         {x = pos.x, y = pos.y + 1})
+            return true
+        end
+    elseif shared_objects[sharedobject] then
+        if flows[flow] then
+            local pos = GetWoodenChestFromCursor(player)
+            if pos then
+                if sharedobject == "chest" then
+                    if flow == "in" then
+                        SharedChestsSpawnInput(player, pos)
+                        return true
+                    elseif flow == "out" then
+                        SharedChestsSpawnOutput(player, pos)
+                        return true
+                    end
+                elseif sharedobject == "belt" or sharedobject == "belts" then
+                    if flow == "in" then
+                        local link_in = tools.link_in_spawn(pos)
+                        global.oarc_players[player.name].link_in = link_in
+                        return link_in
+                    elseif flow == "out" then
+                        local link_out = tools.link_out_spawn(pos)
+                        global.oarc_players[player.name].link_out = link_out
+                        return link_out
+                    end
+                elseif sharedobject == "power" or sharedobject == "energy" or sharedobject == "accumulator" then
+                    if flow == "in" then
+                        if (player.surface.can_place_entity {
+                            name = "electric-energy-interface",
+                            position = pos
+                        }) and (player.surface.can_place_entity {
+                            name = "constant-combinator",
+                            position = {x = pos.x + 1, y = pos.y}
+                        }) then
+                            SharedEnergySpawnInput(player, pos)
+                            return true
+                        end
+                    elseif flow == "out" then
+                        if (player.surface.can_place_entity {
+                            name = "electric-energy-interface",
+                            position = pos
+                        }) and (player.surface.can_place_entity {
+                            name = "constant-combinator",
+                            position = {x = pos.x + 1, y = pos.y}
+                        }) then
+                            SharedEnergySpawnOutput(player, pos)
+                            return true
+                        end
+                    end
+                end
             else
-                p("[ERROR] Invalid argument. Looking for 'in' or 'out'")
                 return false
             end
         else
-            p("[ERROR] Not a linked belt type.")
-            return false
+            tools.error(player, "Looking for 'in/out'")
+            return
         end
+    elseif sharedobject == "help" or sharedobject == "h" then
+        tools.notify(player, "/make <entity/command> <'in' or 'out'>")
+        tools.notify(player, "entities: 'belt', 'chest', 'power', 'combinators', 'water'")
+        tools.notify(player, "commands: 'link', 'mode', 'help'")
     else
-        local pos = GetWoodenChestFromCursor(player)
-        pos = pos or FindClosestWoodenChestAndDestroy(player)
-        if pos then
-            if sharedobject == "chest" then
-                if flow == "in" then
-                    SharedChestsSpawnInput(player, pos)
-                    return true
-                end
-                if flow == "out" then
-                    SharedChestsSpawnOutput(player, pos)
-                    return true
-                end
-            end
-            if sharedobject == "belt" or "belts" then
-                if flow == "in" then
-                    local link_in = tools.link_in_spawn(pos)
-                    global.oarc_players[player.name].link_in = link_in
-                    return link_in
-                end
-                if flow == "out" then
-                    local link_out = tools.link_out_spawn(pos)
-                    global.oarc_players[player.name].link_out = link_out
-                    return link_out
-                end
-            end
-            if sharedobject == "power" or "energy" or "accumulator" then
-                if flow == "in" then
-                    if (player.surface.can_place_entity {
-                        name = "electric-energy-interface",
-                        position = pos
-                    }) and (player.surface.can_place_entity {
-                        name = "constant-combinator",
-                        position = {x = pos.x + 1, y = pos.y}
-                    }) then
-                        SharedEnergySpawnInput(player, pos)
-                        return true
-                    end
-                end
-                if flow == "out" then
-                    if (player.surface.can_place_entity {
-                        name = "electric-energy-interface",
-                        position = pos
-                    }) and (player.surface.can_place_entity {
-                        name = "constant-combinator",
-                        position = {x = pos.x + 1, y = pos.y}
-                    }) then
-                        SharedEnergySpawnOutput(player, pos)
-                        return true
-                    end
-                end
-            end
-            if sharedobject == "combinator" or sharedobject == "combinators" then
-                if (player.surface.can_place_entity {
-                    name = "constant-combinator",
-                    position = {pos.x, pos.y - 1}
-                }) and (player.surface.can_place_entity {
-                    name = "constant-combinator",
-                    position = {pos.x, pos.y + 1}
-                }) then
-                    SharedChestsSpawnCombinators(player,
-                                                 {x = pos.x, y = pos.y - 1},
-                                                 {x = pos.x, y = pos.y + 1})
-                    return true
-                else
-                    p("Failed to place the special combinators. Please check there is enough space in the surrounding tiles!")
-                end
-            end
-            if sharedobject == "water" then
-                if (getDistance(pos, player.position) > 2) then
-                    player.surface.set_tiles({
-                        [1] = {name = "water", position = pos}
-                    })
-                    return true
-                else
-                    p("Failed to place waterfill. Don't stand so close FOOL!")
-                end
-            end
-        end
+        tools.error(player, "Invalid magic entity.. try /make help")
+        return
     end
 end
 
@@ -292,13 +327,13 @@ function tools.run_tests(player, cursor_stack)
     for index, test in pairs(tests.funcs) do
         if test then
             local msg = tests.truthy.parent .. tests.parent[index] ..
-                            tests.truthy.close .. " " ..
-                            tests.truthy.name ..
-                            tests.name[index] ..
-                            tests.truthy.close .. " " .. tests.truthy.funcs .. tostring(test) ..
+                            tests.truthy.close .. " " .. tests.truthy.name ..
+                            tests.name[index] .. tests.truthy.close .. " " ..
+                            tests.truthy.funcs .. tostring(test) ..
                             tests.truthy.close
             p(msg)
-            msg = tests.parent[index] .. " " .. tests.name[index] .. " " .. tostring(test)
+            msg = tests.parent[index] .. " " .. tests.name[index] .. " " ..
+                      tostring(test)
             log(msg)
         end
     end
@@ -366,3 +401,5 @@ function tools.replace(player, e1, e2)
     -- else
     --     player.print("Not a valid blueprint")
 end
+
+return tools
