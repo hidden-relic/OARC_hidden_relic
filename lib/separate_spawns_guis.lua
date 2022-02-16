@@ -349,15 +349,15 @@ function SpawnOptsGuiClick(event)
         else
             -- Find coordinates of a good place to spawn
             if (elemName == "isolated_spawn_far") then
-                newSpawn = FindUngeneratedCoordinates(global.ocfg.far_dist_start,global.ocfg.far_dist_end, player.surface)
+                newSpawn = GetCenterTilePosFromChunkPos(GetChunkPosFromTilePos(FindUngeneratedCoordinates(global.ocfg.far_dist_start,global.ocfg.far_dist_end, player.surface)))
             elseif (elemName == "isolated_spawn_near") then
-                newSpawn = FindUngeneratedCoordinates(global.ocfg.near_dist_start,global.ocfg.near_dist_end, player.surface)
+                newSpawn = GetCenterTilePosFromChunkPos(GetChunkPosFromTilePos(FindUngeneratedCoordinates(global.ocfg.near_dist_start,global.ocfg.near_dist_end, player.surface)))
             end
-        end
+        end 
 
         -- If that fails, find a random map edge in a rand direction.
         if ((newSpawn.x == 0) and (newSpawn.y == 0)) then
-            newSpawn = FindMapEdge(GetRandomVector(), player.surface)
+            newSpawn = GetCenterTilePosFromChunkPos(GetChunkPosFromTilePos(FindMapEdge(GetRandomVector(), player.surface)))
             log("Resorting to find map edge! x=" .. newSpawn.x .. ",y=" .. newSpawn.y)
         end
 

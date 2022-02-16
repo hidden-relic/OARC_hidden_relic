@@ -3,6 +3,8 @@
         "global",
         "game",
         "SHARED_FORCE",
-        "getPlayerBonuses"
+        "getPlayerBonuses",
+        "rendering",
+        "commands"
     ]
 }
