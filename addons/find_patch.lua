@@ -1,4 +1,4 @@
-local tools = require("addons/tools")
+require("addons.tools")
 
 local find_patch = {}
 

@@ -5,7 +5,7 @@
 require("lib/oarc_utils")
 local Colors = require("util/Colors")
 -- local spy = require("addons/spy")
-local tools = require("addons/tools")
+local tools = require("addons.tools")
 -- name :: string: Name of the command.
 -- tick :: uint: Tick the command was used.
 -- player_index :: uint (optional): The player who used the command. It will be missing if run from the server console.
@@ -14,18 +14,10 @@ local tools = require("addons/tools")
 commands.add_command("reset", "reset player", function(command)
     local player = game.players[command.player_index]
     local target = player.name
-    if command.parameter then
-        if game.players[command.parameter] and player.admin then
+    if command.parameter and game.players[command.parameter] and player.admin then
         target = command.parameter
-        elseif game.players[command.parameter] and not player.admin then
-            target = nil
-            tools.error(player, "You are not admin")
-        elseif not game.players[command.parameter] then
-            target = nil
-            tools.error(player, "Couldn't find player '"..command.parameter.."'")
-        end
     end
-    if target and game.players[target].valid then ResetPlayer(target) end
+    if target.valid then ResetPlayer(target) end
 end)
 
 local function format_chat_colour(message, color)
@@ -252,7 +244,7 @@ commands.add_command("ratio",
 
         local ips = item.amount / recipe.energy * machine.crafting_speed *
                         amountOfMachines -- math on the items/fluids per second
-        player.print {sprite, tools.round(ips, 3), item.name} -- full string
+        player.print {sprite, round(ips, 3), item.name} -- full string
     end
     ----------------------------products----------------------------
 
@@ -267,7 +259,7 @@ commands.add_command("ratio",
 
         local output = 1 / recipe.energy * machine.crafting_speed *
                            product.amount * multi -- math on the outputs per second
-        player.print {sprite, tools.round(output * amountOfMachines, 3), product.name} -- full string
+        player.print {sprite, round(output * amountOfMachines, 3), product.name} -- full string
 
     end
 
@@ -490,7 +482,7 @@ end)
 commands.add_command("make", "magic", function(command)
     local player = game.players[command.player_index]
     if not command.parameter then
-        tools.notify(player, "You're gonna need more than that..try /make help")
+        tools.error(player, "You're gonna need more than that..try /help make")
         return
     end
     local args = string.split(command.parameter, " ")
