@@ -255,7 +255,7 @@ end
 function markets.on_tick()
     if game.tick % 10 == 0 then
         for index, player in pairs(game.connected_players) do -- for each online player
-            if global.ocore.markets[player.name] then
+            if global.ocore.markets[player.name] and player.character and player.character.valid then
                 local player_market = global.ocore.markets[player.name] -- get market data
                 local chest_inv = markets.getChestInv(player_market.chest)
                 local item_name = getNthItemFromChest(chest_inv) -- get 1st item
