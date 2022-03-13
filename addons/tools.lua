@@ -3,6 +3,21 @@ local Color = require('util/Colors')
 
 local tools = {}
 
+function tools.sortByValue(t)
+    local keys = {}
+
+    for key, _ in pairs(t) do
+        table.insert(keys, key)
+    end
+
+    table.sort(keys, function(keyLhs, keyRhs) return t[keyLhs] < t[keyRhs] end)
+    local r = {}
+    for _, key in ipairs(keys) do
+        r[key] = t[key]
+    end
+    return r
+end
+
 function tools.FlyingTime(this_tick)
     if not global.oarc_timers then global.oarc_timers = {} end
     local time = tools.formatTimeMinsSecs(this_tick)
