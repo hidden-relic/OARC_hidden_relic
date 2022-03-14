@@ -28,7 +28,9 @@ function InitSpawnGlobalsAndForces()
     if (global.ocore == nil) then
         global.ocore = {}
     end
-
+    if (global.ocore.done_with_speed == nil) then
+        global.ocore.done_with_speed = {}
+    end
     -- if (global.ocore.spy == nil) then
     --     global.ocore.spy = {}
     --     global.ocore.spy.stalking = {}

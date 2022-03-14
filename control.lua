@@ -780,10 +780,12 @@ script.on_event(defines.events.on_market_item_purchased, function(event)
     local player = game.players[event.player_index]
     local player_market = global.ocore.markets[player.name]
     local count = event.count
+    local t = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0.75, 0.5, 0.25}
 
     local offers = player_market.market.get_market_items()
     local offer = offers[event.offer_index]
     if event.offer_index <= 20 then
+
         local price = 0
         for _, single_price in pairs(offer.price) do
             price = price + single_price.amount
@@ -797,19 +799,14 @@ script.on_event(defines.events.on_market_item_purchased, function(event)
         for i, item in ipairs(offers) do
             if i == event.offer_index then
                 if event.offer_index <= 19 then
-                    item.price = market.formatPrice(math.ceil(price * 1.025))
+                    item.price = market.formatPrice(math.ceil(price * 1.2))
                 else
+                    if global.ocore.done_with_speed[player.name] ~= nil then
+                        return
+                    end
                     player_market.sell_speed_lvl =
                         player_market.sell_speed_lvl + 1
-                    if player_market.sell_speed_lvl == 10 then
-                        item.price = market.formatPrice(0)
-                    else
-                        item.price = market.formatPrice(
-                                         market.speed_upgrade_prices[10 -
-                                             player_market.sell_speed_lvl])
-                    end
-                    player_market.sell_speed_multiplier = 10 -
-                                                              player_market.sell_speed_lvl
+                    item.price = market.formatPrice(tools.round(price * 1.7))
                 end
             end
         end
@@ -819,3 +816,4 @@ script.on_event(defines.events.on_market_item_purchased, function(event)
         end
     end
 end)
+

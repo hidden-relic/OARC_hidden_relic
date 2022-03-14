@@ -6,123 +6,125 @@ markets.p_stats = require('production-score')
 
 markets.upgrade_offers = {
     {
-        price = {{"coin", 100}},
+        price = {{"coin", 1000}},
         offer = {type = "gun-speed", ammo_category = "bullet", modifier = 0.01}
     }, {
-        price = {{"coin", 100}},
+        price = {{"coin", 1000}},
         offer = {
             type = "gun-speed",
             ammo_category = "shotgun-shell",
             modifier = 0.01
         }
     }, {
-        price = {{"coin", 100}},
+        price = {{"coin", 1000}},
         offer = {
             type = "gun-speed",
             ammo_category = "landmine",
             modifier = 0.01
         }
     }, {
-        price = {{"coin", 100}},
+        price = {{"coin", 1000}},
         offer = {type = "gun-speed", ammo_category = "grenade", modifier = 0.01}
     }, {
-        price = {{"coin", 250}},
+        price = {{"coin", 2500}},
         offer = {
             type = "gun-speed",
             ammo_category = "cannon-shell",
             modifier = 0.01
         }
     }, {
-        price = {{"coin", 250}},
+        price = {{"coin", 2500}},
         offer = {
             type = "gun-speed",
             ammo_category = "flamethrower",
             modifier = 0.01
         }
     }, {
-        price = {{"coin", 500}},
+        price = {{"coin", 5000}},
         offer = {type = "gun-speed", ammo_category = "rocket", modifier = 0.01}
     }, {
-        price = {{"coin", 1000}},
+        price = {{"coin", 10000}},
         offer = {type = "gun-speed", ammo_category = "laser", modifier = 0.01}
     }, {
-        price = {{"coin", 200}},
+        price = {{"coin", 2000}},
         offer = {
             type = "ammo-damage",
             ammo_category = "bullet",
             modifier = 0.01
         }
     }, {
-        price = {{"coin", 200}},
+        price = {{"coin", 2000}},
         offer = {
             type = "ammo-damage",
             ammo_category = "shotgun-shell",
             modifier = 0.01
         }
     }, {
-        price = {{"coin", 200}},
+        price = {{"coin", 2000}},
         offer = {
             type = "ammo-damage",
             ammo_category = "landmine",
             modifier = 0.01
         }
     }, {
-        price = {{"coin", 200}},
+        price = {{"coin", 2000}},
         offer = {
             type = "ammo-damage",
             ammo_category = "grenade",
             modifier = 0.01
         }
     }, {
-        price = {{"coin", 250}},
+        price = {{"coin", 2500}},
         offer = {
             type = "ammo-damage",
             ammo_category = "cannon-shell",
             modifier = 0.01
         }
     }, {
-        price = {{"coin", 250}},
+        price = {{"coin", 2500}},
         offer = {
             type = "ammo-damage",
             ammo_category = "flamethrower",
             modifier = 0.01
         }
     }, {
-        price = {{"coin", 500}},
+        price = {{"coin", 5000}},
         offer = {
             type = "ammo-damage",
             ammo_category = "rocket",
             modifier = 0.01
         }
     }, {
-        price = {{"coin", 1000}},
+        price = {{"coin", 10000}},
         offer = {type = "ammo-damage", ammo_category = "laser", modifier = 0.01}
     }, {
-        price = {{"coin", 500}},
+        price = {{"coin", 5000}},
         offer = {
             type = "turret-attack",
             turret_id = "gun-turret",
             modifier = 0.01
         }
     }, {
-        price = {{"coin", 3000}},
+        price = {{"coin", 30000}},
         offer = {
             type = "turret-attack",
             turret_id = "flamethrower-turret",
             modifier = 0.01
         }
     }, {
-        price = {{"coin", 5000}},
+        price = {{"coin", 50000}},
         offer = {
             type = "turret-attack",
             turret_id = "laser-turret",
             modifier = 0.01
         }
-    }, {price = {{"coin", 1000}}, offer = { effect_description = {'market.sell_speed_desc'}, type = "nothing"}}
-}
-
-markets.speed_upgrade_prices = {
-    4800000, 2800000, 1750000, 1000000, 500000, 250000, 100000, 25000, 1000
+    }, {
+        price = {{amount = 10000, name = "coin", type = "item"}},
+        offer = {
+            effect_description = {'market.sell_speed_desc'},
+            type = "nothing"
+        }
+    }
 }
 
 function markets.formatPrices()
@@ -134,7 +136,8 @@ function markets.formatPrices()
                     price = {{"coin", value}},
                     offer = {type = "give-item", item = name, count = 1}
                 }
-                global.ocore.markets.sell_offers[name] = tools.round(value * 0.75)
+                global.ocore.markets.sell_offers[name] = tools.round(value *
+                                                                         0.75)
             elseif value > 65535 then
                 local its = math.floor(value / 65535)
                 global.ocore.markets.buy_offers[name] = {
@@ -142,10 +145,11 @@ function markets.formatPrices()
                     offer = {type = "give-item", item = name, count = 1}
                 }
                 for i = 1, its, 1 do
-                    table.insert(global.ocore.markets.buy_offers[name].price, {"coin", 65535})
+                    table.insert(global.ocore.markets.buy_offers[name].price,
+                                 {"coin", 65535})
                 end
                 table.insert(global.ocore.markets.buy_offers[name].price,
-                {"coin", (value % 65535)})
+                             {"coin", (value % 65535)})
             end
         end
     end
@@ -153,7 +157,8 @@ end
 
 function markets.init()
     global.ocore.markets.item_values = tools.sortByValue(markets.getPrices())
-    game.write_file("market/item_values.lua", serpent.block(global.ocore.markets.item_values))
+    game.write_file("market/item_values.lua",
+                    serpent.block(global.ocore.markets.item_values))
     markets.formatPrices()
 end
 function markets.getPrices()
@@ -169,14 +174,11 @@ function markets.formatPrice(n)
     elseif n > 65535 then
         local its = math.floor(n / 65535)
         local t = {}
-        for i = 1, its, 1 do
-            table.insert(t, {"coin", 65535})
-        end
+        for i = 1, its, 1 do table.insert(t, {"coin", 65535}) end
         table.insert(t, {"coin", (n % 65535)})
         return t
     end
 end
-
 
 function markets.create(player, position)
     local player = player
@@ -211,7 +213,9 @@ function markets.create(player, position)
     global.ocore.markets[player.name].sell_speed_lvl, global.ocore.markets[player.name]
         .sell_speed_offer, global.ocore.markets[player.name]
         .sell_speed_multiplier = 1, market.get_market_items()[20], 10
-    for __, item in pairs(global.ocore.markets.buy_offers) do market.add_market_item(item) end
+    for __, item in pairs(global.ocore.markets.buy_offers) do
+        market.add_market_item(item)
+    end
     return market
 end
 
@@ -223,8 +227,8 @@ end
 local function getNthItemFromChest(chest_inv, n)
     if (chest_inv == nil) then return end
     if (chest_inv.is_empty()) then return end
-    local t, item_values, n, contents = {}, global.ocore.markets.item_values, n or 1,
-                                        chest_inv.get_contents()
+    local t, item_values, n, contents = {}, global.ocore.markets.item_values,
+                                        n or 1, chest_inv.get_contents()
     for name, count in pairs(contents) do
         if item_values[name] then table.insert(t, name) end
         if #t == n then break end
@@ -234,8 +238,14 @@ end
 
 local function getSale(chest_inv, item)
     local chest_inv, item, markets = chest_inv, item, markets
-    if chest_inv.can_insert {name = "coin", count = global.ocore.markets.sell_offers[item]} then
-        chest_inv.insert {name = "coin", count = global.ocore.markets.sell_offers[item]}
+    if chest_inv.can_insert {
+        name = "coin",
+        count = global.ocore.markets.sell_offers[item]
+    } then
+        chest_inv.insert {
+            name = "coin",
+            count = global.ocore.markets.sell_offers[item]
+        }
         chest_inv.remove({name = item, count = 1})
     end
 end
@@ -255,7 +265,8 @@ end
 function markets.on_tick()
     if game.tick % 10 == 0 then
         for index, player in pairs(game.connected_players) do -- for each online player
-            if global.ocore.markets[player.name] and player.character and player.character.valid then
+            if global.ocore.markets[player.name] and player.character and
+                player.character.valid then
                 local player_market = global.ocore.markets[player.name] -- get market data
                 local chest_inv = markets.getChestInv(player_market.chest)
                 local item_name = getNthItemFromChest(chest_inv) -- get 1st item
