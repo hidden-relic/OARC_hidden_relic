@@ -157,6 +157,8 @@ end
 
 function markets.init()
     global.ocore.markets.item_values = tools.sortByValue(markets.getPrices())
+    if global.ocore.markets.item_values["electric-energy-interface"] then global.ocore.markets.item_values["electric-energy-interface"] = nil
+    end
     game.write_file("market/item_values.lua",
                     serpent.block(global.ocore.markets.item_values))
     markets.formatPrices()
