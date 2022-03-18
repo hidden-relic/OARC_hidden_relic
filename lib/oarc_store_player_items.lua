@@ -2,6 +2,7 @@
 -- May 2020
 -- Adding microtransactions.
 
+local tools = require('addons/tools')
 local mod_gui = require("mod-gui")
 local market = require("addons/market")
 
@@ -115,7 +116,7 @@ function CreatePlayerStoreTab(tab_container, player)
     for category,section in pairs(OARC_STORE_PLAYER_ITEMS) do
         local flow = tab_container.add{name = category, type="flow", direction="horizontal"}
         for item_name,item in pairs(section) do
-            item.cost = global.ocore.markets.item_values[item_name]
+            item.cost = tools.round(global.ocore.markets.item_values[item_name] * item.count)
             local color = "[color=green]"
             if (item.cost > wallet) then
                 color = "[color=red]"

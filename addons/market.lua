@@ -156,13 +156,24 @@ function markets.formatPrices()
 end
 
 function markets.init()
+    local nil_items = {
+        ["electric-energy-interface"] = true,
+        ["rocket-part"] = true
+    }
     global.ocore.markets.item_values = tools.sortByValue(markets.getPrices())
-    if global.ocore.markets.item_values["electric-energy-interface"] then global.ocore.markets.item_values["electric-energy-interface"] = nil
+    for _, price in pairs(global.ocore.markets.item_values) do
+        price = math.ceil(price)
+    end
+    for name, _ in pairs(nil_items) do
+        if global.ocore.markets.item_values[name] then
+            global.ocore.markets.item_values[name] = nil
+        end
     end
     game.write_file("market/item_values.lua",
                     serpent.block(global.ocore.markets.item_values))
     markets.formatPrices()
 end
+
 function markets.getPrices()
     global.ocore.markets.buy_offers = {}
     global.ocore.markets.sell_offers = {}
@@ -281,7 +292,7 @@ function markets.on_tick()
                                 player_market.tts = markets.getTTS(player)
                             else
                                 player_market.current_item, player_market.tts =
-                                    nil
+                                    nil, nil
                             end
                         else
                             getSale(chest_inv, player_market.current_item)
