@@ -2,6 +2,7 @@
 -- Feb 2020
 -- Oarc's silly idea for a scripted item sharing solution.
 -- Buffer size is the limit of joules/tick so multiply by 60 to get /sec.
+local tools = require("addons.tools")
 SHARED_ELEC_OUTPUT_BUFFER_SIZE = 1000000000
 SHARED_ELEC_INPUT_BUFFER_SIZE = 1000000001
 
@@ -41,7 +42,7 @@ function SharedEnergySpawnInput(player, pos)
     local inputElec = game.surfaces[GAME_SURFACE_NAME].create_entity {
         name = "electric-energy-interface",
         position = pos,
-        force = "neutral"
+        force = "shared"
     }
     inputElec.destructible = false
     inputElec.minable = false
@@ -56,7 +57,7 @@ function SharedEnergySpawnInput(player, pos)
     local inputElecCombi = game.surfaces[GAME_SURFACE_NAME].create_entity {
         name = "constant-combinator",
         position = {x = pos.x + 1, y = pos.y},
-        force = "neutral"
+        force = "shared"
     }
     inputElecCombi.destructible = false
     inputElecCombi.minable = false
@@ -84,7 +85,7 @@ function SharedEnergySpawnOutput(player, pos)
     local outputElec = game.surfaces[GAME_SURFACE_NAME].create_entity {
         name = "electric-energy-interface",
         position = pos,
-        force = "neutral"
+        force = "shared"
     }
     outputElec.destructible = false
     outputElec.minable = false
@@ -99,7 +100,7 @@ function SharedEnergySpawnOutput(player, pos)
     local outputElecCombi = game.surfaces[GAME_SURFACE_NAME].create_entity {
         name = "constant-combinator",
         position = {x = pos.x + 1, y = pos.y},
-        force = "neutral"
+        force = "shared"
     }
     outputElecCombi.destructible = false
     outputElecCombi.minable = false
@@ -202,12 +203,37 @@ function SharedEnergyDistributeOutputOnTick()
                                                             .energy_stored
 end
 
+function GetWoodenChestFromCursor(player)
+    local sel = player.selected
+    if not sel then
+        tools.error(player, "Can't find an empty wooden chest under the cursor. Resorting to searching for wooden chest nearest to player.")
+        return FindClosestWoodenChestAndDestroy(player)
+    end
+    if sel.name == "wooden-chest" then
+        if (not sel.get_inventory(defines.inventory.chest).is_empty()) then
+            tools.error(player, "Empty the chest first")
+            return nil
+        end
+    
+        local pos = sel.position
+        if (not sel.destroy()) then
+            tools.error(player, "Can't destroy wooden chest")
+            return nil
+        end
+    
+        return {x = math.floor(pos.x), y = math.floor(pos.y)}
+    else
+        tools.error(player, "This is not an empty wooden chest..")
+end
+end
+
+
 -- Returns NIL or position of destroyed chest.
 function FindClosestWoodenChestAndDestroy(player)
     local target_chest =
         FindClosestPlayerOwnedEntity(player, "wooden-chest", 16)
     if (not target_chest) then
-        player.print("Failed to find wooden-chest?")
+        tools.error(player, "Failed to find empty wooden chest")
         return nil
     end
 
@@ -325,40 +351,6 @@ function ConvertWoodenChestToWaterFill(player)
     return false
 end
 
-function GetWoodenChestFromCursor(player)
-    local target_chest = player.selected
-    if (not target_chest) then
-        player.print("Failed to find wooden-chest?")
-        return nil
-    end
-
-    if target_chest.name ~= "wooden-chest" then
-        player.print("This is not a wooden chest..")
-        return nil
-    end
-
-    if (not target_chest.get_inventory(defines.inventory.chest).is_empty()) then
-        player.print("Chest is NOT empty! Please empty it and try again.")
-        return nil
-    end
-
-    local pos = target_chest.position
-    if (not target_chest.destroy()) then
-        player.print("ERROR - Can't remove wooden chest??")
-        return nil
-    end
-
-    return {x = math.floor(pos.x), y = math.floor(pos.y)}
-end
-
-function AddToShared(item_name, count)
-    if not (SharedChestUploadItem(item_name, count)) then
-        game.player.print("Failed?")
-        return false
-    end
-    game.player.print(count .. " " .. item_name .. " Added.")
-end
-
 function DestroyClosestSharedChestEntity(player)
     local special_entities = game.surfaces[GAME_SURFACE_NAME]
                                  .find_entities_filtered {
@@ -416,7 +408,7 @@ function SharedChestsSpawnInput(player, pos)
     local inputChest = game.surfaces[GAME_SURFACE_NAME].create_entity {
         name = "logistic-chest-storage",
         position = {pos.x, pos.y},
-        force = "neutral"
+        force = "shared"
     }
     inputChest.destructible = false
     inputChest.minable = false
@@ -440,7 +432,7 @@ function SharedChestsSpawnOutput(player, pos, enable_example)
     local outputChest = game.surfaces[GAME_SURFACE_NAME].create_entity {
         name = "logistic-chest-requester",
         position = {pos.x, pos.y},
-        force = "neutral"
+        force = "shared"
     }
     outputChest.destructible = false
     outputChest.minable = false
@@ -468,7 +460,7 @@ function SharedChestsSpawnCombinators(player, posCtrl, posStatus)
     local combiCtrl = game.surfaces[GAME_SURFACE_NAME].create_entity {
         name = "constant-combinator",
         position = posCtrl,
-        force = "neutral"
+        force = "shared"
     }
     combiCtrl.destructible = false
     combiCtrl.minable = false
@@ -483,7 +475,7 @@ function SharedChestsSpawnCombinators(player, posCtrl, posStatus)
     local combiStat = game.surfaces[GAME_SURFACE_NAME].create_entity {
         name = "constant-combinator",
         position = posStatus,
-        force = "neutral"
+        force = "shared"
     }
     combiStat.destructible = false
     combiStat.minable = false
@@ -812,64 +804,6 @@ function SharedChestsOnTick()
 
 end
 
-function CreateSharedItemsGuiTab(tab_container, player)
-    local scrollFrame = tab_container.add {
-        type = "scroll-pane",
-        name = "sharedItems-panel",
-        direction = "vertical"
-    }
-    ApplyStyle(scrollFrame, my_shared_item_list_fixed_width_style)
-    scrollFrame.horizontal_scroll_policy = "never"
-
-    AddLabel(scrollFrame, "share_items_info",
-             "Place items into the [color=yellow]yellow storage chests to share[/color].\nRequest items from the [color=blue]blue requestor chests to pull out items[/color].\nTo refresh this view, click the tab again.\nShared items are accessible by [color=red]EVERYONE and all teams[/color].\nThe combinator pair allows you to 'set' item types to watch for. Set items in the top one, and connect the bottom one to a circuit network to view the current available inventory. Items with 0 amount do not generate any signal.\nThe special accumulators share energy. The top one acts as an input, the bottom is the output.",
-             my_longer_label_style)
-
-    AddSpacerLine(scrollFrame)
-
-    -- MW charging/discharging rate. (delta change * sample rate per second)
-    local energy_change_add =
-        (global.oshared.energy_stored_history.after_input -
-            global.oshared.energy_stored_history.start) * 60 / 1000000
-    local energy_change_sub = (((global.oshared.energy_stored_history
-                                  .after_input -
-                                  global.oshared.energy_stored_history
-                                      .after_output) * 60)) / 1000000
-    local energy_add_str = string.format("+%.3fMW", energy_change_add)
-    local energy_sub_str = string.format("-%.3fMW", energy_change_sub)
-    local rate_color = "green"
-    if (energy_change_add <= energy_change_sub) then
-        rate_color = "red"
-    elseif (energy_change_add < (energy_change_sub + 10)) then
-        rate_color = "orange"
-    end
-
-    AddLabel(scrollFrame, "elec_avail_info",
-             "[color=acid]Current electricity available: " ..
-                 string.format("%.3f", global.oshared.energy_stored / 1000000) ..
-                 "MJ[/color] [color=" .. rate_color .. "](" .. energy_add_str ..
-                 " " .. energy_sub_str .. ")[/color]", my_longer_label_style)
-
-    AddSpacerLine(scrollFrame)
-    AddLabel(scrollFrame, "share_items_title_msg", "Shared Items:",
-             my_label_header_style)
-
-    local sorted_items = {}
-    for k in pairs(global.oshared.items) do table.insert(sorted_items, k) end
-    table.sort(sorted_items)
-
-    for idx, itemName in pairs(sorted_items) do
-        if (global.oshared.items[itemName] > 0) then
-            local caption_str =
-                "[item=" .. itemName .. "] " .. itemName .. ": " ..
-                    global.oshared.items[itemName]
-            AddLabel(scrollFrame, itemName .. "_itemlist", caption_str,
-                     my_player_list_style)
-        end
-    end
-
-end
-
 -- local ammo_table = {}
 -- table.insert(ammo_table, 'uranium-rounds-magazine')
 -- table.insert(ammo_table, 'piercing-rounds-magazine')
@@ -958,3 +892,61 @@ end
 --         end
 --   end
 -- end
+
+function CreateSharedItemsGuiTab(tab_container, player)
+    local scrollFrame = tab_container.add {
+        type = "scroll-pane",
+        name = "sharedItems-panel",
+        direction = "vertical"
+    }
+    ApplyStyle(scrollFrame, my_shared_item_list_fixed_width_style)
+    scrollFrame.horizontal_scroll_policy = "never"
+
+    AddLabel(scrollFrame, "share_items_info",
+             "Place items into the [color=yellow]yellow storage chests to share[/color].\nRequest items from the [color=blue]blue requestor chests to pull out items[/color].\nTo refresh this view, click the tab again.\nShared items are accessible by [color=red]EVERYONE and all teams[/color].\nThe combinator pair allows you to 'set' item types to watch for. Set items in the top one, and connect the bottom one to a circuit network to view the current available inventory. Items with 0 amount do not generate any signal.\nThe special accumulators share energy. The top one acts as an input, the bottom is the output.",
+             my_longer_label_style)
+
+    AddSpacerLine(scrollFrame)
+
+    -- MW charging/discharging rate. (delta change * sample rate per second)
+    local energy_change_add =
+        (global.oshared.energy_stored_history.after_input -
+            global.oshared.energy_stored_history.start) * 60 / 1000000
+    local energy_change_sub = (((global.oshared.energy_stored_history
+                                  .after_input -
+                                  global.oshared.energy_stored_history
+                                      .after_output) * 60)) / 1000000
+    local energy_add_str = string.format("+%.3fMW", energy_change_add)
+    local energy_sub_str = string.format("-%.3fMW", energy_change_sub)
+    local rate_color = "green"
+    if (energy_change_add <= energy_change_sub) then
+        rate_color = "red"
+    elseif (energy_change_add < (energy_change_sub + 10)) then
+        rate_color = "orange"
+    end
+
+    AddLabel(scrollFrame, "elec_avail_info",
+             "[color=acid]Current electricity available: " ..
+                 string.format("%.3f", global.oshared.energy_stored / 1000000) ..
+                 "MJ[/color] [color=" .. rate_color .. "](" .. energy_add_str ..
+                 " " .. energy_sub_str .. ")[/color]", my_longer_label_style)
+
+    AddSpacerLine(scrollFrame)
+    AddLabel(scrollFrame, "share_items_title_msg", "Shared Items:",
+             my_label_header_style)
+
+    local sorted_items = {}
+    for k in pairs(global.oshared.items) do table.insert(sorted_items, k) end
+    table.sort(sorted_items)
+
+    for idx, itemName in pairs(sorted_items) do
+        if (global.oshared.items[itemName] > 0) then
+            local caption_str =
+                "[item=" .. itemName .. "] " .. itemName .. ": " ..
+                    global.oshared.items[itemName]
+            AddLabel(scrollFrame, itemName .. "_itemlist", caption_str,
+                     my_player_list_style)
+        end
+    end
+
+end

@@ -13,8 +13,6 @@ function InitOarcConfig()
     
     global.bonus = {}
 
-    global.oarc_players = {}
-
     global.ocfg = {}
 
     if (game.active_mods["clean-tutorial-grid"]) then

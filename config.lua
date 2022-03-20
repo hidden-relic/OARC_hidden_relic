@@ -108,7 +108,7 @@ ENABLE_POWER_ARMOR_QUICK_START = false
 ENABLE_MODULAR_ARMOR_QUICK_START = true
 
 
-TECHNOLOGY_PRICE_MULTIPLIER = 3
+TECHNOLOGY_PRICE_MULTIPLIER = 2
 
 ------------------------------------------------------------------------------------------------------------------------
 -- MAP CONFIGURATION OPTIONS
@@ -265,28 +265,28 @@ OARC_CFG = {
     {
         ["iron-ore"] =
         {
-            amount = 16000,
+            amount = 2500,
             size = 20,
             x_offset = -29,
             y_offset = 16
         },
         ["copper-ore"] =
         {
-            amount = 12000,
+            amount = 2500,
             size = 20,
             x_offset = -28,
             y_offset = -3
         },
         ["stone"] =
         {
-            amount = 12000,
+            amount = 2500,
             size = 20,
             x_offset = -27,
             y_offset = -34
         },
         ["coal"] =
         {
-            amount = 12000,
+            amount = 2500,
             size = 20,
             x_offset = -27,
             y_offset = -20
@@ -325,7 +325,7 @@ OARC_CFG = {
         ["crude-oil"] =
         {
             num_patches = 4,
-            amount = 180000,
+            amount = 1080000,
             x_offset_start = -8,
             y_offset_start = 78,
             x_offset_next = 6,
@@ -352,7 +352,7 @@ MAIN_FORCE = "Main Force"
 -- Enable if players can allow others to join their base.
 -- And specify how many including the host are allowed.
 ENABLE_SHARED_SPAWNS = true
-MAX_PLAYERS_AT_SHARED_SPAWN = 2
+MAX_PLAYERS_AT_SHARED_SPAWN = 5
 
 -- Share local team chat with all teams
 -- This makes it so you don't have to use /s

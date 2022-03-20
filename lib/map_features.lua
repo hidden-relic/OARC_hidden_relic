@@ -4,6 +4,7 @@
 
 -- Generic Utility Includes
 require("lib/oarc_utils")
+local tools = require("addons/tools")
 
 
 -- Used to generate placement of buildings.
@@ -174,8 +175,8 @@ function MagicFactoryChunkGenerator()
             local theta = ((math.pi * 2) / num_positions_for_circle);
             local angle = (theta * i) + random_angle_offset;
 
-            local chunk_x = MathRound((r * math.cos(angle)) + math.random(-2, 2))
-            local chunk_y = MathRound((r * math.sin(angle)) + math.random(-2, 2))
+            local chunk_x = tools.round((r * math.cos(angle)) + math.random(-2, 2))
+            local chunk_y = tools.round((r * math.sin(angle)) + math.random(-2, 2))
 
             if (not game.surfaces[GAME_SURFACE_NAME].is_chunk_generated({chunk_x,chunk_y})) then
                 
@@ -198,14 +199,27 @@ end
 
 function IndicateClosestMagicChunk(player)
     local target_pos = GetCenterTilePosFromChunkPos(FindClosestMagicChunk(player))
-    rendering.draw_line{color={r=0.5,g=0.5,b=0.5,a=0.5},
-                    width=2,
-                    from=player.character,
-                    to=target_pos,
-                    surface=player.character.surface,
-                    players={player},
-                    draw_on_ground=true,
-                    time_to_live=60*5}
+    local line = rendering.draw_line {
+        surface = player.surface,
+        from = player.character,
+        to = target_pos,
+        players = {player.index},
+        color = {r=1, g=1, b=1, a=0.5},
+        width = 3.2,
+        gap_length = 5,
+        dash_length = 8,
+        time_to_live = 60 * 60
+    }
+    local circle = rendering.draw_circle {
+        color = {r=1, g=1, b=1, a=0.5},
+        radius = 4,
+        width = 6.4,
+        filled = false,
+        target = target_pos,
+        players = {player.index},
+        surface = player.surface,
+        time_to_live = 60 * 60
+    }
 end
 
 function MagicalFactorySpawnAll()

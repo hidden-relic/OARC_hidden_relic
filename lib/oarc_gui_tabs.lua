@@ -1,5 +1,4 @@
 -- oarc_gui_tabs.lua
-
 local mod_gui = require("mod-gui")
 
 --------------------------------------------------------------------------------
@@ -64,21 +63,23 @@ function InitOarcGuiTabs(player)
 
     AddOarcGuiTab(player, OARC_NOTEPAD_GUI_TAB_NAME)
     SetOarcGuiTabEnabled(player, OARC_NOTEPAD_GUI_TAB_NAME, true)
-    
+
     AddOarcGuiTab(player, OARC_BONUSES_GUI_TAB_NAME)
     SetOarcGuiTabEnabled(player, OARC_BONUSES_GUI_TAB_NAME, true)
-    
+
     HideOarcGui(player)
 end
 
 function CreateOarcGuiButton(player)
     if (mod_gui.get_button_flow(player).oarc_button == nil) then
-        local b = mod_gui.get_button_flow(player).add{name="oarc_button",
-                                                        caption="CLICK ME FOR MORE INFO",
-                                                        type="sprite-button",
-                                                        -- sprite="utility/expand_dots",
-                                                        style=mod_gui.button_style}
-        b.style.padding=2
+        local b = mod_gui.get_button_flow(player).add {
+            name = "oarc_button",
+            caption = "CLICK ME FOR MORE INFO",
+            type = "sprite-button",
+            -- sprite="utility/expand_dots",
+            style = mod_gui.button_style
+        }
+        b.style.padding = 2
         -- b.style.width=20
     end
 end
@@ -124,7 +125,7 @@ function ClickOarcGuiButton(event)
     if (event.element.caption ~= "") then
         event.element.caption = ""
         event.element.style.width = 20
-        event.element.sprite="utility/expand_dots"
+        event.element.sprite = "utility/expand_dots"
     end
 
     if (not DoesOarcGuiExist(player)) then
@@ -147,9 +148,7 @@ function TabChangeOarcGui(event)
     local selected_tab_name = otabs.tabs[otabs.selected_tab_index].tab.name
 
     -- Clear all tab contents
-    for i,t in pairs(otabs.tabs) do
-        t.content.clear()
-    end
+    for i, t in pairs(otabs.tabs) do t.content.clear() end
 
     SetOarGuiTabContent(player, selected_tab_name)
 end
@@ -166,14 +165,15 @@ function CreateOarcGuiTabsPane(player)
     if (mod_gui.get_frame_flow(player)[OARC_GUI] == nil) then
 
         -- OUTER FRAME (TOP GUI ELEMENT)
-        local frame = mod_gui.get_frame_flow(player).add{
+        local frame = mod_gui.get_frame_flow(player).add {
             type = 'frame',
             name = OARC_GUI,
-            direction = "vertical"}
+            direction = "vertical"
+        }
         frame.style.padding = 5
 
         -- INNER FRAME
-        local inside_frame = frame.add{
+        local inside_frame = frame.add {
             type = "frame",
             name = "oarc_if",
             style = "inside_deep_frame",
@@ -181,17 +181,20 @@ function CreateOarcGuiTabsPane(player)
         }
 
         -- SUB HEADING w/ LABEL
-        local subhead = inside_frame.add{
-            type="frame",
-            name="sub_header",
-            style = "changelog_subheader_frame"}
-        AddLabel(subhead, "scen_info", "Scenario Info and Controls", "subheader_caption_label")
+        local subhead = inside_frame.add {
+            type = "frame",
+            name = "sub_header",
+            style = "changelog_subheader_frame"
+        }
+        AddLabel(subhead, "scen_info", "Scenario Info and Controls",
+                 "subheader_caption_label")
 
         -- TABBED PANE
-        local oarc_tabs = inside_frame.add{
-            name="oarc_tabs",
-            type="tabbed-pane",
-            style="tabbed_pane"}
+        local oarc_tabs = inside_frame.add {
+            name = "oarc_tabs",
+            type = "tabbed-pane",
+            style = "tabbed_pane"
+        }
         oarc_tabs.style.top_padding = 8
     end
 end
@@ -199,25 +202,25 @@ end
 -- Function creates a new tab.
 -- It adds whatever it wants to the provided scroll-pane.
 function AddOarcGuiTab(player, tab_name)
-    if (not DoesOarcGuiExist(player)) then
-        CreateOarcGuiTabsPane(player)
-    end
+    if (not DoesOarcGuiExist(player)) then CreateOarcGuiTabsPane(player) end
 
     -- Get the tabbed pane
     local otabs = GetOarcGuiTabsPane(player)
 
     -- Create new tab
-    local new_tab = otabs.add{
-        type="tab",
-        name=tab_name,
-        caption=tab_name}
+    local new_tab = otabs.add {
+        type = "tab",
+        name = tab_name,
+        caption = tab_name
+    }
 
     -- Create inside frame for content
-    local tab_inside_frame = otabs.add{
-        type="frame",
-        name=tab_name.."_if",
+    local tab_inside_frame = otabs.add {
+        type = "frame",
+        name = tab_name .. "_if",
         style = "inside_deep_frame",
-        direction="vertical"}
+        direction = "vertical"
+    }
     tab_inside_frame.style.left_margin = 10
     tab_inside_frame.style.right_margin = 10
     tab_inside_frame.style.top_margin = 4
@@ -235,18 +238,15 @@ function AddOarcGuiTab(player, tab_name)
     new_tab.enabled = false
 
     -- If no other tabs are selected, select the first one.
-    if (otabs.selected_tab_index == nil) then
-        otabs.selected_tab_index = 1
-    end
+    if (otabs.selected_tab_index == nil) then otabs.selected_tab_index = 1 end
 end
-
 
 function SetOarGuiTabContent(player, tab_name)
     if (not DoesOarcGuiExist(player)) then return end
 
     local otabs = GetOarcGuiTabsPane(player)
 
-    for _,t in ipairs(otabs.tabs) do
+    for _, t in ipairs(otabs.tabs) do
         if (t.tab.name == tab_name) then
             t.content.clear()
             OARC_GUI_TAB_CONTENT_FUNCTIONS[tab_name](t.content, player)
@@ -260,7 +260,7 @@ function SetOarcGuiTabEnabled(player, tab_name, enable)
 
     local otabs = GetOarcGuiTabsPane(player)
 
-    for _,t in ipairs(otabs.tabs) do
+    for _, t in ipairs(otabs.tabs) do
         if (t.tab.name == tab_name) then
             t.tab.enabled = enable
             return
@@ -273,7 +273,7 @@ function SwitchOarcGuiTab(player, tab_name)
 
     local otabs = GetOarcGuiTabsPane(player)
 
-    for i,t in pairs(otabs.tabs) do
+    for i, t in pairs(otabs.tabs) do
         if (t.tab.name == tab_name) then
             otabs.selected_tab_index = i
             FakeTabChangeEventOarcGui(player)
@@ -283,7 +283,8 @@ function SwitchOarcGuiTab(player, tab_name)
 end
 
 function OarcGuiOnGuiClosedEvent(event)
+    local player = game.players[event.player_index]
     if (event.element and (event.element.name == "oarc_gui")) then
-        HideOarcGui(game.players[event.player_index])
+        HideOarcGui(player)
     end
 end
