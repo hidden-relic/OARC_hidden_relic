@@ -21,26 +21,24 @@ local SECTION_CONTENT = {
     {
         title = '',
         content = {
-            "Hi, Welcome to the All Weekend Factorio server, enjoy your stay here!",
-            "Rules: Be polite. Ask before changing other players's stuff. Have fun!\n"..
-"This server is running a custom scenario that allows individual starting areas on the map.",
-"Contact: Join our discord.gg/U35NxwY and ask either Windsinger or Oof2win2",
+            {"", {"Game_Info.info1"}},
+            {"", {"Game_Info.info2"}},
+            {"", {"Game_Info.info3"}}
         }
     }, {
         title = "Train Guidelines",
         content = {
             '*> Trains are [color=orange]RHD[/color] (Right Hand Drive)',
             '*> Please do not make train roundabouts/loops, junctions/end point stations only',
-            '*> General Train size is [color=orange]1-4[/color]',
-            '*> Place junctions 1-4 width apart',
+            '*> General Train size is [color=orange]2-4[/color]',
+            '*> Place junctions 2-4 width apart',
             '*> [color=orange]Color[/color] the trains/stations appropriately'
         }
     }, {
         title = "Station Naming Guidelines",
         content = {
-            '*> [L] = Load, [U] = Unload',
-            '*> [Resource-Image] [L or U]',
-            '* Example: "[item=iron-ore] [L]"'
+            '*> L = Load, U = Unload, Q = Queue/Stacker (Exclude "[" and "]" for the following examples):',
+            '*> [Resource-Image] [L or U]', '* Example: "[item=iron-ore] [L]"'
         }
     }
 }

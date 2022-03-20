@@ -1,16 +1,14 @@
-local auto_decon_miners = {}
-
 -- auto_decon_miners.lua
 -- May 2020
 -- My shitty softmod version which is buggy
 
-function auto_decon_miners.OarcAutoDeconOnInit(event)
+function OarcAutoDeconOnInit(event)
 	if (not global.oarc_decon_miners) then
 		global.oarc_decon_miners = {}
 	end
 end
 
-function auto_decon_miners.OarcAutoDeconOnTick()
+function OarcAutoDeconOnTick()
     if (global.oarc_decon_miners and (#global.oarc_decon_miners > 0)) then
         for i,miner in pairs(global.oarc_decon_miners) do
             if ((not miner) or (not miner.valid)) then
@@ -28,7 +26,7 @@ function auto_decon_miners.OarcAutoDeconOnTick()
     end
 end
 
-function auto_decon_miners.OarcAutoDeconOnResourceDepleted(event)
+function OarcAutoDeconOnResourceDepleted(event)
 	if (not global.oarc_decon_miners) then
 		global.oarc_decon_miners = {}
 	end
@@ -43,6 +41,3 @@ function auto_decon_miners.OarcAutoDeconOnResourceDepleted(event)
         end
     end
 end
-
-
-return auto_decon_miners

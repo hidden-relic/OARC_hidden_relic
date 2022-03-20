@@ -3,7 +3,7 @@
 --
 -- Code that handles everything regarding giving each player a separate spawn
 -- Includes the GUI stuff
-
+local market = require("addons/market")
 require("lib/oarc_utils")
 require("config")
 local crash_site = require("crash-site")
@@ -20,10 +20,22 @@ local crash_site = require("crash-site")
 -- status information
 function InitSpawnGlobalsAndForces()
 
+    if (global.oarc_players == nil) then
+        global.oarc_players = {}
+    end
+
     -- Core global to help me organize shit.
     if (global.ocore == nil) then
         global.ocore = {}
     end
+    if (global.ocore.done_with_speed == nil) then
+        global.ocore.done_with_speed = {}
+    end
+    -- if (global.ocore.spy == nil) then
+    --     global.ocore.spy = {}
+    --     global.ocore.spy.stalking = {}
+    --     global.ocore.spy.watching = {}
+    -- end
 
     -- This contains each player's spawn point. Literally where they will respawn.
     -- There is a way in game to change this under one of the little menu features I added.
@@ -74,6 +86,11 @@ function InitSpawnGlobalsAndForces()
         global.ocore.buddySpawnOpts = {}
     end
 
+    
+    if (global.ocore.markets == nil) then
+        global.ocore.markets = {}
+    end
+    
     -- Silo info
     if (global.siloPosition == nil) then
         global.siloPosition = {}
@@ -279,8 +296,14 @@ function SendPlayerToNewSpawnAndCreateIt(delayedSpawn)
 
         -- Combinators for monitoring items in the network.
         SharedChestsSpawnCombinators(player,
-                {x=delayedSpawn.pos.x+x_dist-1, y=delayedSpawn.pos.y-2}, -- Ctrl
-                {x=delayedSpawn.pos.x+x_dist-1, y=delayedSpawn.pos.y}) -- Status
+                {x=delayedSpawn.pos.x+x_dist, y=delayedSpawn.pos.y-2}, -- Ctrl
+                {x=delayedSpawn.pos.x+x_dist, y=delayedSpawn.pos.y}) -- Status
+
+                if not global.ocore.markets[player.name] or (global.ocore.markets[player.name] == nil) then
+                    global.ocore.markets[player.name] = {}
+                end
+        market.create(player, {x=delayedSpawn.pos.x+x_dist-3, y=delayedSpawn.pos.y-1}) -- market
+
 
 
         SharedChestsSpawnOutput(player, {x=delayedSpawn.pos.x+x_dist, y=delayedSpawn.pos.y+4}, true)

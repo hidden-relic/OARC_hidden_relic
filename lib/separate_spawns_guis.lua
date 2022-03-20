@@ -92,6 +92,15 @@ function WelcomeTextGuiClick(event)
     end
 end
 
+function WelcomeTextGuiClosedEvent(event)
+    local player = game.players[event.player_index]
+    if (event.element and (event.element.name == "welcome_msg")) then
+        if (player.gui.screen.welcome_msg ~= nil) then
+            player.gui.screen.welcome_msg.destroy()
+        end
+    end
+end
+
 
 -- Display the spawn options and explanation
 function DisplaySpawnOptions(player)

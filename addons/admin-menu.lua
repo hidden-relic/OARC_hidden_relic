@@ -1,4 +1,13 @@
-
+-- Admin Open Player Inventory Soft Module
+-- Displays a table of all players with and button to open their inventory
+-- Uses locale __modulename__.cfg
+-- @usage require('modules/dddgamer/admin/admin-open-player-inventory')
+-- ------------------------------------------------------- --
+-- @author Denis Zholob (DDDGamer)
+-- github: https://github.com/deniszholob/factorio-softmod-pack
+-- ======================================================= --
+-- Dependencies --
+-- ======================================================= --
 local mod_gui = require("mod-gui") -- From `Factorio\data\core\lualib`
 local GUI = require("stdlib/GUI")
 local Colors = require("util/Colors")
@@ -23,7 +32,7 @@ local BTN_MAKE_BELT_IN = 'btn_make_belt_in'
 local BTN_MAKE_BELT_OUT = 'btn_make_belt_out'
 local BTN_MAKE_LINK = 'btn_make_link'
 local OWNER = 'hidden_relic'
-local OWNER_ONLY = false
+local OWNER_ONLY = true
 local SPRITE_NAMES = {
     menu = Sprites.laser_turret,
     find_iron = Sprites.iron_ore,
@@ -51,13 +60,13 @@ function admin_menu.on_player_joined(event)
     local player = game.players[event.player_index]
     if (OWNER_ONLY) then
         if (player.name == OWNER) then
-            admin_menu.draw_menu_btn(player)
-            admin_menu.draw_master_frame(player)
+            draw_menu_btn(player)
+            draw_master_frame(player)
             GUI.toggle_element(mod_gui.get_frame_flow(player)[MASTER_FRAME_NAME])
         end
     elseif (player.admin == true) then
-        admin_menu.draw_menu_btn(player)
-        admin_menu.draw_master_frame(player)
+        draw_menu_btn(player)
+        draw_master_frame(player)
     end
 end
 
