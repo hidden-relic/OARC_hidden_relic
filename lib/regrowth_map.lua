@@ -359,15 +359,9 @@ function WorldEaterSingleStep()
         local total_count = #entities
         local has_last_user_set = false
 
-        local t_type = {
-            ["character"] = true,
-            ["construction-robot"] = true,
-            ["logistic-robot"] = true
-        }
-
         if (total_count > 0) then
             for k,v in pairs(entities) do
-                if (v.last_user or t_type[v.type]) then
+                if (v.last_user or (v.type == "character")) then
                     has_last_user_set = true
                     return -- This means we're done checking this chunk.
                 end
