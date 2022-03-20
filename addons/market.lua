@@ -161,8 +161,13 @@ function markets.init()
         ["rocket-part"] = true
     }
     global.ocore.markets.item_values = tools.sortByValue(markets.getPrices())
-    for name, t in pairs(global.ocore.markets.item_values) do
-        if nil_items[name] then t = nil
+    for _, price in pairs(global.ocore.markets.item_values) do
+        price = math.ceil(price)
+    end
+    for name, _ in pairs(nil_items) do
+        if global.ocore.markets.item_values[name] then
+            global.ocore.markets.item_values[name] = nil
+        end
     end
     game.write_file("market/item_values.lua",
                     serpent.block(global.ocore.markets.item_values))
