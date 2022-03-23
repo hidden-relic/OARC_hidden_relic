@@ -19,7 +19,7 @@ local Styles = require('util/Styles')
 -- ======================================================= --
 local SECTION_CONTENT = {
     {
-        title = '',
+        title = WELCOME_MSG,
         content = {
             WELCOME_MSG_TITLE,
             WELCOME_MSG,
