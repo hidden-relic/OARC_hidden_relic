@@ -490,7 +490,20 @@ commands.add_command("make", "magic", function(command)
     if not args[1] then args[1] = false end
     if not args[2] then args[2] = false end
     tools.make(player, args[1], args[2])
-end)   
+end)
+
+commands.add_command('find', 'finds the nearest patch of given resource',
+                     function(command)
+    local player = game.players[command.player_index]
+    if isValid(player) and player.admin then
+        local resource = command.parameter
+        if resources[resource] then
+            find_patch.findPatch(resources[resource], find_patch.range, player)
+        end
+    else
+        player.print("[color=red]admin only...[/color]")
+    end
+end)
 
 -- commands.add_command("replace",
 --                      "attempts to replace entities in the held blueprint",

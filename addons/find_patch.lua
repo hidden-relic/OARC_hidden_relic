@@ -1,4 +1,4 @@
-require("addons.tools")
+require("addons/tools")
 
 local find_patch = {}
 
@@ -102,13 +102,5 @@ local resources = {
     ["crude-oil"] = "crude-oil",
     ["crude_oil"] = "crude-oil"
 }
-commands.add_command('find', 'finds the nearest patch of given resource',
-                     function(command)
-    local player = game.players[command.player_index]
-    local resource = command.parameter
-    if resources[resource] then
-        find_patch.findPatch(resources[resource], find_patch.range, player)
-    end
-end)
 
 return find_patch
