@@ -21,18 +21,17 @@ local SECTION_CONTENT = {
     {
         title = '',
         content = {
-            {"", {"Game_Info.info1"}},
-            {"", {"Game_Info.info2"}},
-            {"", {"Game_Info.info3"}}
+            WELCOME_MSG_TITLE,
+            WELCOME_MSG,
+            SERVER_MSG
         }
     }, {
         title = "Train Guidelines",
         content = {
             '*> Trains are [color=orange]RHD[/color] (Right Hand Drive)',
             '*> Please do not make train roundabouts/loops, junctions/end point stations only',
-            '*> General Train size is [color=orange]2-4[/color]',
-            '*> Place junctions 2-4 width apart',
-            '*> [color=orange]Color[/color] the trains/stations appropriately'
+            '*> General Train size is [color=orange]1-4[/color]',
+            '*> Place junctions 1-4 width apart'
         }
     }, {
         title = "Station Naming Guidelines",

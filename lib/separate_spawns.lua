@@ -421,7 +421,7 @@ function SetupAndClearSpawnAreas(surface, chunkArea)
                 RemoveInCircle(surface, chunkArea, "resource", spawn.pos, global.ocfg.spawn_config.gen_settings.land_area_tiles+5)
                 RemoveInCircle(surface, chunkArea, "cliff", spawn.pos, global.ocfg.spawn_config.gen_settings.land_area_tiles+5)
 
-                local fill_tile = "landfill"
+                local fill_tile = "tutorial-grid"
                 if (game.active_mods["oarc-restricted-build"]) then
                     fill_tile = global.ocfg.locked_build_area_tile
                 end

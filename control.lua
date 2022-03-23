@@ -9,37 +9,11 @@ local color = require("util/color_presets")
 
 local handler = require("event_handler")
 handler.add_lib(require("scripts/logging"))
-local market = require("addons/market")
-require("addons/find_patch")
+
 require('stdlib/Event')
 require('stdlib/table')
 
 -- require('addons/for-testing')
-
-require("addons/admin-menu.lua")
--- require("addons/auto-infinite-research.lua")
-require("addons/autodeconstruct.lua")
--- require("addons/bonuses.lua")
-require("addons/bonuses_gui.lua")
-require("addons/custom-tech.lua")
-require("addons/death-marker.lua")
-require("addons/evolution.lua")
--- require("addons/find_patch.lua")
-require("addons/floating-health.lua")
-require("addons/game-info.lua")
-require("addons/game-time.lua")
-require("addons/online-player-list.lua")
--- require("addons/personal-storage.lua")
-require("addons/player-init.lua")
--- require("addons/player-logging.lua")
--- require("addons/research-queue.lua")
-require("addons/silo.lua")
--- require("addons/solo_spawning.lua")
-require("addons/spawn-marker.lua")
-require("addons/tasks.lua")
-local tools = require("addons/tools.lua")
-require('addons/inspect.lua')
-
 
 require("lib/oarc_utils")
 
@@ -56,27 +30,53 @@ require("lib/notepad")
 require("lib/map_features")
 require("lib/oarc_buy")
 
-
 -- For Philip. I currently do not use this and need to add proper support for
--- commands like this in the future.
--- require("lib/rgcommand")
--- require("lib/helper_commands")
-
--- Main Configuration File
-require("config")
-
--- Save all config settings to global table.
-require("lib/oarc_global_cfg.lua")
-
--- Scenario Specific Includes
-require("lib/separate_spawns")
-require("lib/separate_spawns_guis")
-require("lib/oarc_enemies")
-require("lib/oarc_gui_tabs")
-
--- compatibility with mods
-require("compat/factoriomaps")
-
+    -- commands like this in the future.
+    -- require("lib/rgcommand")
+    -- require("lib/helper_commands")
+    
+    -- Main Configuration File
+    require("config")
+    
+    -- Save all config settings to global table.
+    require("lib/oarc_global_cfg.lua")
+    
+    -- Scenario Specific Includes
+    require("lib/separate_spawns")
+    require("lib/separate_spawns_guis")
+    require("lib/oarc_enemies")
+    require("lib/oarc_gui_tabs")
+    
+    -- compatibility with mods
+    require("compat/factoriomaps")
+    
+    
+    require("addons/admin_menu.lua")
+    -- require("addons/auto-infinite-research.lua")
+    require("addons/autodeconstruct.lua")
+    -- require("addons/bonuses.lua")
+    require("addons/bonuses_gui.lua")
+    require("addons/custom-tech.lua")
+    require("addons/death-marker.lua")
+    require("addons/evolution.lua")
+    require("addons/floating-health.lua")
+    require("addons/game-info.lua")
+    require("addons/game-time.lua")
+    require("addons/online-player-list.lua")
+    -- require("addons/personal-storage.lua")
+    require("addons/player-init.lua")
+    -- require("addons/player-logging.lua")
+    -- require("addons/research-queue.lua")
+    require("addons/silo.lua")
+    -- require("addons/solo_spawning.lua")
+    require("addons/spawn-marker.lua")
+    require("addons/tasks.lua")
+    require('addons/inspect.lua')
+    
+    local market = require("addons/market")
+    local tools = require("addons/tools")
+    local find_patch = require("addons/find_patch")
+    
 -- Create a new surface so we can modify map settings at the start.
 GAME_SURFACE_NAME = "oarc"
 
@@ -133,13 +133,12 @@ script.on_init(function(event)
     end
 
     OarcMapFeatureInitGlobalCounters()
-    
 
     -- Display starting point text as a display of dominance.
     RenderPermanentGroundText(game.surfaces[GAME_SURFACE_NAME],
                               {x = -32, y = -30}, 37, "Spawn",
                               {0.9, 0.3, 0.3, 0.8})
-                              market.init()
+    market.init()
 end)
 
 script.on_load(function() Compat.handle_factoriomaps() end)
@@ -151,12 +150,11 @@ script.on_load(function() Compat.handle_factoriomaps() end)
 -- Used for end game win conditions / unlocking late game stuff
 ----------------------------------------
 Event.register(defines.events.on_rocket_launched,
-                function(event) RocketLaunchEvent(event) end)
+               function(event) RocketLaunchEvent(event) end)
 
 ----------------------------------------
 -- Surface Generation
 ----------------------------------------
-
 
 ----------------------------------------
 -- Chunk Generation
@@ -221,18 +219,18 @@ Event.register(defines.events.on_player_joined_game, function(event)
                         " joined the game." .. "\n")
     -- this is part of a much larger TODO
     -- global.permissions[event.player_index] =
-        -- global.permissions[event.player_index] or {}
+    -- global.permissions[event.player_index] or {}
     -- p_c.on_player_joined_game(event)
 
     -- Handle hot-patching into active games
     local player = game.players[event.player_index]
     -- local group = AUTO_PERMISSION_USERS[player.name]
     -- if player.admin and not group then
-        -- game.permissions.get_group(DEFAULT_ADMIN_GROUP).add_player(player)
+    -- game.permissions.get_group(DEFAULT_ADMIN_GROUP).add_player(player)
     -- elseif group then
-        -- game.permissions.get_group(group).add_player(player)
+    -- game.permissions.get_group(group).add_player(player)
     -- else
-        -- game.permissions.get_group('Default').add_player(player)
+    -- game.permissions.get_group('Default').add_player(player)
     -- end
     if (global.oarc_players[player.name] == nil) then
         global.oarc_players[player.name] = {}
@@ -241,13 +239,11 @@ end)
 
 Event.register(defines.events.on_player_created, function(event)
     local player = game.players[event.player_index]
-    global.oarc_players[player.name] = {
-        link_mode = "input"
-    }
+    global.oarc_players[player.name] = {link_mode = "input"}
     -- Handle local hosting auto-promote
     -- if game.players[event.player_index].admin then
-        -- game.permissions.get_group(DEFAULT_ADMIN_GROUP).add_player(
-            -- event.player_index);
+    -- game.permissions.get_group(DEFAULT_ADMIN_GROUP).add_player(
+    -- event.player_index);
     -- end
 
     -- Move the player to the game surface immediately.
@@ -284,8 +280,8 @@ end)
 -- end)
 
 -- Event.register(defines.events.on_player_demoted, function(e)
-    --  auto-remove
-    -- game.permissions.get_group('Default').add_player(e.player_index);
+--  auto-remove
+-- game.permissions.get_group('Default').add_player(e.player_index);
 -- end)
 
 Event.register(defines.events.on_player_left_game, function(event)
@@ -619,14 +615,14 @@ end)
 -- Save player's stuff so they don't lose it if they can't get to the corpse fast enough.
 ----------------------------------------
 Event.register(defines.events.on_character_corpse_expired,
-                function(event) DropGravestoneChestFromCorpse(event.corpse) end)
+               function(event) DropGravestoneChestFromCorpse(event.corpse) end)
 
 ----------------------------------------
 -- On Gui Text Change
 -- For capturing text entry.
 ----------------------------------------
 Event.register(defines.events.on_gui_text_changed,
-                function(event) NotepadOnGuiTextChange(event) end)
+               function(event) NotepadOnGuiTextChange(event) end)
 
 ----------------------------------------
 -- On Gui Closed
@@ -680,3 +676,57 @@ end, {
     {filter = "type", type = "unit"}, {filter = "type", type = "unit-spawner"},
     {filter = "type", type = "turret"}
 })
+
+Event.register(defines.events.on_market_item_purchased, function(event)
+    local player = game.players[event.player_index]
+    local player_market = global.ocore.markets[player.name]
+    local count = event.count
+    local t = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0.75, 0.5, 0.25}
+
+    local offers = player_market.market.get_market_items()
+    local offer = offers[event.offer_index]
+    if event.offer_index <= 20 then
+
+        local price = 0
+        for _, single_price in pairs(offer.price) do
+            price = price + single_price.amount
+        end
+        if count > 1 then
+            local refund = 0
+            refund = price * (count - 1)
+            player.insert {name = "coin", count = refund}
+        end
+        local ammo = ""
+        if (offer.offer.type == "gun-speed") or (offer.offer.type == "ammo-damage") then
+            ammo = offer.offer.ammo_category
+        elseif (offer.offer.type == "turret-attack") then
+            ammo = offer.offer.turret_id
+        else
+            ammo = "sell_speed"
+        end
+        -- local types = player_market.upgrades[offer.offer.type]
+                -- local offer_info = types[ammo]
+        -- offer_info.level = offer_info.level + 1
+        -- offer_info.bonus = offer_info.bonus + offer_info.modifier
+
+        for i, item in ipairs(offers) do
+            if i == event.offer_index then
+                if event.offer_index <= 19 then
+                    item.price = market.formatPrice(math.ceil(price * 1.2))
+                else
+                    if global.ocore.done_with_speed[player.name] ~= nil then
+                        return
+                    end
+                    player_market.sell_speed_lvl =
+                        player_market.sell_speed_lvl + 1
+                    item.price = market.formatPrice(tools.round(price * 1.7))
+                end
+            end
+        end
+        -- offer_info.price = market.unFormatPrice(offer.price)
+        player_market.market.clear_market_items()
+        for __, item in pairs(offers) do
+            player_market.market.add_market_item(item)
+        end
+    end
+end)

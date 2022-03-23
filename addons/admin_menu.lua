@@ -1,7 +1,5 @@
--- Admin Open Player Inventory Soft Module
--- Displays a table of all players with and button to open their inventory
 -- Uses locale __modulename__.cfg
--- @usage require('modules/dddgamer/admin/admin-open-player-inventory')
+-- @usage require('addons/admin_menu')
 -- ------------------------------------------------------- --
 -- @author Denis Zholob (DDDGamer)
 -- github: https://github.com/deniszholob/factorio-softmod-pack
@@ -28,19 +26,29 @@ local BTN_FIND_STONE = 'btn_find_stone'
 local BTN_FIND_COAL = 'btn_find_coal'
 local BTN_FIND_URANIUM = 'btn_find_uranium'
 local BTN_FIND_OIL = 'btn_find_oil'
+local BTN_MAKE_CHEST_IN = 'btn_make_chest_in'
+local BTN_MAKE_CHEST_OUT = 'btn_make_chest_out'
+local BTN_MAKE_POWER_IN = 'btn_make_power_in'
+local BTN_MAKE_POWER_OUT = 'btn_make_power_out'
+local BTN_MAKE_COMBINATORS = 'btn_make_combinators'
+local BTN_MAKE_WATER = 'btn_make_water'
 local BTN_MAKE_BELT_IN = 'btn_make_belt_in'
 local BTN_MAKE_BELT_OUT = 'btn_make_belt_out'
 local BTN_MAKE_LINK = 'btn_make_link'
 local OWNER = 'hidden_relic'
-local OWNER_ONLY = true
+local OWNER_ONLY = false
 local SPRITE_NAMES = {
-    menu = Sprites.laser_turret,
+    menu = Sprites.snippet,
     find_iron = Sprites.iron_ore,
     find_copper = Sprites.copper_ore,
     find_stone = Sprites.stone,
     find_coal = Sprites.coal,
     find_uranium = Sprites.uranium_ore,
     find_oil = Sprites.crude_oil,
+    make_chest = Sprites.logistic_chest_storage,
+    make_power = Sprites.accumulator,
+    make_combinators = Sprites.constant_combinator,
+    make_water = Sprites.water,
     make_belt = Sprites.linked_belt,
     make_link = Sprites.fluid_indication_arrow_both_ways
 }
@@ -81,6 +89,7 @@ end
 -- Toggle playerlist is called if gui element is playerlist button
 -- @param event on_gui_click
 function admin_menu.on_gui_click(event)
+    local range = range
     local player = game.players[event.player_index]
     local el_name = event.element.name
 
@@ -107,6 +116,12 @@ function admin_menu.on_gui_click(event)
     if (el_name == BTN_FIND_OIL) then
         find_patch.findPatch("crude-oil", range, player)
     end
+    if (el_name == BTN_MAKE_CHEST_IN) then tools.make(player, "chest", "in") end
+    if (el_name == BTN_MAKE_CHEST_OUT) then tools.make(player, "chest", "out") end
+    if (el_name == BTN_MAKE_POWER_IN) then tools.make(player, "power", "in") end
+    if (el_name == BTN_MAKE_POWER_OUT) then tools.make(player, "power", "out") end
+    if (el_name == BTN_MAKE_COMBINATORS) then tools.make(player, "combinators") end
+    if (el_name == BTN_MAKE_WATER) then tools.make(player, "water") end
     if (el_name == BTN_MAKE_BELT_IN) then tools.make(player, "belt", "in") end
     if (el_name == BTN_MAKE_BELT_OUT) then tools.make(player, "belt", "out") end
     if (el_name == BTN_MAKE_LINK) then tools.make(player, "link") end
@@ -246,19 +261,67 @@ function admin_menu.draw_master_frame(player)
         direction = 'horizontal'
     })
 
-    local make_belt_in_btn = make_button_group_1.add({
+    local make_chest_in_btn = make_button_group_1.add({
+        type = "sprite-button",
+        name = BTN_MAKE_CHEST_IN,
+        sprite = SPRITE_NAMES.make_chest,
+        tooltip = {'admin_panel.make_chest_in_tooltip'}
+    })
+    local make_chest_out_btn = make_button_group_1.add({
+        type = "sprite-button",
+        name = BTN_MAKE_CHEST_OUT,
+        sprite = SPRITE_NAMES.make_chest,
+        tooltip = {'admin_panel.make_chest_out_tooltip'}
+    })
+    local make_water = make_button_group_1.add({
+        type = "sprite-button",
+        name = BTN_MAKE_WATER,
+        sprite = SPRITE_NAMES.make_water,
+        tooltip = {'admin_panel.make_water_tooltip'}
+    })
+
+    local make_button_group_2 = make_button_flow.add({
+        type = 'flow',
+        direction = 'horizontal'
+    })
+
+    local make_power_in_btn = make_button_group_2.add({
+        type = "sprite-button",
+        name = BTN_MAKE_POWER_IN,
+        sprite = SPRITE_NAMES.make_power,
+        tooltip = {'admin_panel.make_power_in_tooltip'}
+    })
+    local make_power_out_btn = make_button_group_2.add({
+        type = "sprite-button",
+        name = BTN_MAKE_POWER_OUT,
+        sprite = SPRITE_NAMES.make_power,
+        tooltip = {'admin_panel.make_power_out_tooltip'}
+    })
+    local make_combinators = make_button_group_2.add({
+        type = "sprite-button",
+        name = BTN_MAKE_COMBINATORS,
+        sprite = SPRITE_NAMES.make_combinators,
+        tooltip = {'admin_panel.make_combinators_tooltip'}
+    })
+
+    local make_button_group_3 = make_button_flow.add({
+        type = 'flow',
+        direction = 'horizontal'
+    })
+
+    local make_belt_in_btn = make_button_group_3.add({
         type = "sprite-button",
         name = BTN_MAKE_BELT_IN,
         sprite = SPRITE_NAMES.make_belt,
         tooltip = {'admin_panel.make_belt_in_tooltip'}
     })
-    local make_belt_out_btn = make_button_group_1.add({
+    local make_belt_out_btn = make_button_group_3.add({
         type = "sprite-button",
         name = BTN_MAKE_BELT_OUT,
         sprite = SPRITE_NAMES.make_belt,
         tooltip = {'admin_panel.make_belt_out_tooltip'}
     })
-    local make_link_btn = make_button_group_1.add({
+    local make_link_btn = make_button_group_3.add({
         type = "sprite-button",
         name = BTN_MAKE_LINK,
         sprite = SPRITE_NAMES.make_link,

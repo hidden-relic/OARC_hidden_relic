@@ -1,11 +1,11 @@
-require("addons.tools")
+local tools = require("addons/tools")
+local sprites = require("util/Sprites")
 
 local find_patch = {}
 
 find_patch.MAX_INT32 = 2147483647
 
-find_patch.range = 10000
-
+find_patch.max_range = 10000
 
 function find_patch.getDistance(pos1, pos2)
     local pos1 = {x = pos1.x or pos1[1], y = pos1.y or pos1[2]}
@@ -26,9 +26,7 @@ function find_patch.getClosest(pos, list)
             closest = distance
         end
     end
-    if closest == find_patch.MAX_INT32 then
-        return
-    end
+    if closest == find_patch.MAX_INT32 then return end
     return {position = {x, y}, distance = closest}
 end
 
@@ -42,6 +40,7 @@ local colors = {
 }
 
 function find_patch.findPatch(res_name, range, player)
+    local res_name, range, player = res_name, range, player
     local patches = player.surface.find_entities_filtered {
         name = res_name,
         type = "resource",
@@ -52,11 +51,11 @@ function find_patch.findPatch(res_name, range, player)
     for each, patch in pairs(patches) do table.insert(all, patch.position) end
     local found = find_patch.getClosest(player.position, all)
     if not found then
-        player.print("No " .. res_name .. " patch found")
+        player.print("No " .. sprites[res_name] .. " " .. res_name ..
+                         " patch found within " .. range .. " tiles.")
         return
     end
-    player.print(res_name .. " found " .. tools.round(found.distance, 2) ..
-                     " tiles away")
+    player.print(sprites[res_name] .. " " .. res_name .. " found " .. tools.round(found.distance, 2) .. " tiles away")
     res_name = res_name:gsub("-", "_")
     local line = rendering.draw_line {
         surface = player.surface,
@@ -102,13 +101,5 @@ local resources = {
     ["crude-oil"] = "crude-oil",
     ["crude_oil"] = "crude-oil"
 }
-commands.add_command('find', 'finds the nearest patch of given resource',
-                     function(command)
-    local player = game.players[command.player_index]
-    local resource = command.parameter
-    if resources[resource] then
-        find_patch.findPatch(resources[resource], find_patch.range, player)
-    end
-end)
 
 return find_patch
