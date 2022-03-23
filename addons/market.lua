@@ -131,6 +131,14 @@ markets.upgrade_offers = {
 function markets.getPrices()
     global.ocore.markets.buy_offers = {}
     global.ocore.markets.sell_offers = {}
+    global.ocore.markets.sell_upgrade_table = {}
+    local x = 10
+    local y = 1.1
+    for i = 1, 10, 1 do
+        table.insert(global.ocore.markets.sell_upgrade_table, x)
+        x = x / y
+        y = y - 0.025
+    end
     return markets.p_stats.generate_price_list()
 end
 

@@ -719,7 +719,12 @@ Event.register(defines.events.on_market_item_purchased, function(event)
                     end
                     player_market.sell_speed_lvl =
                         player_market.sell_speed_lvl + 1
+                        if player_market.sell_speed_lvl == 10 then
+                            table.insert(global.ocore.done_with_speed, {[player.name] = true})
+                            item = nil
+                        end
                     item.price = market.formatPrice(tools.round(price * 1.7))
+                    player_market.sell_speed_multiplier = global.ocore.markets.sell_upgrade_table[player_market.sell_speed_lvl]
                 end
             end
         end

@@ -1996,6 +1996,7 @@ function CreateCropCircle(surface, centerPos, chunkArea, tileRadius, fillTile)
     local tileRadSqr = tileRadius ^ 2
 
     local dirtTiles = {}
+    local crossTiles = {}
     for i = chunkArea.left_top.x, chunkArea.right_bottom.x, 1 do
         for j = chunkArea.left_top.y, chunkArea.right_bottom.y, 1 do
 
@@ -2011,6 +2012,9 @@ function CreateCropCircle(surface, centerPos, chunkArea, tileRadius, fillTile)
                     (game.active_mods["oarc-restricted-build"])) then
                     table.insert(dirtTiles, {name = fillTile, position = {i, j}})
                 end
+                if i == centerPos.x or j == centerPos.y then
+                    table.insert(crossTiles, {name = "orange-refined-concrete", position = {i, j}})
+                end
             end
 
             -- Create a circle of trees around the spawn point.
@@ -2025,6 +2029,7 @@ function CreateCropCircle(surface, centerPos, chunkArea, tileRadius, fillTile)
     end
 
     surface.set_tiles(dirtTiles)
+    surface.set_tiles(crossTiles)
 end
 
 -- COPIED FROM jvmguy!
