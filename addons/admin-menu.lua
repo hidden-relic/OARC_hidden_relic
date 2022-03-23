@@ -60,13 +60,13 @@ function admin_menu.on_player_joined(event)
     local player = game.players[event.player_index]
     if (OWNER_ONLY) then
         if (player.name == OWNER) then
-            admin_menu.draw_menu_btn(player)
-            admin_menu.draw_master_frame(player)
+            draw_menu_btn(player)
+            draw_master_frame(player)
             GUI.toggle_element(mod_gui.get_frame_flow(player)[MASTER_FRAME_NAME])
         end
     elseif (player.admin == true) then
-        admin_menu.draw_menu_btn(player)
-        admin_menu.draw_master_frame(player)
+        draw_menu_btn(player)
+        draw_master_frame(player)
     end
 end
 

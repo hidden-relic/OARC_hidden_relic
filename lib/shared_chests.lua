@@ -2,7 +2,7 @@
 -- Feb 2020
 -- Oarc's silly idea for a scripted item sharing solution.
 -- Buffer size is the limit of joules/tick so multiply by 60 to get /sec.
-local tools = require("addons/tools")
+local tools = require("addons.tools")
 SHARED_ELEC_OUTPUT_BUFFER_SIZE = 1000000000
 SHARED_ELEC_INPUT_BUFFER_SIZE = 1000000001
 
@@ -206,7 +206,7 @@ end
 function GetWoodenChestFromCursor(player)
     local sel = player.selected
     if not sel then
-        tools.notify(player, "Can't find an empty wooden chest under the cursor. Resorting to searching for wooden chest nearest to player.")
+        tools.error(player, "Can't find an empty wooden chest under the cursor. Resorting to searching for wooden chest nearest to player.")
         return FindClosestWoodenChestAndDestroy(player)
     end
     if sel.name == "wooden-chest" then

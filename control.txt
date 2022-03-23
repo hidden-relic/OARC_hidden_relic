@@ -680,18 +680,6 @@ script.on_event(defines.events.on_market_item_purchased, function(event)
             refund = price * (count - 1)
             player.insert {name = "coin", count = refund}
         end
-        local ammo = ""
-        if (offer.offer.type == "gun-speed") or (offer.offer.type == "ammo-damage") then
-            ammo = offer.offer.ammo_category
-        elseif (offer.offer.type == "turret-attack") then
-            ammo = offer.offer.turret_id
-        else
-            ammo = "sell_speed"
-        end
-        -- local types = player_market.upgrades[offer.offer.type]
-                -- local offer_info = types[ammo]
-        -- offer_info.level = offer_info.level + 1
-        -- offer_info.bonus = offer_info.bonus + offer_info.modifier
 
         for i, item in ipairs(offers) do
             if i == event.offer_index then
@@ -703,19 +691,14 @@ script.on_event(defines.events.on_market_item_purchased, function(event)
                     end
                     player_market.sell_speed_lvl =
                         player_market.sell_speed_lvl + 1
-                        if player_market.sell_speed_lvl == 10 then
-                            table.insert(global.ocore.done_with_speed, {[player.name] = true})
-                            item = nil
-                        end
                     item.price = market.formatPrice(tools.round(price * 1.7))
-                    player_market.sell_speed_multiplier = global.ocore.markets.sell_upgrade_table[player_market.sell_speed_lvl]
                 end
             end
         end
-        -- offer_info.price = market.unFormatPrice(offer.price)
         player_market.market.clear_market_items()
         for __, item in pairs(offers) do
             player_market.market.add_market_item(item)
         end
     end
 end)
+

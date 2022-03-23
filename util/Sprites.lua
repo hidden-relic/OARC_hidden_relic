@@ -42,8 +42,6 @@ Sprites = {
     -- train_visualization = 'utility/train_visualization',
     -- logistics = 'utility/logistics',
     --
-    line = 'utility/line_icon',
-    snippet = 'utility/lua_snippet_tool_icon',
     add = 'utility/add',
     clone = 'utility/clone',
     go_to_arrow = 'utility/go_to_arrow',
@@ -250,8 +248,6 @@ Sprites = {
     explosion_chart_visualization = 'utility/explosion_chart_visualization',
     -- Item
     -- iron_axe = 'item/iron-axe',
-    water = 'fluid/water',
-    constant_combinator = 'item/constant-combinator',
     iron_ore = 'item/iron-ore',
     copper_ore = 'item/copper-ore',
     stone = 'item/stone',

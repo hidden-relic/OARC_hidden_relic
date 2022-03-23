@@ -5,9 +5,7 @@
 require("lib/oarc_utils")
 local Colors = require("util/Colors")
 -- local spy = require("addons/spy")
-local tools = require("addons/tools")
-local find_patch = require('addons/find_patch')
-
+local tools = require("addons.tools")
 -- name :: string: Name of the command.
 -- tick :: uint: Tick the command was used.
 -- player_index :: uint (optional): The player who used the command. It will be missing if run from the server console.
@@ -23,18 +21,16 @@ commands.add_command("reset", "reset player", function(command)
 end)
 
 local function format_chat_colour(message, color)
-    color = color or Colors.white
-    local color_tag = '[color=' .. tools.round(color.r, 3) .. ', ' ..
-                          tools.round(color.g, 3) .. ', ' ..
-                          tools.round(color.b, 3) .. ']'
-    return string.format('%s%s[/color]', color_tag, message)
+color = color or Colors.white
+local color_tag = '[color='..tools.round(color.r, 3)..', '..tools.round(color.g, 3)..', '..tools.round(color.b, 3)..']'
+return string.format('%s%s[/color]', color_tag, message)
 end
 
 local function step_component(c1, c2)
     if c1 < 0 then
-        return 0, c2 + c1
+        return 0, c2+c1
     elseif c1 > 1 then
-        return 1, c2 - c1 + 1
+        return 1, c2-c1+1
     else
         return c1, c2
     end
@@ -49,17 +45,17 @@ local function step_color(color)
 end
 
 local function next_color(color, step)
-    step = step or 0.1
-    local new_color = {r = 0, g = 0, b = 0}
+    step = step  or 0.1
+    local new_color = {r=0, g=0, b=0}
     if color.b == 0 and color.r ~= 0 then
-        new_color.r = color.r - step
-        new_color.g = color.g + step
+        new_color.r = color.r-step
+        new_color.g = color.g+step
     elseif color.r == 0 and color.g ~= 0 then
-        new_color.g = color.g - step
-        new_color.b = color.b + step
+        new_color.g = color.g-step
+        new_color.b = color.b+step
     elseif color.g == 0 and color.b ~= 0 then
-        new_color.b = color.b - step
-        new_color.r = color.r + step
+        new_color.b = color.b-step
+        new_color.r = color.r+step
     end
     return step_color(new_color)
 end
@@ -73,11 +69,11 @@ commands.add_command("rainbow", "Rainbow chat", function(command)
     local message = command.parameter
     local player_name = player and player.name or '<Server>'
     local player_color = player and player.color or nil
-    local color_step = 3 / message:len()
+    local color_step = 3/message:len()
     if color_step > 1 then color_step = 1 end
-    local current_color = {r = 1, g = 0, b = 0}
-    local output = format_chat_colour(player_name .. ': ', player_color)
-    output = output .. message:gsub('%S', function(letter)
+    local current_color = {r=1, g=0, b=0}
+    local output = format_chat_colour(player_name..': ', player_color)
+    output = output..message:gsub('%S', function(letter)
         local rtn = format_chat_colour(letter, current_color)
         current_color = next_color(current_color, color_step)
         return rtn
@@ -93,7 +89,9 @@ commands.add_command("look", "Look at a player", function(command)
     end
     local target = command.parameter
     target = tools.get_player(target)
-    if target.valid then player.zoom_to_world(target.position, 1.75) end
+    if target.valid then
+        player.zoom_to_world(target.position, 1.75)
+    end
 end)
 
 -- commands.add_command('watch', 'Watch a player', function(command)
@@ -117,11 +115,10 @@ commands.add_command("me", "Perform an 'action' in chat", function(command)
         return
     end
     local action = command.parameter
-    local player_name = player and player.name or '<Server>'
-    game.print(string.format('* %s %s *', player_name, action),
-               player.chat_color)
+local player_name = player and player.name or '<Server>'
+game.print(string.format('* %s %s *', player_name, action), player.chat_color)
 end)
-
+    
 commands.add_command("repair",
                      "Repairs all destroyed and damaged entities in an area",
                      function(command)
@@ -271,53 +268,6 @@ commands.add_command("ratio",
     end
 
 end)
-
-commands.add_command('find', 'finds the nearest patch of given resource',
-                     function(command)
-    local player = game.players[command.player_index]
-    local resource = command.parameter
-    if resources[resource] then
-        find_patch.findPatch(resources[resource], find_patch.max_range, player)
-    end
-end)
-
-commands.add_command("get", "get item", function(command)
-    local player = game.players[command.player_index]
-    if player.admin then
-        if game.item_prototypes[command.parameter] then
-            player.insert {
-                name = command.parameter,
-                count = game.item_prototypes[command.parameter].stack_size
-            }
-        end
-    end
-end)
-
-commands.add_command("mark", "mark a position", function(command)
-    local player = game.players[command.player_index]
-    if player.admin then
-        if not global.markers then global.markers = {} end
-        if command.parameter then
-            local args = string.split(command.parameter, " ")
-            local pos = tools.fixCoords(args[1], args[2])
-            table.insert(global.markers, tools.drawCircle(pos))
-        else
-            table.insert(global.markers, tools.drawCircle())
-        end
-    end
-end)
-
-
-
--- commands.add_command("marketinfo", "print a player's market info",
---                      function(command)
---     local player = game.players[command.player_index]
---     if command.parameter and game.players[command.parameter] then
---         player.print(market.getInfo(command.parameter))
---     else
---         player.print(market.getInfo(player.name))
---     end
--- end)
 
 -- Give yourself or another player, power armor
 commands.add_command("give-power-armor-kit", "give a start kit",
@@ -540,7 +490,7 @@ commands.add_command("make", "magic", function(command)
     if not args[1] then args[1] = false end
     if not args[2] then args[2] = false end
     tools.make(player, args[1], args[2])
-end)
+end)   
 
 -- commands.add_command("replace",
 --                      "attempts to replace entities in the held blueprint",

@@ -50,15 +50,14 @@ Tasks = {
     end,
     -- stores tasks here, init with defaults.
     DEFAULT_TASKS = {
-        "get power",
-        "automate belts",
-        "red science",
-        "turrets and walls",
-        "green circuits",
-        "inserters",
-        "green science",
-        "smelter array",
-        "military upgrades"
+        "Get Power",
+        "Build simple belt production",
+        "Build simple red science automation",
+        "Build simple circuit production",
+        "Build simple inserter production",
+        "Build simple green science automation",
+        "Build Bus start (plan lanes)",
+        "Build large smelteries (copper, iron)"
     }
 }
 
@@ -350,7 +349,7 @@ end
 function Tasks.add_default_tasks(task_strings)
     -- Only want to add the default tasks if not initialized yet
     if (not global.Tasks_config) then
-        local name = 'AwF'
+        local name = 'basic'
         -- Loop trough the strings and add in the task objects to the global task table
         for _, task_str in pairs(task_strings) do
             local task_obj = Tasks.add_new_task(name)
