@@ -416,24 +416,6 @@ script.on_event(defines.events.on_console_chat, function(event)
     end
 end)
 
-script.on_event(defines.events.on_console_command, function(e)
-    -- auto-remove kicked/banned players, except admins
-    -- only run this if ran by admin
-    -- Note: if anyone on the server can run code(and not just admins), they can raise an event and pretend to be the console and trigger this
-    -- Another reason why you shouldn't give anyone but admins access to lua commands
-    -- This only allows the Trusted group to remove Trusted status in any case, so its not severe.
-    local caller = (e.player_index and game.players[e.player_index]) or console
-    if caller.admin then
-        if (e.command == 'kick') or (e.command == 'ban') then
-            local player = game.players[e.parameters]
-
-            -- if player and not player.admin then
-            --     game.permissions.get_group('Default').add_player(player);
-            -- end
-        end
-    end
-end)
-
 -- commands.add_command('reloadperms', 'Reload permissions', function(e)
 --     -- this will rebuild permissions, if they get messed up somehow
 --     local caller = (e.player_index and game.players[e.player_index]) or console
