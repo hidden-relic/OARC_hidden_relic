@@ -2,7 +2,7 @@
 -- Feb 2020
 -- Oarc's silly idea for a scripted item sharing solution.
 -- Buffer size is the limit of joules/tick so multiply by 60 to get /sec.
-local tools = require("addons/tools")
+local tools = require("addons.tools")
 SHARED_ELEC_OUTPUT_BUFFER_SIZE = 1000000000
 SHARED_ELEC_INPUT_BUFFER_SIZE = 1000000001
 

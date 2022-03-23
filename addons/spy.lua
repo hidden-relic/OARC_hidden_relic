@@ -1,5 +1,3 @@
--- not implemented
-
 local spy = {}
 
 function spy.is_watching(player)

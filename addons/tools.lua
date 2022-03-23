@@ -1,16 +1,20 @@
 require('stdlib/string')
 local Color = require('util/Colors')
-local Table = require('stdlib/table')
+
 local tools = {}
 
 function tools.sortByValue(t)
     local keys = {}
 
-    for key, _ in pairs(t) do table.insert(keys, key) end
+    for key, _ in pairs(t) do
+        table.insert(keys, key)
+    end
 
     table.sort(keys, function(keyLhs, keyRhs) return t[keyLhs] < t[keyRhs] end)
     local r = {}
-    for _, key in ipairs(keys) do r[key] = t[key] end
+    for _, key in ipairs(keys) do
+        r[key] = t[key]
+    end
     return r
 end
 
@@ -18,7 +22,7 @@ function tools.FlyingTime(this_tick)
     if not global.oarc_timers then global.oarc_timers = {} end
     local time = tools.formatTimeMinsSecs(this_tick)
     for __, player in pairs(global.oarc_timers) do
-        FlyingText(time, player.position, {r = 1, g = 0, b = 0}, player.surface)
+    FlyingText(time, player.position, {r=1, g=0, b=0}, player.surface)
     end
 end
 
@@ -155,7 +159,7 @@ function tools.make(player, sharedobject, flow)
         ["accumulator"] = true
     }
     local flows = {["in"] = true, ["out"] = true}
-
+    
     if not player.admin then
         tools.error(player, "You're not admin!")
         return
@@ -215,17 +219,16 @@ function tools.make(player, sharedobject, flow)
         end
     elseif sharedobject == "water" then
         local pos = GetWoodenChestFromCursor(player)
-        if pos and (getDistance(pos, player.position) > 2) then
+            if pos and (getDistance(pos, player.position) > 2) then
             player.surface.set_tiles({[1] = {name = "water", position = pos}})
             return true
         else
-            tools.error(player,
-                        "Failed to place waterfill. Don't stand so close!")
+            tools.error(player, "Failed to place waterfill. Don't stand so close!")
             return false
         end
     elseif sharedobject == "combinator" or sharedobject == "combinators" then
         local pos = GetWoodenChestFromCursor(player)
-        if pos and (player.surface.can_place_entity {
+            if pos and (player.surface.can_place_entity {
             name = "constant-combinator",
             position = {pos.x, pos.y - 1}
         }) and (player.surface.can_place_entity {
@@ -258,8 +261,7 @@ function tools.make(player, sharedobject, flow)
                         global.oarc_players[player.name].link_out = link_out
                         return link_out
                     end
-                elseif sharedobject == "power" or sharedobject == "energy" or
-                    sharedobject == "accumulator" then
+                elseif sharedobject == "power" or sharedobject == "energy" or sharedobject == "accumulator" then
                     if flow == "in" then
                         if (player.surface.can_place_entity {
                             name = "electric-energy-interface",
@@ -293,8 +295,7 @@ function tools.make(player, sharedobject, flow)
         end
     elseif sharedobject == "help" or sharedobject == "h" then
         tools.notify(player, "/make <entity/command> <'in' or 'out'>")
-        tools.notify(player,
-                     "entities: 'belt', 'chest', 'power', 'combinators', 'water'")
+        tools.notify(player, "entities: 'belt', 'chest', 'power', 'combinators', 'water'")
         tools.notify(player, "commands: 'link', 'mode', 'help'")
     else
         tools.error(player, "Invalid magic entity.. try /make help")
@@ -414,48 +415,6 @@ function tools.replace(player, e1, e2)
     p("tile replacements: " .. bp_tile_count)
     -- else
     --     player.print("Not a valid blueprint")
-end
-
-function tools.fixCoords(t, y)
-    local flr = math.floor
-    if y and type(t) == "number" then
-        t = {
-            x = t >= 0 and flr(t) + 0.5 or flr(t) - 0.5,
-            y = y >= 0 and flr(y) + 0.5 or flr(y) - 0.5
-        }
-    elseif type(t) == "table" then
-        t = {
-            x = t[1] >= 0 and (flr(t[1]) + 0.5) or (flr(t[1]) - 0.5),
-            y = t[2] >= 0 and (flr(t[2]) + 0.5) or (flr(t[2]) - 0.5)
-        }
-    end
-    return t
-end
-
-function tools.safeTeleport(player, surface, target_pos)
-    local safe_pos = surface.find_non_colliding_position("character",
-                                                         target_pos, 15, 1)
-    if (not safe_pos) then
-        player.teleport(target_pos, surface)
-    else
-        player.teleport(safe_pos, surface)
-    end
-end
-
-function tools.sel(n, ...) return arg[n] end
-
-function tools.drawCircle(position, radius, color, width, filled, TTL)
-    local circle = rendering.draw_circle {
-        color = color or {r = 0.5, g = 1, b = 1, a = 0.5},
-        radius = radius or 0.5,
-        width = width or 1,
-        filled = filled or true,
-        target = position or player.position,
-        players = {player.index},
-        surface = player.surface,
-        time_to_live = TTL or 60 * 5 * 60
-    }
-    return circle
 end
 
 return tools

@@ -1,22 +1,8 @@
-local color = require 'util.color_presets'
-
-require('stdlib/Event')
-require('stdlib/table')
-
-require("addons/autodeconstruct.lua")
-require("addons/bonuses_gui.lua")
-require("addons/death-marker.lua")
-require("addons/evolution.lua")
-require("addons/find_patch.lua")
-require("addons/floating-health.lua")
-require("addons/player-init.lua")
--- require("addons/silo.lua")
-require("addons/spawn-marker.lua")
-require("addons/tools.lua")
-local market = require("addons/market")
+local color = require 'utils.color_presets'
 -- Generic Utility Includes
 require("lib/oarc_utils")
 
+local market = require("addons/market")
 -- Other soft-mod type features.
 require("lib/frontier_silo")
 require("lib/tag")
@@ -29,9 +15,11 @@ require("lib/shared_chests")
 require("lib/notepad")
 require("lib/map_features")
 require("lib/oarc_buy")
+require("lib/auto_decon_miners")
 
 require("lib/bonuses_gui")
 require("lib/find_patch")
+local tools = require("addons/tools")
 
 -- Main Configuration File
 require("config")
@@ -104,6 +92,7 @@ script.on_init(function(event)
     end
 
     OarcMapFeatureInitGlobalCounters()
+    OarcAutoDeconOnInit()
 
     -- Display starting point text as a display of dominance.
     RenderPermanentGroundText(game.surfaces[GAME_SURFACE_NAME],
@@ -121,7 +110,7 @@ script.on_load(function() Compat.handle_factoriomaps() end)
 -- Rocket launch event
 -- Used for end game win conditions / unlocking late game stuff
 ----------------------------------------
-Event.register(defines.events.on_rocket_launched,
+script.on_event(defines.events.on_rocket_launched,
                 function(event) RocketLaunchEvent(event) end)
 
 ----------------------------------------
@@ -131,7 +120,7 @@ Event.register(defines.events.on_rocket_launched,
 ----------------------------------------
 -- Chunk Generation
 ----------------------------------------
-Event.register(defines.events.on_chunk_generated, function(event)
+script.on_event(defines.events.on_chunk_generated, function(event)
 
     if (event.surface.name ~= GAME_SURFACE_NAME) then return end
 
@@ -147,7 +136,7 @@ end)
 ----------------------------------------
 -- Gui Click
 ----------------------------------------
-Event.register(defines.events.on_gui_click, function(event)
+script.on_event(defines.events.on_gui_click, function(event)
 
     -- Don't interfere with other mod related stuff.
     if (event.element.get_mod() ~= nil) then return end
@@ -170,12 +159,12 @@ Event.register(defines.events.on_gui_click, function(event)
     GameOptionsGuiClick(event)
 end)
 
-Event.register(defines.events.on_gui_checked_state_changed, function(event)
+script.on_event(defines.events.on_gui_checked_state_changed, function(event)
     SpawnOptsRadioSelect(event)
     SpawnCtrlGuiOptionsSelect(event)
 end)
 
-Event.register(defines.events.on_gui_selected_tab_changed, function(event)
+script.on_event(defines.events.on_gui_selected_tab_changed, function(event)
     TabChangeOarcGui(event)
 
     if global.ocfg.enable_coin_shop then TabChangeOarcStore(event) end
@@ -185,7 +174,7 @@ end)
 -- Player Events
 ----------------------------------------
 
-Event.register(defines.events.on_player_joined_game, function(event)
+script.on_event(defines.events.on_player_joined_game, function(event)
     PlayerJoinedMessages(event)
 
     ServerWriteFile("player_events", game.players[event.player_index].name ..
@@ -210,7 +199,7 @@ Event.register(defines.events.on_player_joined_game, function(event)
     end
 end)
 
-Event.register(defines.events.on_player_created, function(event)
+script.on_event(defines.events.on_player_created, function(event)
     local player = game.players[event.player_index]
     -- Handle local hosting auto-promote
     -- if game.players[event.player_index].admin then
@@ -230,7 +219,7 @@ Event.register(defines.events.on_player_created, function(event)
     if global.ocfg.enable_coin_shop then InitOarcStoreGuiTabs(player) end
 end)
 
-Event.register(defines.events.on_player_respawned, function(event)
+script.on_event(defines.events.on_player_respawned, function(event)
     SeparateSpawnsPlayerRespawned(event)
 
     PlayerRespawnItems(event)
@@ -240,7 +229,7 @@ Event.register(defines.events.on_player_respawned, function(event)
     end
 end)
 
--- Event.register(defines.events.on_player_promoted, function(e)
+-- script.on_event(defines.events.on_player_promoted, function(e)
 --     -- auto-elevate
 --     local player = game.players[e.player_index]
 --     local group = AUTO_PERMISSION_USERS[player.name]
@@ -251,12 +240,12 @@ end)
 --     end
 -- end)
 
--- Event.register(defines.events.on_player_demoted, function(e)
+-- script.on_event(defines.events.on_player_demoted, function(e)
 --  auto-remove
 -- game.permissions.get_group('Default').add_player(e.player_index);
 -- end)
 
-Event.register(defines.events.on_player_left_game, function(event)
+script.on_event(defines.events.on_player_left_game, function(event)
     ServerWriteFile("player_events", game.players[event.player_index].name ..
                         " left the game." .. "\n")
     local player = game.players[event.player_index]
@@ -274,7 +263,7 @@ Event.register(defines.events.on_player_left_game, function(event)
     end
 end)
 
--- Event.register(defines.events.on_pre_player_left_game, function(event)
+-- script.on_event(defines.events.on_pre_player_left_game, function(event)
 --     local player = game.players[event.player_index]
 --     spy.stop_stalking(player)
 --     for _, data in pairs(global.ocore..stalking) do
@@ -284,7 +273,7 @@ end)
 --     end
 -- end)
 
--- Event.register(defines.events.on_player_deconstructed_area, function(event)
+-- script.on_event(defines.events.on_player_deconstructed_area, function(event)
 --     local player = game.get_player(event.player_index)
 --     if (player.permission_group.name ~= DEFAULT_TRUSTED_GROUP) and
 --         (player.permission_group.name ~= DEFAULT_ADMIN_GROUP) then
@@ -316,7 +305,7 @@ end)
 --     end
 -- end)
 
--- Event.register(defines.events.on_player_removed, function(event)
+-- script.on_event(defines.events.on_player_removed, function(event)
 -- Player is already deleted when this is called.
 -- end)
 
@@ -324,7 +313,7 @@ end)
 -- On tick events. Stuff that needs to happen at regular intervals.
 -- Delayed events, delayed spawns, ...
 ----------------------------------------
-Event.register(defines.events.on_tick, function(event)
+script.on_event(defines.events.on_tick, function(event)
     if global.ocfg.enable_regrowth then
         RegrowthOnTick()
         RegrowthForceRemovalOnTick()
@@ -353,14 +342,14 @@ Event.register(defines.events.on_tick, function(event)
     -- spy.update_all()
 end)
 
-Event.register(defines.events.on_sector_scanned, function(event)
+script.on_event(defines.events.on_sector_scanned, function(event)
     if global.ocfg.enable_regrowth then RegrowthSectorScan(event) end
 end)
 
 ----------------------------------------
 -- Various on "built" events
 ----------------------------------------
-Event.register(defines.events.on_built_entity, function(event)
+script.on_event(defines.events.on_built_entity, function(event)
     if global.ocfg.enable_autofill then Autofill(event) end
 
     if global.ocfg.enable_regrowth then
@@ -375,7 +364,7 @@ Event.register(defines.events.on_built_entity, function(event)
     if global.ocfg.frontier_rocket_silo then BuildSiloAttempt(event) end
 end)
 
-Event.register(defines.events.on_robot_built_entity, function(event)
+script.on_event(defines.events.on_robot_built_entity, function(event)
 
     if global.ocfg.enable_regrowth then
         if (event.created_entity.surface.name ~= GAME_SURFACE_NAME) then
@@ -386,7 +375,7 @@ Event.register(defines.events.on_robot_built_entity, function(event)
     if global.ocfg.frontier_rocket_silo then BuildSiloAttempt(event) end
 end)
 
-Event.register(defines.events.on_player_built_tile, function(event)
+script.on_event(defines.events.on_player_built_tile, function(event)
     if global.ocfg.enable_regrowth then
         if (game.surfaces[event.surface_index].name ~= GAME_SURFACE_NAME) then
             return
@@ -403,7 +392,7 @@ end)
 -- place items that don't count as player_built and robot_built.
 -- Specifically FARL.
 ----------------------------------------
-Event.register(defines.events.script_raised_built, function(event)
+script.on_event(defines.events.script_raised_built, function(event)
     if global.ocfg.enable_regrowth then
         if (event.entity.surface.name ~= GAME_SURFACE_NAME) then return end
         RegrowthMarkAreaSafeGivenTilePos(event.entity.position, 2, false)
@@ -414,7 +403,7 @@ end)
 -- Shared chat, so you don't have to type /s
 -- But you do lose your player colors across forces.
 ----------------------------------------
-Event.register(defines.events.on_console_chat, function(event)
+script.on_event(defines.events.on_console_chat, function(event)
     if (event.player_index) then
         ServerWriteFile("server_chat", game.players[event.player_index].name ..
                             ": " .. event.message .. "\n")
@@ -423,6 +412,24 @@ Event.register(defines.events.on_console_chat, function(event)
         if (event.player_index ~= nil) then
             ShareChatBetweenForces(game.players[event.player_index],
                                    event.message)
+        end
+    end
+end)
+
+script.on_event(defines.events.on_console_command, function(e)
+    -- auto-remove kicked/banned players, except admins
+    -- only run this if ran by admin
+    -- Note: if anyone on the server can run code(and not just admins), they can raise an event and pretend to be the console and trigger this
+    -- Another reason why you shouldn't give anyone but admins access to lua commands
+    -- This only allows the Trusted group to remove Trusted status in any case, so its not severe.
+    local caller = (e.player_index and game.players[e.player_index]) or console
+    if caller.admin then
+        if (e.command == 'kick') or (e.command == 'ban') then
+            local player = game.players[e.parameters]
+
+            -- if player and not player.admin then
+            --     game.permissions.get_group('Default').add_player(player);
+            -- end
         end
     end
 end)
@@ -531,7 +538,7 @@ end)
 -- On Research Finished
 -- This is where you can permanently remove researched techs
 ----------------------------------------
-Event.register(defines.events.on_research_finished, function(event)
+script.on_event(defines.events.on_research_finished, function(event)
 
     -- Never allows players to build rocket-silos in "frontier" mode.
     if global.ocfg.frontier_rocket_silo and not global.ocfg.frontier_allow_build then
@@ -553,13 +560,13 @@ end)
 -- On Entity Spawned and On Biter Base Built
 -- This is where I modify biter spawning based on location and other factors.
 ----------------------------------------
-Event.register(defines.events.on_entity_spawned, function(event)
+script.on_event(defines.events.on_entity_spawned, function(event)
     if (global.ocfg.modified_enemy_spawning) then
         ModifyEnemySpawnsNearPlayerStartingAreas(event)
     end
 end)
 
-Event.register(defines.events.on_biter_base_built, function(event)
+script.on_event(defines.events.on_biter_base_built, function(event)
     if (global.ocfg.modified_enemy_spawning) then
         ModifyEnemySpawnsNearPlayerStartingAreas(event)
     end
@@ -569,7 +576,7 @@ end)
 -- On unit group finished gathering
 -- This is where I remove biter waves on offline players
 ----------------------------------------
-Event.register(defines.events.on_unit_group_finished_gathering, function(event)
+script.on_event(defines.events.on_unit_group_finished_gathering, function(event)
     if (global.ocfg.enable_offline_protect) then
         OarcModifyEnemyGroup(event.group)
     end
@@ -579,21 +586,21 @@ end)
 -- On Corpse Timed Out
 -- Save player's stuff so they don't lose it if they can't get to the corpse fast enough.
 ----------------------------------------
-Event.register(defines.events.on_character_corpse_expired,
+script.on_event(defines.events.on_character_corpse_expired,
                 function(event) DropGravestoneChestFromCorpse(event.corpse) end)
 
 ----------------------------------------
 -- On Gui Text Change
 -- For capturing text entry.
 ----------------------------------------
-Event.register(defines.events.on_gui_text_changed,
+script.on_event(defines.events.on_gui_text_changed,
                 function(event) NotepadOnGuiTextChange(event) end)
 
 ----------------------------------------
 -- On Gui Closed
 -- For capturing player escaping custom GUI so we can close it using ESC key.
 ----------------------------------------
-Event.register(defines.events.on_gui_closed, function(event)
+script.on_event(defines.events.on_gui_closed, function(event)
     OarcGuiOnGuiClosedEvent(event)
     if global.ocfg.enable_coin_shop then OarcStoreOnGuiClosedEvent(event) end
     WelcomeTextGuiClosedEvent(event)
@@ -603,7 +610,7 @@ end)
 -- On enemies killed
 -- For coin generation and stuff
 ----------------------------------------
-Event.register(defines.events.on_entity_damaged, function(event)
+script.on_event(defines.events.on_entity_damaged, function(event)
     local entity = event.entity
     local cause = event.cause
     local damage = math.floor(event.original_damage_amount)
@@ -632,7 +639,7 @@ Event.register(defines.events.on_entity_damaged, function(event)
 
 end)
 
-Event.register(defines.events.on_post_entity_died, function(event)
+script.on_event(defines.events.on_post_entity_died, function(event)
     if (game.surfaces[event.surface_index].name ~= GAME_SURFACE_NAME) then
         return
     end
@@ -647,9 +654,14 @@ end, {
 ----------------------------------------
 -- Scripted auto decon for miners...
 ----------------------------------------
+script.on_event(defines.events.on_resource_depleted, function(event)
+    if global.ocfg.enable_miner_decon then
+        OarcAutoDeconOnResourceDepleted(event)
+    end
+end)
 
 --------------------------------------------
-Event.register(defines.events.on_market_item_purchased, function(event)
+script.on_event(defines.events.on_market_item_purchased, function(event)
     local player = game.players[event.player_index]
     local player_market = global.ocore.markets[player.name]
     local count = event.count

@@ -421,7 +421,7 @@ function SetupAndClearSpawnAreas(surface, chunkArea)
                 RemoveInCircle(surface, chunkArea, "resource", spawn.pos, global.ocfg.spawn_config.gen_settings.land_area_tiles+5)
                 RemoveInCircle(surface, chunkArea, "cliff", spawn.pos, global.ocfg.spawn_config.gen_settings.land_area_tiles+5)
 
-                local fill_tile = "tutorial-grid"
+                local fill_tile = "landfill"
                 if (game.active_mods["oarc-restricted-build"]) then
                     fill_tile = global.ocfg.locked_build_area_tile
                 end
@@ -620,11 +620,7 @@ function RemoveOrResetPlayer(player, remove_player, remove_force, remove_base, i
     player.teleport({x=0,y=0}, GAME_SURFACE_NAME)
     local player_old_force = player.force
     player.force = global.ocfg.main_force
-    if global.ocore.markets[player.name] then
-    global.ocore.markets[player.name].chest.destroy()
-    global.ocore.markets[player.name].market.destroy()
-    global.ocore.markets[player.name] = nil
-    end
+
     -- Clear globals
     CleanupPlayerGlobals(player.name) -- Except global.ocore.uniqueSpawns
 
