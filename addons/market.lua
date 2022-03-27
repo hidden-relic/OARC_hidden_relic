@@ -183,6 +183,10 @@ end
 function markets.create(player, position)
     local player = player
     local position = position
+    local nil_items = {
+        ["electric-energy-interface"] = true,
+        ["rocket-part"] = true
+    }
     local market = game.surfaces[GAME_SURFACE_NAME].create_entity {
         name = "market",
         position = position,
@@ -214,7 +218,9 @@ function markets.create(player, position)
         .sell_speed_offer, global.ocore.markets[player.name]
         .sell_speed_multiplier = 1, market.get_market_items()[20], 10
     for __, item in pairs(global.ocore.markets.buy_offers) do
+        if not nil_items[item.name] then
         market.add_market_item(item)
+        end
     end
     return market
 end
