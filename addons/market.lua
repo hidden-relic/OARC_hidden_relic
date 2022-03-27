@@ -161,6 +161,7 @@ function markets.init()
                     serpent.block(global.ocore.markets.item_values))
     markets.formatPrices()
 end
+
 function markets.getPrices()
     global.ocore.markets.buy_offers = {}
     global.ocore.markets.sell_offers = {}
@@ -193,35 +194,44 @@ function markets.create(player, position)
         force = "neutral"
     }
     local chest = game.surfaces[GAME_SURFACE_NAME].create_entity {
-        name = "steel-chest",
+        name = "red-chest",
         position = {x = position.x + 6, y = position.y},
         force = "neutral"
     }
     tools.protect_entity(market)
     tools.protect_entity(chest)
 
-    global.ocore.markets[player.name].chest = chest
-    global.ocore.markets[player.name].market = market
+    if not global.ocore.markets.player_markets then
+        global.ocore.markets.player_markets = {}
+    end
+    if not global.ocore.markets.player_markets[player.name] then
+        global.ocore.markets.player_markets[player.name] = {}
+    end
+
+    global.ocore.markets.player_markets[player.name].chest = chest
+    global.ocore.markets.player_markets[player.name].market = market
 
     TemporaryHelperText(
         "The market allows you to buy items and upgrades for coin.",
         {market.position.x, market.position.y + 1.5}, TICKS_PER_MINUTE * 2,
         {r = 1, g = 0, b = 1})
-    TemporaryHelperText("Dump items to chest to sell for coin.",
+    TemporaryHelperText("It seems this chest will sell items periodically, but holds other secrets..",
                         {chest.position.x + 1.5, chest.position.y - 0.5},
                         TICKS_PER_MINUTE * 2, {r = 1, g = 0, b = 1})
 
     for __, item in pairs(markets.upgrade_offers) do
         market.add_market_item(item)
     end
-    global.ocore.markets[player.name].sell_speed_lvl, global.ocore.markets[player.name]
-        .sell_speed_offer, global.ocore.markets[player.name]
-        .sell_speed_multiplier = 1, market.get_market_items()[20], 10
+    global.ocore.markets.player_markets[player.name].sell_speed_lvl, global.ocore
+        .markets.player_markets[player.name].sell_speed_offer, global.ocore
+        .markets.player_markets[player.name].sell_speed_multiplier = 1,
+                                                                     market.get_market_items()[20],
+                                                                     10
     for __, item in pairs(global.ocore.markets.buy_offers) do
-        if not nil_items[item.name] then
+        if not nil_items[item.name] then   
         market.add_market_item(item)
-        end
     end
+end
     return market
 end
 
@@ -252,13 +262,11 @@ local function getSale(chest_inv, item)
             name = "coin",
             count = global.ocore.markets.sell_offers[item]
         }
-        chest_inv.remove({name = item, count = 1})
     end
 end
 
-function markets.getTTS(player)
-    local player = player
-    local player_market = global.ocore.markets[player.name]
+function markets.getTTS(player_name)
+    local player_market = global.ocore.markets.player_markets[player_name]
     local item = player_market.current_item
     local energy = 1
     if game.recipe_prototypes[item] then
@@ -268,43 +276,102 @@ function markets.getTTS(player)
     return (game.tick + energy_ticks * player_market.sell_speed_multiplier)
 end
 
-function markets.on_tick()
-    if game.tick % 10 == 0 then
-        for index, player in pairs(game.connected_players) do -- for each online player
-            if global.ocore.markets[player.name] and player.character and
-                player.character.valid then
-                local player_market = global.ocore.markets[player.name] -- get market data
-                local chest_inv = markets.getChestInv(player_market.chest)
-                local item_name = getNthItemFromChest(chest_inv) -- get 1st item
-                if player_market.tts and (game.tick >= player_market.tts) then -- if over timer
-                    if player_market.current_item then -- if current item
-                        if player_market.current_item ~= item_name then -- is different
-                            getSale(chest_inv, player_market.current_item) -- get coin
-                            if item_name then -- if new item
-                                player_market.current_item = item_name -- make current
-                                player_market.tts = markets.getTTS(player)
-                            else
-                                player_market.current_item, player_market.tts =
-                                    nil
-                            end
-                        else
-                            getSale(chest_inv, player_market.current_item)
-                            player_market.tts = markets.getTTS(player)
+local function checkSacTier1(chest_inv)
+    local ci = chest_inv
+    local cc = ci.get_contents()
+    if cc then
+        local function checkForItem(item_name, n)
+            local n = n or 1
+            if (cc[item_name] and cc[item_name] >= n) then
+                return true
+            else
+                return
+            end
+        end
+        local cfi = checkForItem
+        if (cfi("submachine-gun", 10) and cfi("coin", 10000)) and (cfi("gun-turret", 100) and cfi("speed-module-1")) then
+            ci.remove({name = "submachine-gun", count = 10})
+            ci.remove({name = "coin", count = 10000})
+            ci.remove({name = "gun-turret", count = 100})
+            ci.remove({name = "speed-module-1", count = 1})
+            return true
+        end
+    end
+    return false
+end
+local function checkSacTier2(chest_inv)
+local ci = chest_inv
+    local cc = ci.get_contents()
+    if cc then
+        local function checkForItem(item_name, n)
+            local n = n or 1
+            if (cc[item_name] and cc[item_name] >= n) then
+                return true
+            else
+                return
+            end
+        end
+        local cfi = checkForItem
+        if (cfi("tank-machine-gun", 10) and cfi("coin", 100000)) and (cfi("tank") and cfi("explosives", 100)) then
+            ci.remove({name = "tank-machine-gun", count = 10})
+            ci.remove({name = "coin", count = 100000})
+            ci.remove({name = "tank", count = 1})
+            ci.remove({name = "explosives", count = 100})
+            return true
+        end
+    end
+    return false
+end
 
-                        end
-                    else
-                        if item_name then -- if new item
-                            player_market.current_item = item_name -- make current
-                            player_market.tts = markets.getTTS(player)
-                        end
-                    end
-                elseif not player_market.tts and item_name then
-                    player_market.current_item = item_name -- make current
-                    player_market.tts = markets.getTTS(player)
-                end
+function markets.checkSac(chest_inv)
+    local chest_inv = chest_inv
+    if chest_inv and chest_inv.valid then
+        if checkSacTier1(chest_inv) then
+            chest_inv.insert("tank-machine-gun")
+            return 1
+        elseif checkSacTier2(chest_inv) then
+            chest_inv.insert("tank-cannon")
+            return 2
+        end
+    else
+    return false
+    end
+end
+
+function markets.on_tick()
+    local gp = game.print
+    if (game.tick % 10 == 0) and global.ocore.markets.player_markets then
+        for player_name, player_market in pairs(
+                                              global.ocore.markets
+                                                  .player_markets) do -- for each player market
+            local chest_inv = markets.getChestInv(player_market.chest) -- get red chest
+            local sac_ret = markets.checkSac(chest_inv)
+            if sac_ret == 1 then
+                gp("[color=red]" .. player_name ..
+                               " [/color][color=purple]has received a blessing[/color]")
+            elseif sac_ret == 2 then
+                gp("[color=red]" .. player_name ..
+                " [/color][color=purple]has received a [/color][color=acid]Greater[/color][color=purple] blessing[/color]")
+ 
+                            end
+
+            local item_name = getNthItemFromChest(chest_inv) -- get 1st item
+
+            if player_market.tts and (game.tick >= player_market.tts) then -- if sale overdue
+                getSale(chest_inv, player_market.current_item) -- get coin
+                player_market.tts, player_market.current_item = nil
+
+            elseif player_market.tts and (game.tick < player_market.tts) then
+                return -- if sale ongoing
+
+            elseif not player_market.tts and item_name then -- if no sale and item in chest
+                player_market.current_item = item_name -- make it current item and remove and set the sale time
+                chest_inv.remove({name = item_name, count = 1})
+                player_market.tts = markets.getTTS(player_name)
+            else
+                return
             end
         end
     end
 end
-
 return markets

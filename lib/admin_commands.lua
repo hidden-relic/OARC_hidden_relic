@@ -17,7 +17,7 @@ commands.add_command("reset", "reset player", function(command)
     if command.parameter and game.players[command.parameter] and player.admin then
         target = command.parameter
     end
-    if target.valid then ResetPlayer(target) end
+    if game.players[target].valid then ResetPlayer(target) end
 end)
 
 local function format_chat_colour(message, color)
@@ -244,7 +244,7 @@ commands.add_command("ratio",
 
         local ips = item.amount / recipe.energy * machine.crafting_speed *
                         amountOfMachines -- math on the items/fluids per second
-        player.print {sprite, round(ips, 3), item.name} -- full string
+        player.print {sprite, tools.round(ips, 3), item.name} -- full string
     end
     ----------------------------products----------------------------
 
@@ -259,7 +259,7 @@ commands.add_command("ratio",
 
         local output = 1 / recipe.energy * machine.crafting_speed *
                            product.amount * multi -- math on the outputs per second
-        player.print {sprite, round(output * amountOfMachines, 3), product.name} -- full string
+        player.print {sprite, tools.round(output * amountOfMachines, 3), product.name} -- full string
 
     end
 
@@ -481,6 +481,7 @@ end)
 
 commands.add_command("make", "magic", function(command)
     local player = game.players[command.player_index]
+    if not player.admin then tools.error("You are not admin my friend") return end
     if not command.parameter then
         tools.error(player, "You're gonna need more than that..try /help make")
         return
@@ -491,6 +492,43 @@ commands.add_command("make", "magic", function(command)
     if not args[2] then args[2] = false end
     tools.make(player, args[1], args[2])
 end)   
+
+commands.add_command("get",
+                     "get <item_name> [<count>]\nneeds the game name (\"iron-plate\" no quotes). if no count is given, you'll get 1 stack",
+                     function(command)
+    local args = string.split(command.parameter, " ")
+    local player, item_name, count = game.players[command.player_index],
+                                     args[1], args[2]
+                                     if not player.admin then tools.error("You are not admin my friend") return end
+    tools.getItem(player, item_name, count)
+end)
+
+commands.add_command("tp", "teleport", function(command)
+    local player = game.players[command.player_index]
+    if not player.admin then tools.error("You are not admin my friend") return end
+    local target_pos = command.parameter
+    if target_pos then
+        if (type(target_pos) == "string") then
+            if game.players[target_pos] then
+                target_pos = game.players[target_pos].position
+            else
+                return
+            end
+        elseif (type(target_pos) == "table") and (target_pos.x or target_pos[1]) then
+            target_pos.x = target_pos.x or target_pos[1]
+            target_pos.y = target_pos.y or target_pos[2]
+        else
+            return
+        end
+    else
+        if player.selected and player.selected.valid then
+            target_pos = player.selected.position
+        else
+            return
+        end
+    end
+    tools.safeTeleport(player, player.surface, target_pos)
+end)
 
 -- commands.add_command("replace",
 --                      "attempts to replace entities in the held blueprint",
