@@ -1,10 +1,15 @@
-require("addons.tools")
+local tools = require("addons/tools")
 
 local find_patch = {}
 
 find_patch.MAX_INT32 = 2147483647
 
 find_patch.range = 10000
+local function isValid(x)
+    if not x or not x.valid then return end
+    return x
+end
+
 
 
 function find_patch.getDistance(pos1, pos2)
@@ -32,7 +37,7 @@ function find_patch.getClosest(pos, list)
     return {position = {x, y}, distance = closest}
 end
 
-local colors = {
+find_patch.colors = {
     iron_ore = {r = 137, g = 186, b = 211},
     copper_ore = {r = 252, g = 166, b = 102},
     stone = {r = 182, g = 150, b = 87},
@@ -42,6 +47,7 @@ local colors = {
 }
 
 function find_patch.findPatch(res_name, range, player)
+    if (res_name == "square") then IndicateClosestMagicChunk(player) end
     local patches = player.surface.find_entities_filtered {
         name = res_name,
         type = "resource",
@@ -63,14 +69,14 @@ function find_patch.findPatch(res_name, range, player)
         from = player.character,
         to = found.position,
         players = {player.index},
-        color = colors[res_name],
+        color = find_patch.colors[res_name],
         width = 3.2,
         gap_length = 5,
         dash_length = 8,
         time_to_live = 60 * 60
     }
     local circle = rendering.draw_circle {
-        color = colors[res_name],
+        color = find_patch.colors[res_name],
         radius = 4,
         width = 6.4,
         filled = false,
@@ -81,7 +87,7 @@ function find_patch.findPatch(res_name, range, player)
     }
 end
 
-local resources = {
+find_patch.resources = {
     ["i"] = "iron-ore",
     ["iron"] = "iron-ore",
     ["iron-ore"] = "iron-ore",
@@ -100,15 +106,12 @@ local resources = {
     ["o"] = "crude-oil",
     ["oil"] = "crude-oil",
     ["crude-oil"] = "crude-oil",
-    ["crude_oil"] = "crude-oil"
+    ["crude_oil"] = "crude-oil",
+    ["square"] = "square",
+    ["magic-square"] = "square",
+    ["magic_square"] = "square",
+    ["magic"] = "square"
 }
-commands.add_command('find', 'finds the nearest patch of given resource',
-                     function(command)
-    local player = game.players[command.player_index]
-    local resource = command.parameter
-    if resources[resource] then
-        find_patch.findPatch(resources[resource], find_patch.range, player)
-    end
-end)
+
 
 return find_patch

@@ -1,5 +1,5 @@
 local tools = require('addons/tools')
-
+local flib_table = require('flib/table')
 local markets = {}
 
 markets.p_stats = require('production-score')
@@ -215,9 +215,10 @@ function markets.create(player, position)
         "The market allows you to buy items and upgrades for coin.",
         {market.position.x, market.position.y + 1.5}, TICKS_PER_MINUTE * 2,
         {r = 1, g = 0, b = 1})
-    TemporaryHelperText("It seems this chest will sell items periodically, but holds other secrets..",
-                        {chest.position.x + 1.5, chest.position.y - 0.5},
-                        TICKS_PER_MINUTE * 2, {r = 1, g = 0, b = 1})
+    TemporaryHelperText(
+        "It seems this chest will sell items periodically, but holds other secrets..",
+        {chest.position.x + 1.5, chest.position.y - 0.5}, TICKS_PER_MINUTE * 2,
+        {r = 1, g = 0, b = 1})
 
     for __, item in pairs(markets.upgrade_offers) do
         market.add_market_item(item)
@@ -228,10 +229,8 @@ function markets.create(player, position)
                                                                      market.get_market_items()[20],
                                                                      10
     for __, item in pairs(global.ocore.markets.buy_offers) do
-        if not nil_items[item.name] then   
-        market.add_market_item(item)
+        if not nil_items[item.name] then market.add_market_item(item) end
     end
-end
     return market
 end
 
@@ -277,42 +276,48 @@ function markets.getTTS(player_name)
 end
 
 local function checkSacTier1(chest_inv)
+    local t = {
+        ["coin"] = 10000,
+        ["gun-turret"] = 100,
+        ["speed-module"] = 1,
+        ["submachine-gun"] = 10
+    }
+    local ret = {}
     local ci = chest_inv
     local cc = ci.get_contents()
     if cc then
-        local function checkForItem(item_name, n)
-            local n = n or 1
-            if (cc[item_name] and cc[item_name] >= n) then
-                return true
-            else
-                return
+        for item_name, count in pairs(t) do
+            if cc[item_name] and (cc[item_name] >= count) then
+                ret[item_name] = count
             end
         end
-        local cfi = checkForItem
-        if (cfi("submachine-gun", 10) and cfi("coin", 10000)) and (cfi("gun-turret", 100) and cfi("speed-module-1")) then
+        if flib_table.deep_compare(ret, t) then
             ci.remove({name = "submachine-gun", count = 10})
             ci.remove({name = "coin", count = 10000})
             ci.remove({name = "gun-turret", count = 100})
-            ci.remove({name = "speed-module-1", count = 1})
+            ci.remove({name = "speed-module", count = 1})
             return true
         end
     end
     return false
 end
 local function checkSacTier2(chest_inv)
-local ci = chest_inv
+    local t = {
+        ["coin"] = 100000,
+        ["explosives"] = 100,
+        ["tank"] = 1,
+        ["tank-machine-gun"] = 10
+    }
+    local ret = {}
+    local ci = chest_inv
     local cc = ci.get_contents()
     if cc then
-        local function checkForItem(item_name, n)
-            local n = n or 1
-            if (cc[item_name] and cc[item_name] >= n) then
-                return true
-            else
-                return
+        for item_name, count in pairs(t) do
+            if cc[item_name] and (cc[item_name] >= count) then
+                ret[item_name] = count
             end
         end
-        local cfi = checkForItem
-        if (cfi("tank-machine-gun", 10) and cfi("coin", 100000)) and (cfi("tank") and cfi("explosives", 100)) then
+        if flib_table.deep_compare(ret, t) then
             ci.remove({name = "tank-machine-gun", count = 10})
             ci.remove({name = "coin", count = 100000})
             ci.remove({name = "tank", count = 1})
@@ -334,7 +339,7 @@ function markets.checkSac(chest_inv)
             return 2
         end
     else
-    return false
+        return false
     end
 end
 
@@ -348,12 +353,12 @@ function markets.on_tick()
             local sac_ret = markets.checkSac(chest_inv)
             if sac_ret == 1 then
                 gp("[color=red]" .. player_name ..
-                               " [/color][color=purple]has received a blessing[/color]")
+                       " [/color][color=purple]has received a blessing[/color]")
             elseif sac_ret == 2 then
                 gp("[color=red]" .. player_name ..
-                " [/color][color=purple]has received a [/color][color=acid]Greater[/color][color=purple] blessing[/color]")
- 
-                            end
+                       " [/color][color=purple]has received a [/color][color=acid]Greater[/color][color=purple] blessing[/color]")
+
+            end
 
             local item_name = getNthItemFromChest(chest_inv) -- get 1st item
 
@@ -365,11 +370,13 @@ function markets.on_tick()
                 return -- if sale ongoing
 
             elseif not player_market.tts and item_name then -- if no sale and item in chest
-                player_market.current_item = item_name -- make it current item and remove and set the sale time
-                chest_inv.remove({name = item_name, count = 1})
-                player_market.tts = markets.getTTS(player_name)
-            else
-                return
+                if global.ocore.markets.sell_offers[item_name] then
+                    player_market.current_item = item_name -- make it current item and remove and set the sale time
+                    chest_inv.remove({name = item_name, count = 1})
+                    player_market.tts = markets.getTTS(player_name)
+                else
+                    return
+                end
             end
         end
     end

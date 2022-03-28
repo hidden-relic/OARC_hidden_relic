@@ -354,6 +354,27 @@ function tools.run_tests(player, cursor_stack)
     end
 end
 
+function tools.safeTeleport(player, surface, target_pos)
+    local safe_pos = surface.find_non_colliding_position("character",
+                                                         target_pos, 15, 1)
+    if (not safe_pos) then
+        player.teleport(target_pos, surface)
+    else
+        player.teleport(safe_pos, surface)
+    end
+end
+
+function tools.getItem(player, item_name, count)
+    local items = game.item_prototypes
+    local player = player
+    if items[item_name] then
+        local count = count or items[item_name].stack_size
+        player.insert {name = item_name, count = count}
+    else
+        return
+    end
+end
+
 function tools.round(num, dp)
     local mult = 10 ^ (dp or 0)
     return math.floor(num * mult + 0.5) / mult

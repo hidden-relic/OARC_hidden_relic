@@ -1,3 +1,4 @@
+-- local spy = require('addons/spy')
 local console = {
     name = 'Console',
     admin = true,
@@ -112,9 +113,6 @@ local color = require 'utils.color_presets'
 require("lib/oarc_utils")
 
 local market = require("addons/market")
-local tools = require("addons/tools")
-local find_patch = require("addons/find_patch")
-require("addons/bonuses_gui")
 -- Other soft-mod type features.
 require("lib/frontier_silo")
 require("lib/tag")
@@ -128,6 +126,10 @@ require("lib/notepad")
 require("lib/map_features")
 require("lib/oarc_buy")
 require("lib/auto_decon_miners")
+
+require("lib/bonuses_gui")
+require("lib/find_patch")
+local tools = require("addons/tools")
 
 -- For Philip. I currently do not use this and need to add proper support for
 -- commands like this in the future.
@@ -325,7 +327,7 @@ script.on_event(defines.events.on_player_created, function(event)
 
     if global.ocfg.enable_long_reach then GivePlayerLongReach(player) end
 
-    if player.admin and DEBUG_MODE then
+    if player.admin and global.ocfg.debug then
         local newSpawn = {x = 0, y = 0}
         newSpawn = FindUngeneratedCoordinates(global.ocfg.far_dist_start,
                                               global.ocfg.far_dist_end,
@@ -794,7 +796,6 @@ script.on_event(defines.events.on_market_item_purchased, function(event)
     local player = game.players[event.player_index]
     local player_market = global.ocore.markets.player_markets[player.name]
     local count = event.count
-    local mults = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0.75, 0.5, 0.25}
 
     if player_market.market and player_market.market.valid then
         local offers = player_market.market.get_market_items()
@@ -821,7 +822,6 @@ script.on_event(defines.events.on_market_item_purchased, function(event)
                         end
                         player_market.sell_speed_lvl =
                             player_market.sell_speed_lvl + 1
-                        player_market.sell_speed_multiplier = mults[player_market.sell_speed_lvl]
                             if player_market.sell_speed_lvl == 13 then
                                 global.ocore.done_with_speed[player.name] = true
                             end

@@ -5,6 +5,8 @@
 -- You should be safe to leave most of the settings here as defaults if you want.
 -- The only thing you definitely want to change are the welcome messages.
 
+DEBUG_MODE = false
+
 --------------------------------------------------------------------------------
 -- Messages
 -- You will want to change some of these to be your own.
@@ -91,7 +93,7 @@ ENABLE_OFFLINE_PROTECTION = true
 -- This allows you to set the tech price multiplier for the game, but 
 -- have it only affect the main force. We just pad all non-main forces lab prod bonus.
 -- This has no effect unless the tech multiplier is more than 1!
-ENABLE_FORCE_LAB_PROD_BONUS = true
+ENABLE_FORCE_LAB_PROD_BONUS = false
 
 -- Lock various recipes and technologies behind a rocket launch.
 -- Each team/force must launch their own rocket to unlock this!
@@ -108,7 +110,7 @@ ENABLE_POWER_ARMOR_QUICK_START = false
 ENABLE_MODULAR_ARMOR_QUICK_START = true
 
 
-TECHNOLOGY_PRICE_MULTIPLIER = 2
+TECHNOLOGY_PRICE_MULTIPLIER = 2.5
 
 ------------------------------------------------------------------------------------------------------------------------
 -- MAP CONFIGURATION OPTIONS
@@ -208,7 +210,7 @@ OARC_CFG = {
 
         -- Spawn a circle/octagon of trees around the base outline.
         tree_circle = true,
-        tree_octagon = false,
+        tree_octagon = true,
     },
 
     -- Safe Spawn Area Options
@@ -217,11 +219,11 @@ OARC_CFG = {
     {
         -- Safe area has no aliens
         -- This is the radius in tiles of safe area.
-        safe_radius = CHUNK_SIZE*6,
+        safe_radius = CHUNK_SIZE*10,
 
         -- Warning area has significantly reduced aliens
         -- This is the radius in tiles of warning area.
-        warn_radius = CHUNK_SIZE*12,
+        warn_radius = CHUNK_SIZE*15,
 
         -- 1 : X (spawners alive : spawners destroyed) in this area
         warn_reduction = 20,
@@ -236,7 +238,7 @@ OARC_CFG = {
 
     -- Location of water strip (horizontal)
     water = {
-        x_offset = -6,
+        x_offset = -8,
         y_offset = -78,
         length = 16
     },
@@ -351,7 +353,7 @@ MAIN_FORCE = "Main Force"
 
 -- Enable if players can allow others to join their base.
 -- And specify how many including the host are allowed.
-ENABLE_SHARED_SPAWNS = true
+ENABLE_SHARED_SPAWNS = false
 MAX_PLAYERS_AT_SHARED_SPAWN = 5
 
 -- Share local team chat with all teams
