@@ -486,6 +486,7 @@ commands.add_command('find', 'finds the nearest patch of given resource',
     local resource = command.parameter
     if find_patch.resources[resource] then
         find_patch.findPatch(find_patch.resources[resource], find_patch.range, player)
+
     end
 end)
 

@@ -10,8 +10,6 @@ local function isValid(x)
     return x
 end
 
-
-
 function find_patch.getDistance(pos1, pos2)
     local pos1 = {x = pos1.x or pos1[1], y = pos1.y or pos1[2]}
     local pos2 = {x = pos2.x or pos2[1], y = pos2.y or pos2[2]}
@@ -31,9 +29,7 @@ function find_patch.getClosest(pos, list)
             closest = distance
         end
     end
-    if closest == find_patch.MAX_INT32 then
-        return
-    end
+    if closest == find_patch.MAX_INT32 then return end
     return {position = {x, y}, distance = closest}
 end
 
@@ -112,6 +108,5 @@ find_patch.resources = {
     ["magic_square"] = "square",
     ["magic"] = "square"
 }
-
 
 return find_patch
