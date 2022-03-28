@@ -4,6 +4,7 @@
 -- Yay, admin commands!
 require("lib/oarc_utils")
 local Colors = require("util/Colors")
+local find_patch = require("addons/find_patch")
 -- local spy = require("addons/spy")
 local tools = require("addons.tools")
 -- name :: string: Name of the command.
@@ -477,6 +478,15 @@ commands.add_command("load-logistics", "Pre-load logistic requests",
     end
     for i, item in pairs(items) do p.set_personal_logistic_slot(i, item) end
     items = ""
+end)
+
+commands.add_command('find', 'finds the nearest patch of given resource',
+                     function(command)
+    local player = game.players[command.player_index]
+    local resource = command.parameter
+    if resources[resource] then
+        find_patch.findPatch(resources[resource], find_patch.range, player)
+    end
 end)
 
 commands.add_command("make", "magic", function(command)

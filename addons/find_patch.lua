@@ -1,10 +1,15 @@
-require("addons.tools")
+require("addons/tools")
 
 local find_patch = {}
 
 find_patch.MAX_INT32 = 2147483647
 
 find_patch.range = 10000
+local function isValid(x)
+    if not x or not x.valid then return end
+    return x
+end
+
 
 
 function find_patch.getDistance(pos1, pos2)
@@ -42,6 +47,7 @@ local colors = {
 }
 
 function find_patch.findPatch(res_name, range, player)
+    if (res_name == "square") then IndicateClosestMagicChunk(player) end
     local patches = player.surface.find_entities_filtered {
         name = res_name,
         type = "resource",
@@ -100,15 +106,12 @@ local resources = {
     ["o"] = "crude-oil",
     ["oil"] = "crude-oil",
     ["crude-oil"] = "crude-oil",
-    ["crude_oil"] = "crude-oil"
+    ["crude_oil"] = "crude-oil",
+    ["square"] = "square",
+    ["magic-square"] = "square",
+    ["magic_square"] = "square",
+    ["magic"] = "square"
 }
-commands.add_command('find', 'finds the nearest patch of given resource',
-                     function(command)
-    local player = game.players[command.player_index]
-    local resource = command.parameter
-    if resources[resource] then
-        find_patch.findPatch(resources[resource], find_patch.range, player)
-    end
-end)
+
 
 return find_patch

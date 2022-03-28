@@ -5,6 +5,8 @@
 -- You should be safe to leave most of the settings here as defaults if you want.
 -- The only thing you definitely want to change are the welcome messages.
 
+DEBUG_MODE = false
+
 --------------------------------------------------------------------------------
 -- Messages
 -- You will want to change some of these to be your own.

@@ -293,7 +293,7 @@ local function checkSacTier1(chest_inv)
             ci.remove({name = "submachine-gun", count = 10})
             ci.remove({name = "coin", count = 10000})
             ci.remove({name = "gun-turret", count = 100})
-            ci.remove({name = "speed-module-1", count = 1})
+            ci.remove({name = "speed-module", count = 1})
             return true
         end
     end
