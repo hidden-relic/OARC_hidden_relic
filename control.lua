@@ -285,6 +285,8 @@ script.on_event(defines.events.on_tick, function(event)
         tools.FlyingTime(game.tick)
     end
     
+    market.on_tick()
+
     DelayedSpawnOnTick()
     
     UpdatePlayerBuffsOnTick(game.tick)
