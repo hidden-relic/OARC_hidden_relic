@@ -25,9 +25,9 @@ function SharedChestInitItems()
     global.oshared.chests_combinators = {}
     global.oshared.items = {}
 
-    global.oshared.items['red-wire'] = 10000
-    global.oshared.items['green-wire'] = 10000
-    global.oshared.items['raw-fish'] = 10000
+    global.oshared.items['red-wire'] = 100
+    global.oshared.items['green-wire'] = 100
+    global.oshared.items['raw-fish'] = 50
 
     global.oshared.energy_stored = SHARED_ENERGY_STARTING_VALUE
     global.oshared.energy_stored_history = {

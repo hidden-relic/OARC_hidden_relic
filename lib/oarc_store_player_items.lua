@@ -4,6 +4,7 @@
 
 local mod_gui = require("mod-gui")
 local market = require("addons/market")
+local tools = require("addons/tools")
 
 OARC_STORE_PLAYER_ITEMS = 
 {
@@ -47,7 +48,7 @@ OARC_STORE_PLAYER_ITEMS =
         ["land-mine"] = {cost = 20, count = 10, play_time_locked=false},
         ["defender-capsule"] = {cost = 20, count = 10, play_time_locked=false},
         ["distractor-capsule"] = {cost = 40, count = 10, play_time_locked=false},
-        ["destroyer-capsule"] = {cost = 60, count = 10, play_time_locked=false},
+        ["destroyer-capsule"] = {cost = 60, count = 10, play_time_locked=true},
         ["poison-capsule"] = {cost = 50, count = 10, play_time_locked=false},
         ["slowdown-capsule"] = {cost = 25, count = 10, play_time_locked=false},
     },
@@ -61,15 +62,15 @@ OARC_STORE_PLAYER_ITEMS =
     },
     
     ["Power Equipment"] = {
-        ["fusion-reactor-equipment"] = {cost = 1000, count = 1, play_time_locked=false},
+        ["fusion-reactor-equipment"] = {cost = 1000, count = 1, play_time_locked=true},
         ["battery-equipment"] = {cost = 100, count = 1, play_time_locked=false},
-        ["battery-mk2-equipment"] = {cost = 1000, count = 1, play_time_locked=false},
+        ["battery-mk2-equipment"] = {cost = 1000, count = 1, play_time_locked=true},
         ["solar-panel-equipment"] = {cost = 10, count = 1, play_time_locked=false},
     },
 
     ["Bot Equipment"] = {
         ["personal-roboport-equipment"] = {cost = 200, count = 1, play_time_locked=false},
-        ["personal-roboport-mk2-equipment"] = {cost = 600, count = 1, play_time_locked=false},
+        ["personal-roboport-mk2-equipment"] = {cost = 600, count = 1, play_time_locked=true},
         ["construction-robot"] = {cost = 100, count = 10, play_time_locked=false},
         ["roboport"] = {cost = 600, count = 1, play_time_locked=false},
         ["logistic-chest-storage"] = {cost = 100, count = 1, play_time_locked=false},
@@ -80,10 +81,10 @@ OARC_STORE_PLAYER_ITEMS =
         ["exoskeleton-equipment"] = {cost = 200, count = 1, play_time_locked=false},
         ["night-vision-equipment"] = {cost = 50, count = 1, play_time_locked=false},
 
-        ["personal-laser-defense-equipment"] = {cost = 400, count = 1, play_time_locked=false},
+        ["personal-laser-defense-equipment"] = {cost = 400, count = 1, play_time_locked=true},
         -- ["discharge-defense-equipment"] = {cost = 1, count = 1, play_time_locked=false},
         ["energy-shield-equipment"] = {cost = 100, count = 1, play_time_locked=false},
-        ["energy-shield-mk2-equipment"] = {cost = 1000, count = 1, play_time_locked=false},
+        ["energy-shield-mk2-equipment"] = {cost = 1000, count = 1, play_time_locked=true},
     },
 
     ["Spidertron"] = {
@@ -115,7 +116,7 @@ function CreatePlayerStoreTab(tab_container, player)
     for category,section in pairs(OARC_STORE_PLAYER_ITEMS) do
         local flow = tab_container.add{name = category, type="flow", direction="horizontal"}
         for item_name,item in pairs(section) do
-            item.cost = global.ocore.markets.item_values[item_name]
+            item.cost = tools.round(global.ocore.markets.item_values[item_name] * item.count)
             local color = "[color=green]"
             if (item.cost > wallet) then
                 color = "[color=red]"

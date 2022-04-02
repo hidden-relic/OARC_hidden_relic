@@ -19,7 +19,7 @@ TICKS_PER_HOUR = TICKS_PER_MINUTE * 60
 MAX_INT32_POS = 2147483647
 MAX_INT32_NEG = -2147483648
 
-PLAYER_HOURLY_RUN_BONUS = 0.025
+PLAYER_HOURLY_RUN_BONUS = 0.0125
 PLAYER_HOURLY_HANDCRAFT_BONUS = 0.075
 PLAYER_HOURLY_MINING_BONUS = 0.05
 PLAYER_HOURLY_REACH_BONUS = 3
@@ -2040,7 +2040,7 @@ function CreateCropOctagon(surface, centerPos, chunkArea, tileRadius, fillTile)
                                                  math.abs(centerPos.y - j)))
             local distVar2 = math.floor(math.abs(centerPos.x - i) +
                                             math.abs(centerPos.y - j))
-            local distVar = math.max(distVar1 * 1.1, distVar2 * 0.707 * 1.1);
+            local distVar = math.max(distVar1 * 1.15, distVar2 * 0.627 * 1.175);
 
             -- Fill in all unexpected water in a circle
             if (distVar < tileRadius + 2) then
@@ -2192,7 +2192,7 @@ function UndecorateOnChunkGenerate(event)
     local surface = event.surface
     local chunkArea = event.area
     RemoveDecorationsArea(surface, chunkArea)
-    RemoveFish(surface, chunkArea)
+    -- RemoveFish(surface, chunkArea)
 end
 
 -- Give player items on respawn

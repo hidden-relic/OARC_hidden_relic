@@ -156,7 +156,21 @@ function markets.formatPrices()
 end
 
 function markets.init()
+    local nil_items = {
+        ["electric-energy-interface"] = true,
+        ["rocket-part"] = true,
+        ["discharge-defense-equipment"] = true,
+        ["discharge-defense-remote"] = true
+    }
     global.ocore.markets.item_values = tools.sortByValue(markets.getPrices())
+    for name, price in pairs(global.ocore.markets.item_values) do
+        global.ocore.markets.item_values[name] = math.ceil(price)
+    end
+    for name, _ in pairs(nil_items) do
+        if global.ocore.markets.item_values[name] then
+            global.ocore.markets.item_values[name] = nil
+        end
+    end
     game.write_file("market/item_values.lua",
                     serpent.block(global.ocore.markets.item_values))
     markets.formatPrices()
@@ -277,65 +291,79 @@ end
 
 local function checkSacTier1(chest_inv)
     local t = {
-        ["coin"] = 10000,
-        ["gun-turret"] = 100,
-        ["speed-module"] = 1,
-        ["submachine-gun"] = 10
+        ["tank-machine-gun"] = {
+            ["coin"] = 10000,
+            ["gun-turret"] = 100,
+            ["speed-module"] = 1,
+            ["submachine-gun"] = 1
+        },
+        ["burner-generator"] = {
+            ["coin"] = 5000,
+            ["steam-engine"] = 10,
+            ["offshore-pump"] = 5,
+            ["pipe"] = 10
+        }
     }
-    local ret = {}
     local ci = chest_inv
     local cc = ci.get_contents()
     if cc then
-        for item_name, count in pairs(t) do
-            if cc[item_name] and (cc[item_name] >= count) then
-                ret[item_name] = count
+        for blessing, sac in pairs(t) do
+            local ret = {}
+            for item_name, count in pairs(sac) do
+                if cc[item_name] and (cc[item_name] >= count) then
+                    ret[item_name] = count
+                end
+            end
+            if flib_table.deep_compare(ret, sac) then
+                for item_name, count in pairs(ret) do
+                    ci.remove({name = item_name, count = count})
+                end
+                return {name = blessing, count = 1}
             end
         end
-        if flib_table.deep_compare(ret, t) then
-            ci.remove({name = "submachine-gun", count = 10})
-            ci.remove({name = "coin", count = 10000})
-            ci.remove({name = "gun-turret", count = 100})
-            ci.remove({name = "speed-module", count = 1})
-            return true
-        end
     end
-    return false
 end
+
 local function checkSacTier2(chest_inv)
     local t = {
-        ["coin"] = 100000,
-        ["explosives"] = 100,
-        ["tank"] = 1,
-        ["tank-machine-gun"] = 10
+        ["tank-cannon"] = {
+            ["coin"] = 100000,
+            ["explosives"] = 100,
+            ["tank"] = 1,
+            ["tank-machine-gun"] = 10
+        }
     }
-    local ret = {}
     local ci = chest_inv
     local cc = ci.get_contents()
     if cc then
-        for item_name, count in pairs(t) do
-            if cc[item_name] and (cc[item_name] >= count) then
-                ret[item_name] = count
+        for blessing, sac in pairs(t) do
+            local ret = {}
+            for item_name, count in pairs(sac) do
+                if cc[item_name] and (cc[item_name] >= count) then
+                    ret[item_name] = count
+                end
+            end
+            if flib_table.deep_compare(ret, sac) then
+                for item_name, count in pairs(ret) do
+                    ci.remove({name = item_name, count = count})
+                end
+                return {name = blessing, count = 1}
             end
         end
-        if flib_table.deep_compare(ret, t) then
-            ci.remove({name = "tank-machine-gun", count = 10})
-            ci.remove({name = "coin", count = 100000})
-            ci.remove({name = "tank", count = 1})
-            ci.remove({name = "explosives", count = 100})
-            return true
-        end
     end
-    return false
 end
 
 function markets.checkSac(chest_inv)
     local chest_inv = chest_inv
     if chest_inv and chest_inv.valid then
-        if checkSacTier1(chest_inv) then
-            chest_inv.insert("tank-machine-gun")
+        local ret = checkSacTier1(chest_inv)
+        if ret then
+            chest_inv.insert{name=ret.name, count=1}
             return 1
-        elseif checkSacTier2(chest_inv) then
-            chest_inv.insert("tank-cannon")
+        end
+            ret = checkSacTier2(chest_inv)
+        if ret then
+            chest_inv.insert{name=ret.name, count=1}
             return 2
         end
     else
