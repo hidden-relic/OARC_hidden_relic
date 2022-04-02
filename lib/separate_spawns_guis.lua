@@ -53,7 +53,7 @@ function DisplayWelcomeTextGui(player)
     AddSpacer(wGui)
 
     -- Informational message about the scenario
-    AddLabel(wGui, "scenario_info_msg_lbl1", SCENARIO_INFO_MSG, my_label_style)
+    AddLabel(wGui, "scenario_info_msg_lbl1", SCENARIO_INFO_MSG, my_other_label_style)
     AddSpacer(wGui)
 
     -- Warning about spawn creation time

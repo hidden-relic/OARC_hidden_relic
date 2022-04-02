@@ -19,12 +19,22 @@ SERVER_MSG = "Rules: Be polite. Ask before changing other players's stuff. Have 
 "This server is running a custom scenario that allows individual starting areas on the map."
 
 SCENARIO_INFO_MSG = "Latest updates in this scenario version:\n"..
+"Market system :: Players can now buy items and upgrades for coin.\n"..
+"Coin is acquired by killing bugs or by using the Red Chest\b"..
+"Red Chest :: Players can now sell items for coin by placing them inside the Red Chest. \n"..
+"There are also a few hidden combinations of different items that can be 'sacrificed'\n"..
+"in the Red Chest for bonus items.\n"..
+"Player Bonuses :: Players will slowly gain bonuses to their\n"..
+"player crafting/running/mining speed,\n"..
+"their inventory and trash capacity, their reach distances,\n"..
+"and their robot's speed, battery, and inventory size over time.\n"..
+"Added more trees at start and moved market/shared stuff to add more room, per request\n"..
 "Item & energy sharing system! No attacks on your base while you are offline!\n"..
 "This scenario gives you and/or your friends your own starting area.\n"..
 "You can be on the main team or your own. All teams are friendly.\n"..
 "If you leave in the first 15 minutes, your base and character will be deleted!"
 
-CONTACT_MSG = "Contact: Join our discord.gg/U35NxwY and ask either Windsinger or Oof2win2"
+CONTACT_MSG = "Contact: Join our discord.gg/U35NxwY and ask either Windsinger or Oof2win2.\nPlease report any bugs you may encounter to hidden_relic"
 DISCORD_INV = "discord.gg/U35NxwY"
 
 ------------------------------------------------------------------------------------------------------------------------

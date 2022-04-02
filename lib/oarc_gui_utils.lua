@@ -19,10 +19,18 @@ my_label_style = {
     top_padding = 0,
     bottom_padding = 0
 }
+my_other_label_style = {
+    -- minimal_width = 450,
+    -- maximal_width = 50,
+    single_line = false,
+    font_color = {r=1,g=0,b=1},
+    top_padding = 0,
+    bottom_padding = 0
+}
 my_label_header_style = {
     single_line = false,
     font = "heading-1",
-    font_color = {r=1,g=1,b=1},
+    font_color = {r=1,g=0,b=1},
     top_padding = 0,
     bottom_padding = 0
 }

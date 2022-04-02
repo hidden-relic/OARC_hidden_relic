@@ -5,7 +5,7 @@ function CreateBonusesGuiTab(tab_container, player)
 
     if global.oarc_bonuses == nil then global.oarc_bonuses = {} end
 
-        global.oarc_bonuses[player.name] = getPlayerBonuses(player)
+        global.oarc_bonuses[player.name] = getPlayerBonuses(player, true)
 
     AddLabel(tab_container, "bonuses_info", "Bonuses:", my_longer_label_style)
 

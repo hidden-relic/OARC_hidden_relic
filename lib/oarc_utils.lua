@@ -19,7 +19,7 @@ TICKS_PER_HOUR = TICKS_PER_MINUTE * 60
 MAX_INT32_POS = 2147483647
 MAX_INT32_NEG = -2147483648
 
-PLAYER_HOURLY_RUN_BONUS = 0.025
+PLAYER_HOURLY_RUN_BONUS = 0.0125
 PLAYER_HOURLY_HANDCRAFT_BONUS = 0.075
 PLAYER_HOURLY_MINING_BONUS = 0.05
 PLAYER_HOURLY_REACH_BONUS = 3
@@ -27,11 +27,11 @@ PLAYER_HOURLY_RESOURCE_REACH_BONUS = 3
 PLAYER_HOURLY_BUILD_BONUS = 3
 PLAYER_HOURLY_ITEM_DROP_BONUS = 3
 PLAYER_HOURLY_LOOT_BONUS = 3
-PLAYER_HOURLY_INV_BONUS = 1.5
+PLAYER_HOURLY_INV_BONUS = 1
 PLAYER_HOURLY_TRASH_BONUS = 1
-FORCE_HOURLY_BOT_SPEED_BONUS = 0.00125
-FORCE_HOURLY_BOT_STORAGE_BONUS = 0.00125
-FORCE_HOURLY_BOT_BATTERY_BONUS = 0.00125
+FORCE_HOURLY_BOT_SPEED_BONUS = 0.00250
+FORCE_HOURLY_BOT_STORAGE_BONUS = 0.00250
+FORCE_HOURLY_BOT_BATTERY_BONUS = 0.00250
 
 PLAYER_BUFF_MINUTES = 10
 REPORT_PLAYER_BUFF_MINUTES = 30
@@ -112,7 +112,6 @@ function charge(player)
 end
 
 ------------acid--------------------------------------------------------------------
-
 local function UpdateForceBuffs(player, buff)
     local name, text, color, modifier, base_multiplier = buff.name, buff.text,
                                                          buff.color,
@@ -122,10 +121,10 @@ local function UpdateForceBuffs(player, buff)
     local multiplier = (player.online_time / TICKS_PER_HOUR) * base_multiplier
     FlyingText(text .. tools.round(multiplier, 3), player.position, color,
                player.surface)
-    modifier = old_data + multiplier
+    player.force[buff.modifier] = old_data + multiplier
 end
 
-local function UpdatePlayerBuffs(player, buff)
+function UpdatePlayerBuffs(player, buff)
     local name, text, color, modifier, base_multiplier = buff.name, buff.text,
                                                          buff.color,
                                                          player[buff.modifier],
@@ -135,127 +134,290 @@ local function UpdatePlayerBuffs(player, buff)
 
     FlyingText(text .. tools.round((multiplier - modifier), 3), player.position,
                color, player.surface)
-    modifier = multiplier
+    player[buff.modifier] = multiplier
 end
+
+local gradient = {
+    {r = 0, g = 255, b = 0}, {r = 10, g = 245, b = 10},
+    {r = 20, g = 235, b = 20}, {r = 31, g = 224, b = 31},
+    {r = 41, g = 214, b = 41}, {r = 51, g = 204, b = 51},
+    {r = 61, g = 194, b = 61}, {r = 71, g = 184, b = 71},
+    {r = 82, g = 173, b = 82}, {r = 92, g = 163, b = 92},
+    {r = 102, g = 153, b = 102}, {r = 112, g = 143, b = 112},
+    {r = 122, g = 133, b = 122}, {r = 133, g = 122, b = 133},
+    {r = 143, g = 112, b = 143}, {r = 153, g = 102, b = 153},
+    {r = 163, g = 92, b = 163}, {r = 173, g = 82, b = 173},
+    {r = 184, g = 71, b = 184}, {r = 194, g = 61, b = 194},
+    {r = 204, g = 51, b = 204}, {r = 214, g = 41, b = 214},
+    {r = 224, g = 31, b = 224}, {r = 235, g = 20, b = 235},
+    {r = 245, g = 10, b = 245}, {r = 255, g = 0, b = 255}
+}
 
 local bonuses_data = {
     ["1"] = {
         name = "run_bonus",
-        text = 'bonuses.run_bonus_text',
-        color = colors.medium_sea_green,
+        text = "running + ",
+        color = gradient[1],
         modifier = "character_running_speed_modifier",
         base_multiplier = PLAYER_HOURLY_RUN_BONUS
     },
     ["16"] = {
         name = "handcraft_bonus",
-        text = 'bonuses.handcraft_bonus_text',
-        color = colors.medium_sea_green,
+        text = "handcrafting + ",
+        color = gradient[3],
         modifier = "character_crafting_speed_modifier",
         base_multiplier = PLAYER_HOURLY_HANDCRAFT_BONUS
     },
     ["31"] = {
         name = "mining_bonus",
-        text = 'bonuses.mining_bonus_text',
-        color = colors.medium_sea_green,
+        text = "mining + ",
+        color = gradient[5],
         modifier = "character_mining_speed_modifier",
         base_multiplier = PLAYER_HOURLY_MINING_BONUS
     },
     ["46"] = {
         name = "reach_bonus",
-        text = 'bonuses.reach_bonus_text',
-        color = colors.medium_slate_blue,
+        text = "reach + ",
+        color = gradient[7],
         modifier = "character_reach_distance_bonus",
         base_multiplier = PLAYER_HOURLY_REACH_BONUS
     },
     ["61"] = {
         name = "resource_reach_bonus",
-        text = 'bonuses.resource_reach_bonus_text',
-        color = colors.medium_slate_blue,
+        text = "resource_reach + ",
+        color = gradient[9],
         modifier = "character_resource_reach_distance_bonus",
         base_multiplier = PLAYER_HOURLY_RESOURCE_REACH_BONUS
     },
     ["76"] = {
         name = "build_bonus",
-        text = 'bonuses.build_bonus_text',
-        color = colors.medium_slate_blue,
+        text = "build reach + ",
+        color = gradient[11],
         modifier = "character_build_distance_bonus",
         base_multiplier = PLAYER_HOURLY_BUILD_BONUS
     },
     ["91"] = {
         name = "item_drop_bonus",
-        text = 'bonuses.item_drop_bonus_text',
-        color = colors.medium_slate_blue,
+        text = "item drop + ",
+        color = gradient[13],
         modifier = "character_item_drop_distance_bonus",
         base_multiplier = PLAYER_HOURLY_ITEM_DROP_BONUS
     },
     ["106"] = {
         name = "loot_pickup_bonus",
-        text = 'bonuses.loot_bonus_text',
-        color = colors.medium_slate_blue,
+        text = "loot pickup + ",
+        color = gradient[15],
         modifier = "character_loot_pickup_distance_bonus",
         base_multiplier = PLAYER_HOURLY_LOOT_BONUS
     },
     ["121"] = {
         name = "inventory_bonus",
-        text = 'bonuses.inv_bonus_text',
-        color = colors.orange_red,
+        text = "inventory + ",
+        color = gradient[17],
         modifier = "character_inventory_slots_bonus",
         base_multiplier = PLAYER_HOURLY_INV_BONUS
     },
     ["136"] = {
         name = "trash_bonus",
-        text = 'bonuses.trash_bonus_text',
-        color = colors.orange_red,
+        text = "trash + ",
+        color = gradient[19],
         modifier = "character_trash_slot_count_bonus",
         base_multiplier = PLAYER_HOURLY_TRASH_BONUS
     },
     ["151"] = {
         name = "bot_speed_bonus",
-        text = 'bonuses.bot_speed_bonus_text',
-        color = colors.violet,
+        text = "bot speed + ",
+        color = gradient[21],
         modifier = "worker_robots_speed_modifier",
         base_multiplier = FORCE_HOURLY_BOT_SPEED_BONUS
     },
     ["166"] = {
         name = "bot_storage_bonus",
-        text = 'bonuses.bot_storage_bonus_text',
-        color = colors.violet,
+        text = "bot storage + ",
+        color = gradient[23],
         modifier = "worker_robots_storage_bonus",
         base_multiplier = FORCE_HOURLY_BOT_STORAGE_BONUS
     },
     ["181"] = {
         name = "bot_battery_bonus",
-        text = 'bonuses.bot_battery_bonus_text',
-        color = colors.violet,
+        text = "bot battery + ",
+        color = gradient[25],
         modifier = "worker_robots_battery_modifier",
         base_multiplier = FORCE_HOURLY_BOT_BATTERY_BONUS
     }
 }
 
-function UpdatePlayerBuffsOnTick()
-    if game.tick >= TICKS_PER_MINUTE * PLAYER_BUFF_MINUTES then
-        local this_tick = (game.tick % (TICKS_PER_MINUTE * PLAYER_BUFF_MINUTES))
+local force_ticks = {["151"] = true, ["166"] = true, ["181"] = true}
 
-        if bonuses_data[this_tick] then
-            local this_bonus = bonuses_data[this_tick]
-            if this_tick == 151 or 166 or 181 then
-                for __, force in pairs(game.forces) do
-                    for __, player in pairs(force.players) do
-                        player = tools.get_player(player)
-                        if player.character and player.character.valid then
-                            UpdateForceBuffs(player, this_bonus)
-                        end
-                    end
-                end
-            else
-                for __, player in pairs(game.online_players) do
+function UpdatePlayerBuffsOnTick(this_tick)
+    local this_tick = tostring((this_tick %
+                                   (TICKS_PER_MINUTE * PLAYER_BUFF_MINUTES)))
+    if bonuses_data[this_tick] then
+        local this_bonus = bonuses_data[this_tick]
+        if force_ticks[this_tick] then
+            for __, force in pairs(game.forces) do
+                for __, player in pairs(force.players) do
                     player = tools.get_player(player)
-                    if player and player.character and player.character.valid then
-                        UpdatePlayerBuffs(player, this_bonus)
+                    if player.character and player.character.valid then
+                        UpdateForceBuffs(player, this_bonus)
                     end
                 end
             end
+        else
+            for __, player in pairs(game.connected_players) do
+                player = tools.get_player(player)
+                if player and player.character and player.character.valid then
+                    UpdatePlayerBuffs(player, this_bonus)
+                end
+            end
         end
+    end
+end
+
+local function buff_prefix(i)
+    return "[font=default-semibold][color=" .. gradient[i].r .. ", " ..
+               gradient[i].g .. ", " .. gradient[i].b .. "]"
+end
+
+local function buff_mid(i)
+    return "[/color][/font][font=default][color=" .. gradient[i].r .. ", " ..
+               gradient[i].g .. ", " .. gradient[i].b .. "]"
+end
+
+local function buff_suffix() return "[/color][/font]\n" end
+
+function ReportPlayerBuffsOnTick()
+    if game.tick >= TICKS_PER_MINUTE * REPORT_PLAYER_BUFF_MINUTES then
+        if ((game.tick % (TICKS_PER_MINUTE * REPORT_PLAYER_BUFF_MINUTES)) == 0) then
+            for _, player in pairs(game.connected_players) do
+                player = tools.get_player(player)
+                if player.character and player.character.valid then
+                    local hours = player.online_time / TICKS_PER_HOUR
+                    local run_bonus, handcraft_bonus, mining_bonus, reach_bonus,
+                          resource_reach_bonus, build_bonus, item_drop_bonus,
+                          loot_pickup_bonus, inventory_bonus, trash_bonus,
+                          bot_speed_bonus, bot_storage_bonus, bot_battery_bonus =
+                        hours * PLAYER_HOURLY_RUN_BONUS + 1,
+                        hours * PLAYER_HOURLY_HANDCRAFT_BONUS + 1,
+                        hours * PLAYER_HOURLY_MINING_BONUS + 1,
+                        hours * PLAYER_HOURLY_REACH_BONUS + 1,
+                        hours * PLAYER_HOURLY_RESOURCE_REACH_BONUS + 1,
+                        hours * PLAYER_HOURLY_BUILD_BONUS + 1,
+                        hours * PLAYER_HOURLY_ITEM_DROP_BONUS + 1,
+                        hours * PLAYER_HOURLY_LOOT_BONUS + 1,
+                        hours * PLAYER_HOURLY_INV_BONUS,
+                        hours * PLAYER_HOURLY_TRASH_BONUS,
+                        hours * FORCE_HOURLY_BOT_SPEED_BONUS + 1,
+                        hours * FORCE_HOURLY_BOT_STORAGE_BONUS + 1,
+                        hours * FORCE_HOURLY_BOT_BATTERY_BONUS + 1
+
+                    local string = ""
+                    string = string ..
+                                 "[font=heading-1]Your playtime bonuses have increased![/font]\n"
+                    string = string ..
+                                 "[font=heading-2]Here are your current totals:[/font]\n"
+
+                    string = string .. buff_prefix(1) .. "Running Speed >>> " ..
+                                 buff_mid(2) .. run_bonus .. buff_suffix()
+                    string = string .. buff_prefix(3) ..
+                                 "Handcrafting Speed >>> >>> " .. buff_mid(4) ..
+                                 handcraft_bonus .. buff_suffix()
+                    string =
+                        string .. buff_prefix(5) .. "Handmining Speed >>> " ..
+                            buff_mid(6) .. mining_bonus .. buff_suffix()
+                    string =
+                        string .. buff_prefix(7) .. "Reach Distance >>> " ..
+                            buff_mid(8) .. reach_bonus .. buff_suffix()
+                    string =
+                        string .. buff_prefix(9) .. "Resource Reach >>> " ..
+                            buff_mid(10) .. resource_reach_bonus ..
+                            buff_suffix()
+                    string = string .. buff_prefix(11) .. "Build Reach >>> " ..
+                                 buff_mid(12) .. build_bonus .. buff_suffix()
+                    string =
+                        string .. buff_prefix(13) .. "Item Drop Reach >>> " ..
+                            buff_mid(14) .. item_drop_bonus .. buff_suffix()
+                    string = string .. buff_prefix(15) ..
+                                 "Loot Pickup Reach >>> " .. buff_mid(16) ..
+                                 loot_pickup_bonus .. buff_suffix()
+                    string =
+                        string .. buff_prefix(17) .. "Inventory Slots >>> " ..
+                            buff_mid(18) .. inventory_bonus .. buff_suffix()
+                    string = string .. buff_prefix(19) .. "Trash Slots >>> " ..
+                                 buff_mid(20) .. trash_bonus .. buff_suffix()
+                    string = string .. buff_prefix(21) .. "Robot Speed >>> " ..
+                                 buff_mid(22) .. bot_speed_bonus ..
+                                 buff_suffix()
+                    string =
+                        string .. buff_prefix(23) .. "Robot Inventory >>> " ..
+                            buff_mid(24) .. bot_storage_bonus .. buff_suffix()
+                    string =
+                        string .. buff_prefix(25) .. "Robot Battery >>> " ..
+                            buff_mid(26) .. bot_battery_bonus .. buff_suffix()
+
+                    DisplaySpeechBubble(player, string, 10)
+                end
+            end
+        end
+    end
+end
+
+function getPlayerBonuses(player)
+    local player = tools.get_player(player)
+    if player.character and player.character.valid then
+        local hours = player.online_time / TICKS_PER_HOUR
+        local run_bonus, handcraft_bonus, mining_bonus, reach_bonus,
+              resource_reach_bonus, build_bonus, item_drop_bonus,
+              loot_pickup_bonus, inventory_bonus, trash_bonus, bot_speed_bonus,
+              bot_storage_bonus, bot_battery_bonus = hours *
+                                                         PLAYER_HOURLY_RUN_BONUS,
+                                                     hours *
+                                                         PLAYER_HOURLY_HANDCRAFT_BONUS,
+                                                     hours *
+                                                         PLAYER_HOURLY_MINING_BONUS,
+                                                     hours *
+                                                         PLAYER_HOURLY_REACH_BONUS,
+                                                     hours *
+                                                         PLAYER_HOURLY_RESOURCE_REACH_BONUS,
+                                                     hours *
+                                                         PLAYER_HOURLY_BUILD_BONUS,
+                                                     hours *
+                                                         PLAYER_HOURLY_ITEM_DROP_BONUS,
+                                                     hours *
+                                                         PLAYER_HOURLY_LOOT_BONUS,
+                                                     hours *
+                                                         PLAYER_HOURLY_INV_BONUS,
+                                                     hours *
+                                                         PLAYER_HOURLY_TRASH_BONUS,
+                                                     hours *
+                                                         FORCE_HOURLY_BOT_SPEED_BONUS,
+                                                     hours *
+                                                         FORCE_HOURLY_BOT_STORAGE_BONUS,
+                                                     hours *
+                                                         FORCE_HOURLY_BOT_BATTERY_BONUS
+        return {
+            ["speed"] = {
+                ["hand crafting"] = tools.round((handcraft_bonus), 6),
+                ["hand mining"] = tools.round((mining_bonus), 6),
+                ["running speed"] = tools.round((run_bonus), 6)
+            },
+            ["reach"] = {
+                ["reach distance"] = tools.round((reach_bonus), 6),
+                ["resource reach"] = tools.round((resource_reach_bonus), 6),
+                ["build distance"] = tools.round((build_bonus), 6),
+                ["item drop distance"] = tools.round((item_drop_bonus), 6),
+                ["loot pickup distance"] = tools.round((loot_pickup_bonus), 6)
+            },
+            ["inv"] = {
+                ["inventory slots"] = math.floor(inventory_bonus),
+                ["trash slots"] = math.floor(trash_bonus)
+            },
+            ["robot"] = {
+                ["battery"] = tools.round((bot_battery_bonus), 6),
+                ["storage"] = tools.round((bot_storage_bonus), 6),
+                ["speed"] = tools.round((bot_speed_bonus), 6)
+            }
+        }
     end
 end
 
@@ -464,167 +626,6 @@ end
 --     end
 -- end
 -- end
-
-local gradient = {
-    {r = 0, g = 255, b = 0}, {r = 10, g = 245, b = 10},
-    {r = 20, g = 235, b = 20}, {r = 31, g = 224, b = 31},
-    {r = 41, g = 214, b = 41}, {r = 51, g = 204, b = 51},
-    {r = 61, g = 194, b = 61}, {r = 71, g = 184, b = 71},
-    {r = 82, g = 173, b = 82}, {r = 92, g = 163, b = 92},
-    {r = 102, g = 153, b = 102}, {r = 112, g = 143, b = 112},
-    {r = 122, g = 133, b = 122}, {r = 133, g = 122, b = 133},
-    {r = 143, g = 112, b = 143}, {r = 153, g = 102, b = 153},
-    {r = 163, g = 92, b = 163}, {r = 173, g = 82, b = 173},
-    {r = 184, g = 71, b = 184}, {r = 194, g = 61, b = 194},
-    {r = 204, g = 51, b = 204}, {r = 214, g = 41, b = 214},
-    {r = 224, g = 31, b = 224}, {r = 235, g = 20, b = 235},
-    {r = 245, g = 10, b = 245}, {r = 255, g = 0, b = 255}
-}
-
-local function buff_prefix(i)
-    return "[font=default-semibold][color="..gradient[i].r..", "..gradient[i].g..", "..gradient[i].b.."]"
-end
-
-local function buff_mid(i)
-    return "[/color][/font][font=default][color="..gradient[i].r..", "..gradient[i].g..", "..gradient[i].b.."]"
-end
-
-local function buff_suffix() return "[/color][/font]\n" end
-
-function ReportPlayerBuffsOnTick()
-    if game.tick >= TICKS_PER_MINUTE * REPORT_PLAYER_BUFF_MINUTES then
-        if ((game.tick % (TICKS_PER_MINUTE * REPORT_PLAYER_BUFF_MINUTES)) == 0) then
-            for _, player in pairs(game.connected_players) do
-                player = tools.get_player(player)
-                if player.character and player.character.valid then
-                    local hours = player.online_time / TICKS_PER_HOUR
-                    local run_bonus, handcraft_bonus, mining_bonus, reach_bonus,
-                          resource_reach_bonus, build_bonus, item_drop_bonus,
-                          loot_pickup_bonus, inventory_bonus, trash_bonus,
-                          bot_speed_bonus, bot_storage_bonus, bot_battery_bonus =
-                        hours * PLAYER_HOURLY_RUN_BONUS + 1,
-                        hours * PLAYER_HOURLY_HANDCRAFT_BONUS + 1,
-                        hours * PLAYER_HOURLY_MINING_BONUS + 1,
-                        hours * PLAYER_HOURLY_REACH_BONUS + 1,
-                        hours * PLAYER_HOURLY_RESOURCE_REACH_BONUS + 1,
-                        hours * PLAYER_HOURLY_BUILD_BONUS + 1,
-                        hours * PLAYER_HOURLY_ITEM_DROP_BONUS + 1,
-                        hours * PLAYER_HOURLY_LOOT_BONUS + 1,
-                        hours * PLAYER_HOURLY_INV_BONUS,
-                        hours * PLAYER_HOURLY_TRASH_BONUS,
-                        hours * FORCE_HOURLY_BOT_SPEED_BONUS + 1,
-                        hours * FORCE_HOURLY_BOT_STORAGE_BONUS + 1,
-                        hours * FORCE_HOURLY_BOT_BATTERY_BONUS + 1
-
-                    local string = ""
-                    string = string ..
-                                 "[font=heading-1]Your playtime bonuses have increased![/font]\n"
-                    string = string ..
-                                 "[font=heading-2]Here are your current totals:[/font]\n"
-
-                    string = string .. buff_prefix(1) .. "Running Speed >>> " ..
-                                 buff_mid(2) .. run_bonus .. buff_suffix()
-                    string = string .. buff_prefix(3) ..
-                                 "Handcrafting Speed >>> >>> " .. buff_mid(4) ..
-                                 handcraft_bonus .. buff_suffix()
-                    string =
-                        string .. buff_prefix(5) .. "Handmining Speed >>> " ..
-                            buff_mid(6) .. mining_bonus .. buff_suffix()
-                    string =
-                        string .. buff_prefix(7) .. "Reach Distance >>> " ..
-                            buff_mid(8) .. reach_bonus .. buff_suffix()
-                    string =
-                        string .. buff_prefix(9) .. "Resource Reach >>> " ..
-                            buff_mid(10) .. resource_reach_bonus ..
-                            buff_suffix()
-                    string = string .. buff_prefix(11) .. "Build Reach >>> " ..
-                                 buff_mid(12) .. build_bonus .. buff_suffix()
-                    string =
-                        string .. buff_prefix(13) .. "Item Drop Reach >>> " ..
-                            buff_mid(14) .. item_drop_bonus .. buff_suffix()
-                    string = string .. buff_prefix(15) ..
-                                 "Loot Pickup Reach >>> " .. buff_mid(16) ..
-                                 loot_pickup_bonus .. buff_suffix()
-                    string =
-                        string .. buff_prefix(17) .. "Inventory Slots >>> " ..
-                            buff_mid(18) .. inventory_bonus .. buff_suffix()
-                    string = string .. buff_prefix(19) .. "Trash Slots >>> " ..
-                                 buff_mid(20) .. trash_bonus .. buff_suffix()
-                    string = string .. buff_prefix(21) .. "Robot Speed >>> " ..
-                                 buff_mid(22) .. bot_speed_bonus ..
-                                 buff_suffix()
-                    string =
-                        string .. buff_prefix(23) .. "Robot Inventory >>> " ..
-                            buff_mid(24) .. bot_storage_bonus .. buff_suffix()
-                    string =
-                        string .. buff_prefix(25) .. "Robot Battery >>> " ..
-                            buff_mid(26) .. bot_battery_bonus .. buff_suffix()
-
-                    DisplaySpeechBubble(player, string, 10)
-                end
-            end
-        end
-    end
-end
-
-function getPlayerBonuses(player)
-    local player = tools.get_player(player)
-    if player.character and player.character.valid then
-        local hours = player.online_time / TICKS_PER_HOUR
-        local run_bonus, handcraft_bonus, mining_bonus, reach_bonus,
-              resource_reach_bonus, build_bonus, item_drop_bonus,
-              loot_pickup_bonus, inventory_bonus, trash_bonus, bot_speed_bonus,
-              bot_storage_bonus, bot_battery_bonus = hours *
-                                                         PLAYER_HOURLY_RUN_BONUS,
-                                                     hours *
-                                                         PLAYER_HOURLY_HANDCRAFT_BONUS,
-                                                     hours *
-                                                         PLAYER_HOURLY_MINING_BONUS,
-                                                     hours *
-                                                         PLAYER_HOURLY_REACH_BONUS,
-                                                     hours *
-                                                         PLAYER_HOURLY_RESOURCE_REACH_BONUS,
-                                                     hours *
-                                                         PLAYER_HOURLY_BUILD_BONUS,
-                                                     hours *
-                                                         PLAYER_HOURLY_ITEM_DROP_BONUS,
-                                                     hours *
-                                                         PLAYER_HOURLY_LOOT_BONUS,
-                                                     hours *
-                                                         PLAYER_HOURLY_INV_BONUS,
-                                                     hours *
-                                                         PLAYER_HOURLY_TRASH_BONUS,
-                                                     hours *
-                                                         FORCE_HOURLY_BOT_SPEED_BONUS,
-                                                     hours *
-                                                         FORCE_HOURLY_BOT_STORAGE_BONUS,
-                                                     hours *
-                                                         FORCE_HOURLY_BOT_BATTERY_BONUS
-        return {
-            ["speed"] = {
-                ["hand_crafting"] = tools.round((run_bonus), 6),
-                ["hand_mining"] = tools.round((handcraft_bonus), 6),
-                ["running_speed"] = tools.round((mining_bonus), 6)
-            },
-            ["reach"] = {
-                ["reach_distance"] = tools.round((reach_bonus), 6),
-                ["resource_reach"] = tools.round((resource_reach_bonus), 6),
-                ["build_distance"] = tools.round((build_bonus), 6),
-                ["item_drop_distance"] = tools.round((item_drop_bonus), 6),
-                ["loot_pickup_distance"] = tools.round((loot_pickup_bonus), 6)
-            },
-            ["inv"] = {
-                ["inventory_slots"] = math.floor(inventory_bonus),
-                ["trash_slots"] = math.floor(trash_bonus)
-            },
-            ["robot"] = {
-                ["battery"] = tools.round((bot_speed_bonus), 6),
-                ["storage"] = tools.round((bot_storage_bonus), 6),
-                ["speed"] = tools.round((bot_battery_bonus), 6)
-            }
-        }
-    end
-end
 
 -- -------------------------------------------------------------------------------------
 
@@ -1409,11 +1410,15 @@ end
 function killradius(r, percent)
     local r = r or 10
     local percent = percent or 10
-    local bugs = game.player.surface.find_entities_filtered{force = "enemy", position = game.player.position, radius = r}
+    local bugs = game.player.surface.find_entities_filtered {
+        force = "enemy",
+        position = game.player.position,
+        radius = r
+    }
     local max = #bugs
     while (#bugs / max) * 100 > 100 - (100 / percent) do
-        for _, bug in pairs (bugs) do
-            if math.random(0,100) > 50 then bug.die() end
+        for _, bug in pairs(bugs) do
+            if math.random(0, 100) > 50 then bug.die() end
         end
     end
 end
@@ -2040,7 +2045,7 @@ function CreateCropOctagon(surface, centerPos, chunkArea, tileRadius, fillTile)
                                                  math.abs(centerPos.y - j)))
             local distVar2 = math.floor(math.abs(centerPos.x - i) +
                                             math.abs(centerPos.y - j))
-            local distVar = math.max(distVar1 * 1.1, distVar2 * 0.707 * 1.1);
+            local distVar = math.max(distVar1 * 1.15, distVar2 * 0.627 * 1.175);
 
             -- Fill in all unexpected water in a circle
             if (distVar < tileRadius + 2) then
@@ -2192,7 +2197,7 @@ function UndecorateOnChunkGenerate(event)
     local surface = event.surface
     local chunkArea = event.area
     RemoveDecorationsArea(surface, chunkArea)
-    RemoveFish(surface, chunkArea)
+    -- RemoveFish(surface, chunkArea)
 end
 
 -- Give player items on respawn
