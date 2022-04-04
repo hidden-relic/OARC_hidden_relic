@@ -22,16 +22,18 @@ commands.add_command("reset", "reset player", function(command)
 end)
 
 local function format_chat_colour(message, color)
-color = color or Colors.white
-local color_tag = '[color='..tools.round(color.r, 3)..', '..tools.round(color.g, 3)..', '..tools.round(color.b, 3)..']'
-return string.format('%s%s[/color]', color_tag, message)
+    color = color or Colors.white
+    local color_tag = '[color=' .. tools.round(color.r, 3) .. ', ' ..
+                          tools.round(color.g, 3) .. ', ' ..
+                          tools.round(color.b, 3) .. ']'
+    return string.format('%s%s[/color]', color_tag, message)
 end
 
 local function step_component(c1, c2)
     if c1 < 0 then
-        return 0, c2+c1
+        return 0, c2 + c1
     elseif c1 > 1 then
-        return 1, c2-c1+1
+        return 1, c2 - c1 + 1
     else
         return c1, c2
     end
@@ -46,17 +48,17 @@ local function step_color(color)
 end
 
 local function next_color(color, step)
-    step = step  or 0.1
-    local new_color = {r=0, g=0, b=0}
+    step = step or 0.1
+    local new_color = {r = 0, g = 0, b = 0}
     if color.b == 0 and color.r ~= 0 then
-        new_color.r = color.r-step
-        new_color.g = color.g+step
+        new_color.r = color.r - step
+        new_color.g = color.g + step
     elseif color.r == 0 and color.g ~= 0 then
-        new_color.g = color.g-step
-        new_color.b = color.b+step
+        new_color.g = color.g - step
+        new_color.b = color.b + step
     elseif color.g == 0 and color.b ~= 0 then
-        new_color.b = color.b-step
-        new_color.r = color.r+step
+        new_color.b = color.b - step
+        new_color.r = color.r + step
     end
     return step_color(new_color)
 end
@@ -70,11 +72,11 @@ commands.add_command("rainbow", "Rainbow chat", function(command)
     local message = command.parameter
     local player_name = player and player.name or '<Server>'
     local player_color = player and player.color or nil
-    local color_step = 3/message:len()
+    local color_step = 3 / message:len()
     if color_step > 1 then color_step = 1 end
-    local current_color = {r=1, g=0, b=0}
-    local output = format_chat_colour(player_name..': ', player_color)
-    output = output..message:gsub('%S', function(letter)
+    local current_color = {r = 1, g = 0, b = 0}
+    local output = format_chat_colour(player_name .. ': ', player_color)
+    output = output .. message:gsub('%S', function(letter)
         local rtn = format_chat_colour(letter, current_color)
         current_color = next_color(current_color, color_step)
         return rtn
@@ -90,7 +92,15 @@ commands.add_command("look", "Look at a player", function(command)
     end
     local target = command.parameter
     target = tools.get_player(target)
-    if target.valid then
+    if not target.position then
+        if (target[1] or target.x) and (target[2] or target.y) then
+            target.position = {
+                x = (target[1] or target.x),
+                y = (target[2] or target.y)
+            }
+        end
+    end
+    if target.valid and target.position then
         player.zoom_to_world(target.position, 1.75)
     end
 end)
@@ -116,10 +126,11 @@ commands.add_command("me", "Perform an 'action' in chat", function(command)
         return
     end
     local action = command.parameter
-local player_name = player and player.name or '<Server>'
-game.print(string.format('* %s %s *', player_name, action), player.chat_color)
+    local player_name = player and player.name or '<Server>'
+    game.print(string.format('* %s %s *', player_name, action),
+               player.chat_color)
 end)
-    
+
 commands.add_command("repair",
                      "Repairs all destroyed and damaged entities in an area",
                      function(command)
@@ -260,7 +271,9 @@ commands.add_command("ratio",
 
         local output = 1 / recipe.energy * machine.crafting_speed *
                            product.amount * multi -- math on the outputs per second
-        player.print {sprite, tools.round(output * amountOfMachines, 3), product.name} -- full string
+        player.print {
+            sprite, tools.round(output * amountOfMachines, 3), product.name
+        } -- full string
 
     end
 
@@ -485,14 +498,18 @@ commands.add_command('find', 'finds the nearest patch of given resource',
     local player = game.players[command.player_index]
     local resource = command.parameter
     if find_patch.resources[resource] then
-        find_patch.findPatch(find_patch.resources[resource], find_patch.range, player)
+        find_patch.findPatch(find_patch.resources[resource], find_patch.range,
+                             player)
 
     end
 end)
 
 commands.add_command("make", "magic", function(command)
     local player = game.players[command.player_index]
-    if not player.admin then tools.error("You are not admin my friend") return end
+    if not player.admin then
+        tools.error("You are not admin my friend")
+        return
+    end
     if not command.parameter then
         tools.error(player, "You're gonna need more than that..try /help make")
         return
@@ -502,7 +519,7 @@ commands.add_command("make", "magic", function(command)
     if not args[1] then args[1] = false end
     if not args[2] then args[2] = false end
     tools.make(player, args[1], args[2])
-end)   
+end)
 
 commands.add_command("get",
                      "get <item_name> [<count>]\nneeds the game name (\"iron-plate\" no quotes). if no count is given, you'll get 1 stack",
@@ -510,18 +527,54 @@ commands.add_command("get",
     local args = string.split(command.parameter, " ")
     local player, item_name, count = game.players[command.player_index],
                                      args[1], args[2]
-                                     if not player.admin then tools.error("You are not admin my friend") return end
+    if not player.admin then
+        tools.error("You are not admin my friend")
+        return
+    end
     tools.getItem(player, item_name, count)
+end)
+
+commands.add_command("stats", "Show yours or another player's market stats", function(command)
+    local player = game.players[command.player_index]
+    local target_player = {}
+    if not command.parameter then
+        target_player = player
+    elseif command.parameter then
+        local target_player = tools.get_player(command.parameter)
+    end
+    if target_player then
+        player.print(tools.formatMarketBonuses(target_player))
+    else
+        tools.error(player, "Couldn't find player's stats..")
+        return
+    end
 end)
 
 commands.add_command("tp", "teleport", function(command)
     local player = game.players[command.player_index]
-    if not player.admin then tools.error("You are not admin my friend") return end
+    if not player.admin then
+        tools.error("You are not admin my friend")
+        return
+    end
     local target_pos = command.parameter
+    if not global.ocore.last_position then
+        global.ocore.last_position = {}
+        global.ocore.last_position[player.name] = player.position
+    end
     if target_pos then
         if (type(target_pos) == "string") then
-            if game.players[target_pos] then
-                target_pos = game.players[target_pos].position
+            if target_pos == "home" then
+                target_pos = global.ocore.playerSpawns[player.name]
+            elseif target_pos == "back" then
+                target_pos = global.ocore.last_position[player.name] or
+                                 global.ocore.playerSpawns[player.name]
+            elseif game.players[target_pos] then
+                if game.players[target_pos].online then
+                    target_pos = game.players[target_pos].position
+                else
+                    target_pos =
+                        global.ocore.playerSpawns[game.players[target_pos].name]
+                end
             else
                 return
             end

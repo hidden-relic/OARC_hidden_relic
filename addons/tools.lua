@@ -6,15 +6,11 @@ local tools = {}
 function tools.sortByValue(t)
     local keys = {}
 
-    for key, _ in pairs(t) do
-        table.insert(keys, key)
-    end
+    for key, _ in pairs(t) do table.insert(keys, key) end
 
     table.sort(keys, function(keyLhs, keyRhs) return t[keyLhs] < t[keyRhs] end)
     local r = {}
-    for _, key in ipairs(keys) do
-        r[key] = t[key]
-    end
+    for _, key in ipairs(keys) do r[key] = t[key] end
     return r
 end
 
@@ -22,7 +18,7 @@ function tools.FlyingTime(this_tick)
     if not global.oarc_timers then global.oarc_timers = {} end
     local time = tools.formatTimeMinsSecs(this_tick)
     for __, player in pairs(global.oarc_timers) do
-    FlyingText(time, player.position, {r=1, g=0, b=0}, player.surface)
+        FlyingText(time, player.position, {r = 1, g = 0, b = 0}, player.surface)
     end
 end
 
@@ -80,6 +76,48 @@ function tools.get_player(o)
     if p and p.valid and p.is_player() then return p end
 end
 
+function tools.getMarketBonuses(player)
+    local player = tools.get_player(player)
+    if player and global.ocore.markets.player_markets[player.name].stats then
+        return global.ocore.markets.player_markets[player.name].stats
+    end
+end
+
+function tools.formatMarketBonuses(player)
+    local player = tools.get_player(player)
+    if player then
+        local stats = global.ocore.markets.player_markets[player.name].stats
+        str = "[color=blue]Bonuses for [/color][color=orange]"..player.name.."[/color][color=blue]:[/color]\n"
+        for type, item in pairs(stats) do
+            str = str.."[color=purple]["..type.."][/color]\n"
+            for name, data in pairs(item) do
+                str = str.."[color=cyan]-- ["..name.."]:[/color] \t[color=orange]LVL: [/color][color=green]"..data.lvl.."[/color] \t[color=orange]MULT: [/color][color=green]"..(data.multiplier*100).."%[/color]\n"
+            end
+        end
+        return str
+    end
+end
+
+function tools.get_player_base_bonuses(player)
+    local player = player
+    local t = {
+        ["run_bonus"] = player.character_running_speed_modifier,
+        ["handcraft_bonus"] = player.character_crafting_speed_modifier,
+        ["mining_bonus"] = player.character_mining_speed_modifier,
+        ["reach_bonus"] = player.character_reach_distance_bonus,
+        ["resource_reach_bonus"] = player.character_resource_reach_distance_bonus,
+        ["build_bonus"] = player.character_build_distance_bonus,
+        ["item_drop_bonus"] = player.character_item_drop_distance_bonus,
+        ["loot_pickup_bonus"] = player.character_loot_pickup_distance_bonus,
+        ["inventory_bonus"] = player.character_inventory_slots_bonus,
+        ["trash_bonus"] = player.character_trash_slot_count_bonus,
+        ["bot_speed_bonus"] = player.force.worker_robots_speed_modifier,
+        ["bot_storage_bonus"] = player.force.worker_robots_storage_bonus,
+        ["bot_battery_bonus"] = player.force.worker_robots_battery_modifier
+    }
+    return t
+end
+
 function tools.floating_text(surface, position, text, color)
     color = color or Color.white
     return surface.create_entity {
@@ -132,6 +170,7 @@ function tools.link_out_spawn(pos)
 end
 
 function tools.link_belts(player, inp, outp)
+    local player = player
     if inp.valid and outp.valid then
         inp.connect_linked_belts(outp)
         if inp.linked_belt_neighbour == outp then
@@ -150,6 +189,7 @@ function tools.link_belts(player, inp, outp)
 end
 
 function tools.make(player, sharedobject, flow)
+    local player = player
     local shared_objects = {
         ["chest"] = true,
         ["belt"] = true,
@@ -159,7 +199,7 @@ function tools.make(player, sharedobject, flow)
         ["accumulator"] = true
     }
     local flows = {["in"] = true, ["out"] = true}
-    
+
     if not player.admin then
         tools.error(player, "You're not admin!")
         return
@@ -219,16 +259,17 @@ function tools.make(player, sharedobject, flow)
         end
     elseif sharedobject == "water" then
         local pos = GetWoodenChestFromCursor(player)
-            if pos and (getDistance(pos, player.position) > 2) then
+        if pos and (getDistance(pos, player.position) > 2) then
             player.surface.set_tiles({[1] = {name = "water", position = pos}})
             return true
         else
-            tools.error(player, "Failed to place waterfill. Don't stand so close!")
+            tools.error(player,
+                        "Failed to place waterfill. Don't stand so close!")
             return false
         end
     elseif sharedobject == "combinator" or sharedobject == "combinators" then
         local pos = GetWoodenChestFromCursor(player)
-            if pos and (player.surface.can_place_entity {
+        if pos and (player.surface.can_place_entity {
             name = "constant-combinator",
             position = {pos.x, pos.y - 1}
         }) and (player.surface.can_place_entity {
@@ -261,7 +302,8 @@ function tools.make(player, sharedobject, flow)
                         global.oarc_players[player.name].link_out = link_out
                         return link_out
                     end
-                elseif sharedobject == "power" or sharedobject == "energy" or sharedobject == "accumulator" then
+                elseif sharedobject == "power" or sharedobject == "energy" or
+                    sharedobject == "accumulator" then
                     if flow == "in" then
                         if (player.surface.can_place_entity {
                             name = "electric-energy-interface",
@@ -295,7 +337,8 @@ function tools.make(player, sharedobject, flow)
         end
     elseif sharedobject == "help" or sharedobject == "h" then
         tools.notify(player, "/make <entity/command> <'in' or 'out'>")
-        tools.notify(player, "entities: 'belt', 'chest', 'power', 'combinators', 'water'")
+        tools.notify(player,
+                     "entities: 'belt', 'chest', 'power', 'combinators', 'water'")
         tools.notify(player, "commands: 'link', 'mode', 'help'")
     else
         tools.error(player, "Invalid magic entity.. try /make help")

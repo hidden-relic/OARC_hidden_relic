@@ -13,11 +13,12 @@ function OarcAutoDeconOnTick()
         for i,miner in pairs(global.oarc_decon_miners) do
             if ((not miner) or (not miner.valid)) then
                 table.remove(global.oarc_decon_miners, i)
-
             else
-                if (#miner.surface.find_entities_filtered{area = {{miner.position.x-3, miner.position.y-3},
-                                                                            {miner.position.x+3, miner.position.y+3}},
-                                                                            type = "resource", limit = 1} == 0) then
+                if (miner.surface.find_entities_filtered{
+                    area = {
+                        {miner.position.x-3, miner.position.y-3}, 
+                        {miner.position.x+3, miner.position.y+3}}, 
+                    type = "resource", limit = 1} == 0) then
                     miner.order_deconstruction(miner.force)
                 end
                 table.remove(global.oarc_decon_miners, i)
