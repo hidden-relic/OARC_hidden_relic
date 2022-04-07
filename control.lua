@@ -210,6 +210,42 @@ script.on_event(defines.events.on_player_joined_game, function(event)
     if (global.oarc_players[player.name] == nil) then
         global.oarc_players[player.name] = {}
     end
+    if not global.ocore.markets.player_markets then
+        global.ocore.markets.player_markets = {}
+    end
+    if not global.ocore.markets.player_markets[player.name] then
+        global.ocore.markets.player_markets[player.name] = {}
+    end
+    if not global.ocore.markets.player_markets[player.name].stats then
+        global.ocore.markets.player_markets[player.name].stats = {
+            ["gun-speed"] = {
+                ["bullet"] = {["lvl"] = 1, ["multiplier"] = 0},
+                ["shotgun-shell"] = {["lvl"] = 1, ["multiplier"] = 0},
+                ["landmine"] = {["lvl"] = 1, ["multiplier"] = 0},
+                ["grenade"] = {["lvl"] = 1, ["multiplier"] = 0},
+                ["cannon-shell"] = {["lvl"] = 1, ["multiplier"] = 0},
+                ["flamethrower"] = {["lvl"] = 1, ["multiplier"] = 0},
+                ["rocket"] = {["lvl"] = 1, ["multiplier"] = 0},
+                ["laser"] = {["lvl"] = 1, ["multiplier"] = 0}
+            },
+            ["ammo-damage"] = {
+                ["bullet"] = {["lvl"] = 1, ["multiplier"] = 0},
+                ["shotgun-shell"] = {["lvl"] = 1, ["multiplier"] = 0},
+                ["landmine"] = {["lvl"] = 1, ["multiplier"] = 0},
+                ["grenade"] = {["lvl"] = 1, ["multiplier"] = 0},
+                ["cannon-shell"] = {["lvl"] = 1, ["multiplier"] = 0},
+                ["flamethrower"] = {["lvl"] = 1, ["multiplier"] = 0},
+                ["rocket"] = {["lvl"] = 1, ["multiplier"] = 0},
+                ["laser"] = {["lvl"] = 1, ["multiplier"] = 0}
+            },
+            ["turret-attack"] = {
+                ["gun-turret"] = {["lvl"] = 1, ["multiplier"] = 0},
+                ["flamethrower-turret"] = {["lvl"] = 1, ["multiplier"] = 0},
+                ["laser-turret"] = {["lvl"] = 1, ["multiplier"] = 0}
+            },
+            ["sell-speed"] = {["current"] = {["lvl"] = 1, ["multiplier"] = 10}}
+        }
+    end
 end)
 
 script.on_event(defines.events.on_player_created, function(event)
@@ -284,7 +320,11 @@ script.on_event(defines.events.on_tick, function(event)
     if game.tick % 60 == 0 then
         tools.FlyingTime(game.tick)
     end
+<<<<<<< Updated upstream
 
+=======
+    
+>>>>>>> Stashed changes
     DelayedSpawnOnTick()
     
     UpdatePlayerBuffsOnTick(game.tick)

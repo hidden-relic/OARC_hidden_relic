@@ -215,6 +215,7 @@ function markets.create(player, position)
     tools.protect_entity(market)
     tools.protect_entity(chest)
 
+<<<<<<< Updated upstream
     if not global.ocore.markets.player_markets then
         global.ocore.markets.player_markets = {}
     end
@@ -252,6 +253,8 @@ function markets.create(player, position)
         }
     end
 
+=======
+>>>>>>> Stashed changes
     global.ocore.markets.player_markets[player.name].chest = chest
     global.ocore.markets.player_markets[player.name].market = market
 
@@ -312,9 +315,9 @@ function markets.getTTS(player_name)
     local player_market = global.ocore.markets.player_markets[player_name]
     local item = player_market.current_item
     local energy = 1
-    if game.recipe_prototypes[item] then
-        energy = game.recipe_prototypes[item].energy
-    end
+    -- if game.recipe_prototypes[item] then
+    --     energy = game.recipe_prototypes[item].energy
+    -- end
     local energy_ticks = (energy * 60)
     return (game.tick + energy_ticks * player_market.sell_speed_multiplier)
 end
@@ -407,33 +410,35 @@ function markets.on_tick()
         for player_name, player_market in pairs(
                                               global.ocore.markets
                                                   .player_markets) do -- for each player market
-            local chest_inv = markets.getChestInv(player_market.chest) -- get red chest
-            local sac_ret = markets.checkSac(chest_inv)
-            if sac_ret == 1 then
-                gp("[color=red]" .. player_name ..
-                       " [/color][color=purple]has received a blessing[/color]")
-            elseif sac_ret == 2 then
-                gp("[color=red]" .. player_name ..
-                       " [/color][color=purple]has received a [/color][color=acid]Greater[/color][color=purple] blessing[/color]")
+            if player_market.chest then
+                local chest_inv = markets.getChestInv(player_market.chest) -- get red chest
+                local sac_ret = markets.checkSac(chest_inv)
+                if sac_ret == 1 then
+                    gp("[color=red]" .. player_name ..
+                           " [/color][color=purple]has received a blessing[/color]")
+                elseif sac_ret == 2 then
+                    gp("[color=red]" .. player_name ..
+                           " [/color][color=purple]has received a [/color][color=acid]Greater[/color][color=purple] blessing[/color]")
 
-            end
+                end
 
-            local item_name = getNthItemFromChest(chest_inv) -- get 1st item
+                local item_name = getNthItemFromChest(chest_inv) -- get 1st item
 
-            if player_market.tts and (game.tick >= player_market.tts) then -- if sale overdue
-                getSale(chest_inv, player_market.current_item) -- get coin
-                player_market.tts, player_market.current_item = nil
+                if player_market.tts and (game.tick >= player_market.tts) then -- if sale overdue
+                    getSale(chest_inv, player_market.current_item) -- get coin
+                    player_market.tts, player_market.current_item = nil
 
-            elseif player_market.tts and (game.tick < player_market.tts) then
-                return -- if sale ongoing
+                elseif player_market.tts and (game.tick < player_market.tts) then
+                    return -- if sale ongoing
 
-            elseif not player_market.tts and item_name then -- if no sale and item in chest
-                if global.ocore.markets.sell_offers[item_name] then
-                    player_market.current_item = item_name -- make it current item and remove and set the sale time
-                    chest_inv.remove({name = item_name, count = 1})
-                    player_market.tts = markets.getTTS(player_name)
-                else
-                    return
+                elseif not player_market.tts and item_name then -- if no sale and item in chest
+                    if global.ocore.markets.sell_offers[item_name] then
+                        player_market.current_item = item_name -- make it current item and remove and set the sale time
+                        chest_inv.remove({name = item_name, count = 1})
+                        player_market.tts = markets.getTTS(player_name)
+                    else
+                        return
+                    end
                 end
             end
         end
