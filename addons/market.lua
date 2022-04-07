@@ -215,46 +215,6 @@ function markets.create(player, position)
     tools.protect_entity(market)
     tools.protect_entity(chest)
 
-<<<<<<< Updated upstream
-    if not global.ocore.markets.player_markets then
-        global.ocore.markets.player_markets = {}
-    end
-    if not global.ocore.markets.player_markets[player.name] then
-        global.ocore.markets.player_markets[player.name] = {}
-    end
-    if not global.ocore.markets.player_markets[player.name].stats then
-        global.ocore.markets.player_markets[player.name].stats = {
-            ["gun-speed"] = {
-                ["bullet"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["shotgun-shell"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["landmine"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["grenade"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["cannon-shell"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["flamethrower"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["rocket"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["laser"] = {["lvl"] = 1, ["multiplier"] = 0}
-            },
-            ["ammo-damage"] = {
-                ["bullet"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["shotgun-shell"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["landmine"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["grenade"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["cannon-shell"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["flamethrower"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["rocket"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["laser"] = {["lvl"] = 1, ["multiplier"] = 0}
-            },
-            ["turret-attack"] = {
-                ["gun-turret"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["flamethrower-turret"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["laser-turret"] = {["lvl"] = 1, ["multiplier"] = 0}
-            },
-            ["sell-speed"] = {["current"] = {["lvl"] = 1, ["multiplier"] = 10}}
-        }
-    end
-
-=======
->>>>>>> Stashed changes
     global.ocore.markets.player_markets[player.name].chest = chest
     global.ocore.markets.player_markets[player.name].market = market
 

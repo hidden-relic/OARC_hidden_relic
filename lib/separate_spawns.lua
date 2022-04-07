@@ -276,14 +276,9 @@ function SendPlayerToNewSpawnAndCreateIt(delayedSpawn)
     end
 
     if (global.ocfg.enable_chest_sharing and not delayedSpawn.vanilla) then
-<<<<<<< Updated upstream
-        
-        local x_dist = global.ocfg.spawn_config.resource_rand_pos_settings.radius + 16
-=======
 
         local x_dist = global.ocfg.spawn_config.resource_rand_pos_settings
                            .radius + 16
->>>>>>> Stashed changes
 
         -- Shared electricity IO pair of scripted electric-energy-interfaces
         SharedEnergySpawnInput(player, {
