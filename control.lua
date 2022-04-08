@@ -32,6 +32,7 @@ require("lib/oarc_utils")
 market = require("addons/market")
 tools = require("addons/tools")
 local find_patch = require("addons/find_patch")
+local deathmarkers = require("addons/death-marker")
 require("addons/bonuses_gui")
 -- Other soft-mod type features.
 require("lib/frontier_silo")
@@ -77,86 +78,85 @@ commands.add_command("trigger-map-cleanup",
 --------------------------------------------------------------------------------
 -- ALL EVENT HANLDERS ARE HERE IN ONE PLACE!
 --------------------------------------------------------------------------------
-
 ----------------------------------------
 -- On Init - only runs once the first
 --   time the game starts
 ----------------------------------------
 script.on_init(function(event)
-
+    
     -- FIRST
     InitOarcConfig()
-
+    
     -- Regrowth (always init so we can enable during play.)
     RegrowthInit()
 
     -- Create new game surface
     CreateGameSurface()
-
+    
     -- MUST be before other stuff, but after surface creation.
     InitSpawnGlobalsAndForces()
-
+    
     market.init()
     -- Frontier Silo Area Generation
     if (global.ocfg.frontier_rocket_silo and
-        not global.ocfg.enable_magic_factories) then
+    not global.ocfg.enable_magic_factories) then
         SpawnSilosAndGenerateSiloAreas()
     end
-
+    
     -- Everyone do the shuffle. Helps avoid always starting at the same location.
-    -- Needs to be done after the silo spawning.
-    if (global.ocfg.enable_vanilla_spawns) then
-        global.vanillaSpawns = FYShuffle(global.vanillaSpawns)
-        log("Vanilla spawns:")
+        -- Needs to be done after the silo spawning.
+        if (global.ocfg.enable_vanilla_spawns) then
+            global.vanillaSpawns = FYShuffle(global.vanillaSpawns)
+            log("Vanilla spawns:")
         log(serpent.block(global.vanillaSpawns))
     end
-
+    
     Compat.handle_factoriomaps()
 
     if (global.ocfg.enable_coin_shop and global.ocfg.enable_chest_sharing) then
         SharedChestInitItems()
     end
-
+    
     if (global.ocfg.enable_coin_shop and global.ocfg.enable_magic_factories) then
         MagicFactoriesInit()
     end
-
+    
     OarcMapFeatureInitGlobalCounters()
     OarcAutoDeconOnInit()
-
+    
     -- Display starting point text as a display of dominance.
     RenderPermanentGroundText(game.surfaces[GAME_SURFACE_NAME],
-                              {x = -32, y = -30}, 37, "Spawn",
+    {x = -32, y = -30}, 37, "Spawn",
                               {0.9, 0.3, 0.3, 0.8})
 
-end)
+                            end)
 
-script.on_load(function() Compat.handle_factoriomaps() end)
-
-----------------------------------------
--- Rocket launch event
--- Used for end game win conditions / unlocking late game stuff
-----------------------------------------
-script.on_event(defines.events.on_rocket_launched,
-                function(event) RocketLaunchEvent(event) end)
-
-----------------------------------------
--- Surface Generation
+                            script.on_load(function() Compat.handle_factoriomaps() end)
+                            
+                            ----------------------------------------
+                            -- Rocket launch event
+                            -- Used for end game win conditions / unlocking late game stuff
+                            ----------------------------------------
+                            script.on_event(defines.events.on_rocket_launched,
+                            function(event) RocketLaunchEvent(event) end)
+                            
+                            ----------------------------------------
+                            -- Surface Generation
 ----------------------------------------
 
 ----------------------------------------
 -- Chunk Generation
 ----------------------------------------
 script.on_event(defines.events.on_chunk_generated, function(event)
-
+    
     if (event.surface.name ~= GAME_SURFACE_NAME) then return end
-
+    
     if global.ocfg.enable_regrowth then RegrowthChunkGenerate(event) end
-
+    
     if global.ocfg.enable_undecorator then UndecorateOnChunkGenerate(event) end
-
+    
     SeparateSpawnsGenerateChunk(event)
-
+    
     CreateHoldingPen(event.surface, event.area)
 end)
 
@@ -164,12 +164,12 @@ end)
 -- Gui Click
 ----------------------------------------
 script.on_event(defines.events.on_gui_click, function(event)
-
+    
     -- Don't interfere with other mod related stuff.
     if (event.element.get_mod() ~= nil) then return end
-
+    
     if global.ocfg.enable_tags then TagGuiClick(event) end
-
+    
     WelcomeTextGuiClick(event)
     SpawnOptsGuiClick(event)
     SpawnCtrlGuiClick(event)
@@ -178,11 +178,11 @@ script.on_event(defines.events.on_gui_click, function(event)
     BuddySpawnWaitMenuClick(event)
     BuddySpawnRequestMenuClick(event)
     SharedSpawnJoinWaitMenuClick(event)
-
+    
     ClickOarcGuiButton(event)
-
+    
     if global.ocfg.enable_coin_shop then ClickOarcStoreButton(event) end
-
+    
     GameOptionsGuiClick(event)
 end)
 
@@ -193,7 +193,7 @@ end)
 
 script.on_event(defines.events.on_gui_selected_tab_changed, function(event)
     TabChangeOarcGui(event)
-
+    
     if global.ocfg.enable_coin_shop then TabChangeOarcStore(event) end
 end)
 
@@ -201,9 +201,11 @@ end)
 -- Player Events
 ----------------------------------------
 
+script.on_event(defines.events.on_pre_player_died, function(event) deathmarkers.playerDied(event) end)
+script.on_event(defines.events.on_pre_player_mined_item, function(event) deathmarkers.onMined(event) end)
 script.on_event(defines.events.on_player_joined_game, function(event)
     PlayerJoinedMessages(event)
-
+    
     ServerWriteFile("player_events", game.players[event.player_index].name ..
                         " joined the game." .. "\n")
     local player = game.players[event.player_index]
@@ -258,6 +260,7 @@ script.on_event(defines.events.on_player_joined_game, function(event)
             ["sell-speed"] = {["current"] = {["lvl"] = 1, ["multiplier"] = 10}}
         }
     end
+    deathmarkers.init(event)
 end)
 
 script.on_event(defines.events.on_player_created, function(event)
@@ -289,6 +292,7 @@ script.on_event(defines.events.on_player_created, function(event)
     InitOarcGuiTabs(player)
 
     if global.ocfg.enable_coin_shop then InitOarcStoreGuiTabs(player) end
+    deathmarkers.init(event)
 end)
 
 script.on_event(defines.events.on_player_respawned, function(event)
@@ -299,6 +303,7 @@ script.on_event(defines.events.on_player_respawned, function(event)
     if global.ocfg.enable_long_reach then
         GivePlayerLongReach(game.players[event.player_index])
     end
+    deathmarkers.playerRespawned(event)
 end)
 
 script.on_event(defines.events.on_player_left_game, function(event)
@@ -489,7 +494,10 @@ end)
 -- Save player's stuff so they don't lose it if they can't get to the corpse fast enough.
 ----------------------------------------
 script.on_event(defines.events.on_character_corpse_expired,
-                function(event) DropGravestoneChestFromCorpse(event.corpse) end)
+                function(event)
+                    DropGravestoneChestFromCorpse(event.corpse)
+                    deathmarkers.corpseExpired(event)
+                end)
 
 ----------------------------------------
 -- On Gui Text Change
