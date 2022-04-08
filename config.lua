@@ -152,7 +152,7 @@ OARC_MODIFIED_ENEMY_SPAWNING = true
 -- Items provided to the player the first time they join
 PLAYER_SPAWN_START_ITEMS = {
     ["pistol"]=1,
-    ["firearm-magazine"]=200,
+    ["firearm-magazine"]=20,
     ["iron-plate"]=16,
     ["burner-mining-drill"] = 2,
     ["stone-furnace"] = 2,
@@ -165,7 +165,7 @@ PLAYER_SPAWN_START_ITEMS = {
 -- Items provided after EVERY respawn (disabled by default)
 PLAYER_RESPAWN_START_ITEMS = {
     ["pistol"]=1,
-    ["firearm-magazine"]=200
+    ["firearm-magazine"]=10
 }
 ------------------------------------------------------------------------------------------------------------------------
 -- Distance Options

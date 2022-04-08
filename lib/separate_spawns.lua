@@ -314,7 +314,7 @@ function SendPlayerToNewSpawnAndCreateIt(delayedSpawn)
         SharedChestsSpawnCombinators(player, {
             x = delayedSpawn.pos.x + x_dist,
             y = delayedSpawn.pos.y - 2
-        }, -- Ctrl
+        }, -- Ctrl  
         {x = delayedSpawn.pos.x + x_dist, y = delayedSpawn.pos.y}) -- Status
 
         if not global.ocore then global.ocore = {} end
@@ -359,7 +359,7 @@ function SendPlayerToNewSpawnAndCreateIt(delayedSpawn)
     crash_site.create_crash_site(game.surfaces[GAME_SURFACE_NAME], {
         x = delayedSpawn.pos.x + 15,
         y = delayedSpawn.pos.y - 25
-    }, { -- ["spidertron"] = 1,
+    }, {["gun-turret"] = 2,
         ["electronic-circuit"] = math.random(100, 200),
         ["iron-gear-wheel"] = math.random(50, 100),
         ["copper-cable"] = math.random(100, 200),

@@ -569,7 +569,7 @@ commands.add_command("tp", "teleport", function(command)
                 target_pos = global.ocore.last_position[player.name] or
                                  global.ocore.playerSpawns[player.name]
             elseif game.players[target_pos] then
-                if game.players[target_pos].online then
+                if game.players.connected_players[game.players[target_pos]] then
                     target_pos = game.players[target_pos].position
                 else
                     target_pos =
