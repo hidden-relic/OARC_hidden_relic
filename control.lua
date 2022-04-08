@@ -83,7 +83,7 @@ commands.add_command("trigger-map-cleanup",
 --   time the game starts
 ----------------------------------------
 script.on_init(function(event)
-    
+
     -- FIRST
     InitOarcConfig()
 
@@ -220,20 +220,20 @@ script.on_event(defines.events.on_player_joined_game, function(event)
         global.ocore.markets.player_markets[player.name].stats = {
             ["gun-speed"] = {
                 ["bullet"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["shotgun-shell"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["landmine"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["grenade"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["cannon-shell"] = {["lvl"] = 1, ["multiplier"] = 0},
+                -- ["shotgun-shell"] = {["lvl"] = 1, ["multiplier"] = 0},
+                -- ["landmine"] = {["lvl"] = 1, ["multiplier"] = 0},
+                -- ["grenade"] = {["lvl"] = 1, ["multiplier"] = 0},
+                -- ["cannon-shell"] = {["lvl"] = 1, ["multiplier"] = 0},
                 ["flamethrower"] = {["lvl"] = 1, ["multiplier"] = 0},
                 ["rocket"] = {["lvl"] = 1, ["multiplier"] = 0},
                 ["laser"] = {["lvl"] = 1, ["multiplier"] = 0}
             },
             ["ammo-damage"] = {
                 ["bullet"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["shotgun-shell"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["landmine"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["grenade"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["cannon-shell"] = {["lvl"] = 1, ["multiplier"] = 0},
+                -- ["shotgun-shell"] = {["lvl"] = 1, ["multiplier"] = 0},
+                -- ["landmine"] = {["lvl"] = 1, ["multiplier"] = 0},
+                -- ["grenade"] = {["lvl"] = 1, ["multiplier"] = 0},
+                -- ["cannon-shell"] = {["lvl"] = 1, ["multiplier"] = 0},
                 ["flamethrower"] = {["lvl"] = 1, ["multiplier"] = 0},
                 ["rocket"] = {["lvl"] = 1, ["multiplier"] = 0},
                 ["laser"] = {["lvl"] = 1, ["multiplier"] = 0}
@@ -242,6 +242,18 @@ script.on_event(defines.events.on_player_joined_game, function(event)
                 ["gun-turret"] = {["lvl"] = 1, ["multiplier"] = 0},
                 ["flamethrower-turret"] = {["lvl"] = 1, ["multiplier"] = 0},
                 ["laser-turret"] = {["lvl"] = 1, ["multiplier"] = 0}
+            },
+            ["character-health"] = {
+                ["current"] = {
+                    ["lvl"] = 1,
+                    ["multiplier"] = 0
+                }
+            },
+            ["mining-productivity"] = {
+                ["current"] = {
+                    ["lvl"] = 1,
+                    ["multiplier"] = 0
+                }
             },
             ["sell-speed"] = {["current"] = {["lvl"] = 1, ["multiplier"] = 10}}
         }
@@ -269,7 +281,7 @@ script.on_event(defines.events.on_player_created, function(event)
 
         QueuePlayerForDelayedSpawn(player.name, newSpawn, false,
                                    global.ocfg.enable_vanilla_spawns)
-                                   player.force = game.create_force(player.name)
+        player.force = game.create_force(player.name)
         return
     end
     SeparateSpawnsPlayerCreated(event.player_index, true)
@@ -317,16 +329,14 @@ script.on_event(defines.events.on_tick, function(event)
         RegrowthForceRemovalOnTick()
     end
 
-    if game.tick % 60 == 0 then
-        tools.FlyingTime(game.tick)
-    end
-    
+    if game.tick % 60 == 0 then tools.FlyingTime(game.tick) end
+
     DelayedSpawnOnTick()
-    
+
     UpdatePlayerBuffsOnTick(game.tick)
-    
+
     ReportPlayerBuffsOnTick()
-    
+
     market.on_tick()
 
     if global.ocfg.enable_chest_sharing then SharedChestsOnTick() end
@@ -573,7 +583,7 @@ script.on_event(defines.events.on_market_item_purchased, function(event)
                 refund = price * (count - 1)
                 player.insert {name = "coin", count = refund}
             end
---[[
+            --[[
             {
                 price = {{"coin", 1000}},
                 offer = {type = "gun-speed", ammo_category = "bullet", modifier = 0.01}
@@ -581,32 +591,66 @@ script.on_event(defines.events.on_market_item_purchased, function(event)
 ]]
             for i, item in ipairs(offers) do
                 if i == event.offer_index then
-                    if i <= 19 then
-                        if i <= 16 then
-                            local stat = player_market.stats[item.offer.type][item.offer.ammo_category]
-                            stat.multiplier = stat.multiplier + item.offer.modifier
+                    if i <= 14 then
+                        if i <= 13 then
+                            if i <= 8 then
+                                local stat =
+                                    player_market.stats[item.offer.type][item.offer
+                                        .ammo_category]
+                                stat.multiplier = stat.multiplier +
+                                                      item.offer.modifier
+                                stat.lvl = stat.lvl + 1
+                                item.price =
+                                market.formatPrice(math.ceil(price * 1.2))
+                            elseif (i > 8) and (i <= 11) then
+                                local stat =
+                                    player_market.stats[item.offer.type][item.offer
+                                        .turret_id]
+                                stat.multiplier = stat.multiplier +
+                                                      item.offer.modifier
+                                stat.lvl = stat.lvl + 1
+                                item.price =
+                                market.formatPrice(math.ceil(price * 1.2))
+                            elseif (i == 12) then
+                                local stat =
+                                    player_market.stats["character-health"]
+                                        .current
+                                stat.multiplier = stat.multiplier +
+                                                      item.offer.modifier
+                                stat.lvl = stat.lvl + 1
+                                item.price =
+                                market.formatPrice(math.ceil(price * 1.1))
+                            elseif (i == 13) then
+                                local stat =
+                                    player_market.stats["mining-productivity"]
+                                        .current
+                                stat.multiplier = stat.multiplier +
+                                                      item.offer.modifier
+                                stat.lvl = stat.lvl + 1
+                                item.price =
+                                market.formatPrice(math.ceil(price * 1.08))
+                            end
+                        else
+                            if global.ocore.done_with_speed[player.name] ~= nil then
+                                return
+                            end
+                            local stat =
+                                player_market.stats["sell-speed"].current
                             stat.lvl = stat.lvl + 1
-                        elseif (i > 16) and (i <= 19) then
-                            local stat = player_market.stats[item.offer.type][item.offer.turret_id]
-                            stat.multiplier = stat.multiplier + item.offer.modifier
-                            stat.lvl = stat.lvl + 1
-                        end
-                        item.price = market.formatPrice(math.ceil(price * 1.2))
-                    else
-                        if global.ocore.done_with_speed[player.name] ~= nil then
-                            return
-                        end
-                        local stat = player_market.stats["sell-speed"].current
-                        stat.lvl = stat.lvl + 1
-                        stat.multiplier = mults[stat.lvl]
-                        player_market.sell_speed_lvl =
-                            player_market.sell_speed_lvl + 1
-                        player_market.sell_speed_multiplier = mults[player_market.sell_speed_lvl]
+                            stat.multiplier = mults[stat.lvl]
+                            player_market.sell_speed_lvl =
+                                player_market.sell_speed_lvl + 1
+                            player_market.sell_speed_multiplier =
+                                mults[player_market.sell_speed_lvl]
                             if player_market.sell_speed_lvl == 13 then
                                 global.ocore.done_with_speed[player.name] = true
                             end
-                            item.price = market.formatPrice(tools.round(price * 1.5))
-                            if global.ocore.done_with_speed[player.name] == true then item = nil end
+                            item.price =
+                                market.formatPrice(tools.round(price * 1.5))
+                            if global.ocore.done_with_speed[player.name] == true then
+                                item = nil
+                            end
+                        end
                     end
                 end
             end

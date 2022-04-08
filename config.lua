@@ -220,7 +220,7 @@ OARC_CFG = {
 
         -- Spawn a circle/octagon of trees around the base outline.
         tree_circle = true,
-        tree_octagon = true,
+        tree_octagon = false,
     },
 
     -- Safe Spawn Area Options

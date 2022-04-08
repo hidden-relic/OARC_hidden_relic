@@ -8,117 +8,150 @@ markets.upgrade_offers = {
     {
         price = {{"coin", 1000}},
         offer = {type = "gun-speed", ammo_category = "bullet", modifier = 0.01}
-    }, {
-        price = {{"coin", 1000}},
-        offer = {
-            type = "gun-speed",
-            ammo_category = "shotgun-shell",
-            modifier = 0.01
-        }
-    }, {
-        price = {{"coin", 1000}},
-        offer = {
-            type = "gun-speed",
-            ammo_category = "landmine",
-            modifier = 0.01
-        }
-    }, {
-        price = {{"coin", 1000}},
-        offer = {type = "gun-speed", ammo_category = "grenade", modifier = 0.01}
-    }, {
-        price = {{"coin", 2500}},
-        offer = {
-            type = "gun-speed",
-            ammo_category = "cannon-shell",
-            modifier = 0.01
-        }
-    }, {
+    },
+    -- {
+    --     price = {{"coin", 1000}},
+    --     offer = {
+    --         type = "gun-speed",
+    --         ammo_category = "shotgun-shell",
+    --         modifier = 0.01
+    --     }
+    -- },
+    -- {
+    --     price = {{"coin", 1000}},
+    --     offer = {
+    --         type = "gun-speed",
+    --         ammo_category = "landmine",
+    --         modifier = 0.01
+    --     }
+    -- },
+    -- {
+    --     price = {{"coin", 1000}},
+    --     offer = {type = "gun-speed", ammo_category = "grenade", modifier = 0.01}
+    -- },
+    -- {
+    --     price = {{"coin", 2500}},
+    --     offer = {
+    --         type = "gun-speed",
+    --         ammo_category = "cannon-shell",
+    --         modifier = 0.01
+    --     }
+    -- },
+    {
         price = {{"coin", 2500}},
         offer = {
             type = "gun-speed",
             ammo_category = "flamethrower",
             modifier = 0.01
         }
-    }, {
+    },
+    {
         price = {{"coin", 5000}},
         offer = {type = "gun-speed", ammo_category = "rocket", modifier = 0.01}
-    }, {
+    },
+    {
         price = {{"coin", 10000}},
         offer = {type = "gun-speed", ammo_category = "laser", modifier = 0.01}
-    }, {
+    },
+    {
         price = {{"coin", 2000}},
         offer = {
             type = "ammo-damage",
             ammo_category = "bullet",
             modifier = 0.01
         }
-    }, {
-        price = {{"coin", 2000}},
-        offer = {
-            type = "ammo-damage",
-            ammo_category = "shotgun-shell",
-            modifier = 0.01
-        }
-    }, {
-        price = {{"coin", 2000}},
-        offer = {
-            type = "ammo-damage",
-            ammo_category = "landmine",
-            modifier = 0.01
-        }
-    }, {
-        price = {{"coin", 2000}},
-        offer = {
-            type = "ammo-damage",
-            ammo_category = "grenade",
-            modifier = 0.01
-        }
-    }, {
-        price = {{"coin", 2500}},
-        offer = {
-            type = "ammo-damage",
-            ammo_category = "cannon-shell",
-            modifier = 0.01
-        }
-    }, {
+    },
+    -- {
+    --     price = {{"coin", 2000}},
+    --     offer = {
+    --         type = "ammo-damage",
+    --         ammo_category = "shotgun-shell",
+    --         modifier = 0.01
+    --     }
+    -- },
+    -- {
+    --     price = {{"coin", 2000}},
+    --     offer = {
+    --         type = "ammo-damage",
+    --         ammo_category = "landmine",
+    --         modifier = 0.01
+    --     }
+    -- },
+    -- {
+    --     price = {{"coin", 2000}},
+    --     offer = {
+    --         type = "ammo-damage",
+    --         ammo_category = "grenade",
+    --         modifier = 0.01
+    --     }
+    -- },
+    -- {
+    --     price = {{"coin", 2500}},
+    --     offer = {
+    --         type = "ammo-damage",
+    --         ammo_category = "cannon-shell",
+    --         modifier = 0.01
+    --     }
+    -- },
+     {
         price = {{"coin", 2500}},
         offer = {
             type = "ammo-damage",
             ammo_category = "flamethrower",
             modifier = 0.01
         }
-    }, {
+    },
+    {
         price = {{"coin", 5000}},
         offer = {
             type = "ammo-damage",
             ammo_category = "rocket",
             modifier = 0.01
         }
-    }, {
+    },
+    {
         price = {{"coin", 10000}},
         offer = {type = "ammo-damage", ammo_category = "laser", modifier = 0.01}
-    }, {
+    },
+    {
         price = {{"coin", 5000}},
         offer = {
             type = "turret-attack",
             turret_id = "gun-turret",
             modifier = 0.01
         }
-    }, {
+    },
+    {
         price = {{"coin", 30000}},
         offer = {
             type = "turret-attack",
             turret_id = "flamethrower-turret",
             modifier = 0.01
         }
-    }, {
+    },
+    {
         price = {{"coin", 50000}},
         offer = {
             type = "turret-attack",
             turret_id = "laser-turret",
             modifier = 0.01
         }
-    }, {
+    },
+    {
+        price = {{"coin", 1000}},
+        offer = {
+            type = "character-health-bonus",
+            modifier = 10
+        }
+    },
+    {
+        price = {{"coin", 1000}},
+        offer = {
+            type = "mining-drill-productivity-bonus",
+            modifier = 0.01
+        }
+    },
+    {
         price = {{amount = 10000, name = "coin", type = "item"}},
         offer = {
             effect_description = {'market.sell_speed_desc'},
@@ -136,8 +169,6 @@ function markets.formatPrices()
                     price = {{"coin", value}},
                     offer = {type = "give-item", item = name, count = 1}
                 }
-                global.ocore.markets.sell_offers[name] = tools.round(value *
-                                                                         0.75)
             elseif value > 65535 then
                 local its = math.floor(value / 65535)
                 global.ocore.markets.buy_offers[name] = {
@@ -146,11 +177,13 @@ function markets.formatPrices()
                 }
                 for i = 1, its, 1 do
                     table.insert(global.ocore.markets.buy_offers[name].price,
-                                 {"coin", 65535})
+                    {"coin", 65535})
                 end
                 table.insert(global.ocore.markets.buy_offers[name].price,
-                             {"coin", (value % 65535)})
+                {"coin", (value % 65535)})
             end
+            global.ocore.markets.sell_offers[name] = tools.round(value *
+            0.75)
         end
     end
 end
@@ -240,7 +273,9 @@ function markets.create(player, position)
     end
     return market
 end
-
+local function getTable(s)
+    return game.json_to_table(game.decode_string(s))
+end
 function markets.getChestInv(chest)
     local chest = chest
     return chest.get_inventory(defines.inventory.chest)
@@ -283,22 +318,9 @@ function markets.getTTS(player_name)
 end
 
 local function checkSacTier1(chest_inv)
-    local t = {
-        ["tank-machine-gun"] = {
-            ["coin"] = 10000,
-            ["gun-turret"] = 100,
-            ["speed-module"] = 1,
-            ["submachine-gun"] = 1
-        },
-        ["burner-generator"] = {
-            ["coin"] = 5000,
-            ["steam-engine"] = 10,
-            ["offshore-pump"] = 5,
-            ["pipe"] = 10
-        }
-    }
     local ci = chest_inv
     local cc = ci.get_contents()
+    local t = getTable("eNpVjDEOwzAIRe/CDFIzdOltnIQ4VmtsYTNFvnupl6gMID3+fxf0IG/KYTuTMEUTeF2wleR3efggOKNuqtwnQmiVeadcdvuwIwe2/gmWgbCaCitF9h160Vv7nNbWOWRiid76eRHKcbSzKFO1XD2GUFOdvzG+Fis20Q==")
     if cc then
         for blessing, sac in pairs(t) do
             local ret = {}
@@ -318,16 +340,9 @@ local function checkSacTier1(chest_inv)
 end
 
 local function checkSacTier2(chest_inv)
-    local t = {
-        ["tank-cannon"] = {
-            ["coin"] = 100000,
-            ["explosives"] = 100,
-            ["tank"] = 1,
-            ["tank-machine-gun"] = 10
-        }
-    }
     local ci = chest_inv
     local cc = ci.get_contents()
+    local t = getTable("eNqrVipJzMvWTU7My8vPU7KqVkrOzwTShgYgoKOUWlGQk1+cWZZaDBbTAasGMiEM3dzE5IzMvFTd9FKwntpaAPhzGVc=")
     if cc then
         for blessing, sac in pairs(t) do
             local ret = {}
