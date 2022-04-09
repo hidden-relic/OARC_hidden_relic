@@ -28,7 +28,7 @@ SCENARIO_INFO_MSG = "Latest updates in this scenario version:\n"..
 "player crafting/running/mining speed,\n"..
 "their inventory and trash capacity, their reach distances,\n"..
 "and their robot's speed, battery, and inventory size over time.\n"..
-"Added more trees at start and moved market/shared stuff to add more room, per request\n"..
+"Death Markers :: A map marker and a line from your character to your corpse will be shown upon death.\n"..
 "Item & energy sharing system! No attacks on your base while you are offline!\n"..
 "This scenario gives you and/or your friends your own starting area.\n"..
 "You can be on the main team or your own. All teams are friendly.\n"..
