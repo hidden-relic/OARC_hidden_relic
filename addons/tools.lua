@@ -86,15 +86,23 @@ end
 function tools.formatMarketBonuses(player)
     local player = tools.get_player(player)
     if player then
-        local stats = global.ocore.markets.player_markets[player.name].stats
-        str = "[color=blue]Bonuses for [/color][color=orange]"..player.name.."[/color][color=blue]:[/color]\n"
-        for type, item in pairs(stats) do
-            str = str.."[color=purple]["..type.."][/color]\n"
-            for name, data in pairs(item) do
-                str = str.."[color=cyan]-- ["..name.."]:[/color] \t[color=orange]LVL: [/color][color=green]"..data.lvl.."[/color] \t[color=orange]MULT: [/color][color=green]"..(data.multiplier*100).."%[/color]\n"
+        if global.ocore.markets and global.ocore.markets.player_markets and global.ocore.markets.player_markets[player.name] and global.ocore.markets.player_markets[player.name].stats then
+            local stats = global.ocore.markets.player_markets[player.name].stats
+            local str = "[color=blue]Bonuses for [/color][color=orange]"..player.name.."[/color][color=blue]:[/color]\n"
+            for type, item in pairs(stats) do
+                str = str.."[color=purple]["..type.."][/color]\n"
+                for name, data in pairs(item) do
+                    if type == "sell-speed" then
+                        str = str.."[color=cyan]-- ["..name.."]:[/color] \t[color=orange]LVL: [/color][color=green]"..data.lvl.."[/color] \t[color=orange]SECONDS: [/color][color=green]"..data.formatted.."%[/color]\n"
+                    else
+                    str = str.."[color=cyan]-- ["..name.."]:[/color] \t[color=orange]LVL: [/color][color=green]"..data.lvl.."[/color] \t[color=orange]BONUS: [/color][color=green]"..data.formatted.."%[/color]\n"
+                    end
+                end
             end
+            return str
+        else
+            return
         end
-        return str
     end
 end
 

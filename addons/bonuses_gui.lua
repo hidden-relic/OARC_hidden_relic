@@ -54,9 +54,9 @@ function CreateBonusesGuiTab(tab_container, player)
     local label_name_parent = "gun-speed_info"
     AddLabel(stats_flow, label_name_parent, "[gun speed]", my_robot_label_style)
     for name, data in pairs(stats["gun-speed"]) do
-        local label_name_child = label_name_parent..name .. "_info"
-        stat_text = name .. "\t::\t[LVL]: " .. data.lvl .. "\t[MULT]: " ..
-                        data.multiplier
+        local label_name_child = label_name_parent .. name .. "_info"
+        stat_text = name .. "\t::\t[LVL]: " .. data.lvl .. "\t[BONUS]: " ..
+                        data.multiplier*100 .. "%"
         AddLabel(stats_flow, label_name_child, stat_text, my_speed_label_style)
     end
     AddSpacerLine(stats_flow)
@@ -65,9 +65,9 @@ function CreateBonusesGuiTab(tab_container, player)
     AddLabel(stats_flow, label_name_parent, "[ammo damage]",
              my_robot_label_style)
     for name, data in pairs(stats["ammo-damage"]) do
-        local label_name_child = label_name_parent..name .. "_info"
-        stat_text = name .. "\t::\t[LVL]: " .. data.lvl .. "\t[MULT]: " ..
-                        data.multiplier
+        local label_name_child = label_name_parent .. name .. "_info"
+        stat_text = name .. "\t::\t[LVL]: " .. data.lvl .. "\t[BONUS]: " ..
+                        data.multiplier*100 .. "%"
         AddLabel(stats_flow, label_name_child, stat_text, my_reach_label_style)
     end
     AddSpacerLine(stats_flow)
@@ -76,17 +76,37 @@ function CreateBonusesGuiTab(tab_container, player)
     AddLabel(stats_flow, label_name_parent, "[turret attack]",
              my_robot_label_style)
     for name, data in pairs(stats["turret-attack"]) do
-        local label_name_child = label_name_parent..name .. "_info"
-        stat_text = name .. "\t::\t[LVL]: " .. data.lvl .. "\t[MULT]: " ..
-                        data.multiplier
+        local label_name_child = label_name_parent .. name .. "_info"
+        stat_text = name .. "\t::\t[LVL]: " .. data.lvl .. "\t[BONUS]: " ..
+                        data.multiplier*100 .. "%"
         AddLabel(stats_flow, label_name_child, stat_text, my_inv_label_style)
     end
     AddSpacerLine(stats_flow)
     stat_text = ""
+    label_name_parent = "character-health_info"
+    AddLabel(stats_flow, label_name_parent, "[character health]",
+             my_robot_label_style)
+    local label_name_child = label_name_parent .. "character-health_info"
+    stat_text = "character-health\t::\t[LVL]: " ..
+                    stats["character-health"].current.lvl .. "\t[BONUS]: +" ..
+                    stats["character-health"].current.multiplier
+    AddLabel(stats_flow, label_name_child, stat_text, my_longer_label_style)
+    AddSpacerLine(stats_flow)
+    stat_text = ""
+    label_name_parent = "mining-productivity_info"
+    AddLabel(stats_flow, label_name_parent, "[mining productivity]",
+             my_robot_label_style)
+    local label_name_child = label_name_parent .. "mining-productivity_info"
+    stat_text = "mining-productivity\t::\t[LVL]: " ..
+                    stats["mining-productivity"].current.lvl .. "\t[BONUS]: " ..
+                    stats["mining-productivity"].current.multiplier*100 .. "%"
+    AddLabel(stats_flow, label_name_child, stat_text, my_longer_label_style)
+    AddSpacerLine(stats_flow)
+    stat_text = ""
     label_name_parent = "sell-speed_info"
     AddLabel(stats_flow, label_name_parent, "[sell speed]", my_robot_label_style)
-    local label_name_child = label_name_parent.."sell-speed_info"
-    stat_text = "sell-speed\t::\t[LVL]: " .. stats["sell-speed"].current.lvl .. "\t[MULT]: " ..
-    stats["sell-speed"].current.multiplier
-        AddLabel(stats_flow, label_name_child, stat_text, my_longer_label_style)
+    local label_name_child = label_name_parent .. "sell-speed_info"
+    stat_text = "sell-speed\t::\t[LVL]: " .. stats["sell-speed"].current.lvl ..
+                    "\t[SECONDS]: " .. stats["sell-speed"].current.multiplier
+    AddLabel(stats_flow, label_name_child, stat_text, my_longer_label_style)
 end

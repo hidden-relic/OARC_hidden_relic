@@ -534,21 +534,21 @@ commands.add_command("get",
     tools.getItem(player, item_name, count)
 end)
 
-commands.add_command("stats", "Show yours or another player's market stats", function(command)
-    local player = game.players[command.player_index]
-    local target_player = {}
-    if not command.parameter then
-        target_player = player
-    elseif command.parameter then
-        local target_player = tools.get_player(command.parameter)
-    end
-    if target_player then
-        player.print(tools.formatMarketBonuses(target_player))
-    else
-        tools.error(player, "Couldn't find player's stats..")
-        return
-    end
-end)
+-- commands.add_command("stats", "Show yours or another player's market stats", function(command)
+--     local player = game.players[command.player_index]
+--     local target_player = {}
+--     if not command.parameter then
+--         target_player = player
+--     elseif command.parameter then
+--         local target_player = tools.get_player(command.parameter)
+--     end
+--     if target_player then
+--         player.print(tools.formatMarketBonuses(target_player))
+--     else
+--         tools.error(player, "Couldn't find player's stats..")
+--         return
+--     end
+-- end)
 
 commands.add_command("tp", "teleport", function(command)
     local player = game.players[command.player_index]
@@ -569,7 +569,7 @@ commands.add_command("tp", "teleport", function(command)
                 target_pos = global.ocore.last_position[player.name] or
                                  global.ocore.playerSpawns[player.name]
             elseif game.players[target_pos] then
-                if game.players[target_pos].online then
+                if game.players.connected_players[game.players[target_pos]] then
                     target_pos = game.players[target_pos].position
                 else
                     target_pos =

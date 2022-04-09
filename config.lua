@@ -28,7 +28,7 @@ SCENARIO_INFO_MSG = "Latest updates in this scenario version:\n"..
 "player crafting/running/mining speed,\n"..
 "their inventory and trash capacity, their reach distances,\n"..
 "and their robot's speed, battery, and inventory size over time.\n"..
-"Added more trees at start and moved market/shared stuff to add more room, per request\n"..
+"Death Markers :: A map marker and a line from your character to your corpse will be shown upon death.\n"..
 "Item & energy sharing system! No attacks on your base while you are offline!\n"..
 "This scenario gives you and/or your friends your own starting area.\n"..
 "You can be on the main team or your own. All teams are friendly.\n"..
@@ -152,7 +152,7 @@ OARC_MODIFIED_ENEMY_SPAWNING = true
 -- Items provided to the player the first time they join
 PLAYER_SPAWN_START_ITEMS = {
     ["pistol"]=1,
-    ["firearm-magazine"]=200,
+    ["firearm-magazine"]=20,
     ["iron-plate"]=16,
     ["burner-mining-drill"] = 2,
     ["stone-furnace"] = 2,
@@ -165,7 +165,7 @@ PLAYER_SPAWN_START_ITEMS = {
 -- Items provided after EVERY respawn (disabled by default)
 PLAYER_RESPAWN_START_ITEMS = {
     ["pistol"]=1,
-    ["firearm-magazine"]=200
+    ["firearm-magazine"]=10
 }
 ------------------------------------------------------------------------------------------------------------------------
 -- Distance Options
@@ -220,7 +220,7 @@ OARC_CFG = {
 
         -- Spawn a circle/octagon of trees around the base outline.
         tree_circle = true,
-        tree_octagon = true,
+        tree_octagon = false,
     },
 
     -- Safe Spawn Area Options
