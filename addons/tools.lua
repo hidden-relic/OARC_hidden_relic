@@ -106,6 +106,36 @@ function tools.formatMarketBonuses(player)
     end
 end
 
+function matChest()
+    local player = game.player
+    local target = player.selected
+    if target and target.valid then
+        if target.type == "container" or target.type == "logistic-container" then
+            material_chest = target
+        end
+    end
+end
+
+function tools.stockUp()
+    if material_chest and material_chest.valid then
+        local chest_inv = material_chest.get_inventory(defines.inventory.chest)
+        chest_inv.clear()
+        local list = game.surfaces[GAME_SURFACE_NAME].find_entities_filtered {type = "entity-ghost", force = material_chest.force}
+        for _, ghost in pairs(list) do
+            if ghost.ghost_name == "curved-rail" or ghost.ghost_name ==
+                "straight-rail" then
+                if chest_inv.can_insert("rail") then
+                    chest_inv.insert {name = "rail", count = 1}
+                end
+            else
+                if chest_inv.can_insert(ghost.ghost_name) then
+                    chest_inv.insert {name = ghost.ghost_name, count = 1}
+                end
+            end
+        end
+    end
+end
+
 function tools.get_player_base_bonuses(player)
     local player = player
     local t = {
