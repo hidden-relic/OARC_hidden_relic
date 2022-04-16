@@ -220,6 +220,7 @@ function IndicateClosestMagicChunk(player)
         surface = player.surface,
         time_to_live = 60 * 60
     }
+    return target_pos
 end
 
 function MagicalFactorySpawnAll()
