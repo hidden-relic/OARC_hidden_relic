@@ -373,7 +373,7 @@ function markets.on_tick()
                         global.ocore.markets.sell_offers[item_name] then
                         chest_inv.insert {
                             name = "coin",
-                            count = global.ocore.markets.sell_offers[item]
+                            count = global.ocore.markets.sell_offers[item_name]
                         }
                         player_market.tts, player_market.current_item = nil
                     end

@@ -92,16 +92,18 @@ commands.add_command("look", "Look at a player", function(command)
     end
     local target = command.parameter
     target = tools.get_player(target)
-    if not target.position then
-        if (target[1] or target.x) and (target[2] or target.y) then
-            target.position = {
-                x = (target[1] or target.x),
-                y = (target[2] or target.y)
-            }
+    if target then
+        if not target.position then
+            if (target[1] or target.x) and (target[2] or target.y) then
+                target.position = {
+                    x = (target[1] or target.x),
+                    y = (target[2] or target.y)
+                }
+            end
         end
-    end
-    if target.valid and target.position then
-        player.zoom_to_world(target.position, 1.75)
+        if target.valid and target.position then
+            player.zoom_to_world(target.position, 1.75)
+        end
     end
 end)
 
@@ -569,7 +571,7 @@ commands.add_command("tp", "teleport", function(command)
                 target_pos = global.ocore.last_position[player.name] or
                                  global.ocore.playerSpawns[player.name]
             elseif game.players[target_pos] then
-                if game.players.connected_players[game.players[target_pos]] then
+                if game.players[target_pos].connected then
                     target_pos = game.players[target_pos].position
                 else
                     target_pos =
