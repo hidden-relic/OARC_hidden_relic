@@ -367,27 +367,29 @@ function markets.on_tick()
 
                 local item_name = getNthItemFromChest(chest_inv) -- get 1st item
 
-                if player_market.tts and (game.tick >= player_market.tts) then -- if sale overdue
-                    if chest_inv.get_insertable_count("coin") and
-                        chest_inv.get_insertable_count("coin") >=
-                        global.ocore.markets.sell_offers[item_name] then
-                        chest_inv.insert {
-                            name = "coin",
-                            count = global.ocore.markets.sell_offers[item_name]
-                        }
-                        player_market.tts, player_market.current_item = nil
-                    end
+                if item_name then
+                    if player_market.tts and (game.tick >= player_market.tts) then -- if sale overdue
+                        if chest_inv.get_insertable_count("coin") and
+                            chest_inv.get_insertable_count("coin") >=
+                            global.ocore.markets.sell_offers[item_name] then
+                            chest_inv.insert {
+                                name = "coin",
+                                count = global.ocore.markets.sell_offers[item_name]
+                            }
+                            player_market.tts, player_market.current_item = nil
+                        end
 
-                elseif player_market.tts and (game.tick < player_market.tts) then
-                    return -- if sale ongoing
+                    elseif player_market.tts and (game.tick < player_market.tts) then
+                        return -- if sale ongoing
 
-                elseif not player_market.tts and item_name then -- if no sale and item in chest
-                    if global.ocore.markets.sell_offers[item_name] then
-                        player_market.current_item = item_name -- make it current item and remove and set the sale time
-                        chest_inv.remove({name = item_name, count = 1})
-                        player_market.tts = markets.getTTS(player_name)
-                    else
-                        return
+                    elseif not player_market.tts and item_name then -- if no sale and item in chest
+                        if global.ocore.markets.sell_offers[item_name] then
+                            player_market.current_item = item_name -- make it current item and remove and set the sale time
+                            chest_inv.remove({name = item_name, count = 1})
+                            player_market.tts = markets.getTTS(player_name)
+                        else
+                            return
+                        end
                     end
                 end
             end
