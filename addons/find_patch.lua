@@ -43,7 +43,13 @@ find_patch.colors = {
 }
 
 function find_patch.findPatch(res_name, range, player)
-    if (res_name == "square") then IndicateClosestMagicChunk(player) end
+    if (res_name == "square") then
+        local distance = find_patch.getDistance(
+                             IndicateClosestMagicChunk(player), player.position)
+        player.print(res_name .. " found " .. tools.round(distance, 2) ..
+                         " tiles away")
+        return
+    end
     local patches = player.surface.find_entities_filtered {
         name = res_name,
         type = "resource",
