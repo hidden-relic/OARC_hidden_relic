@@ -260,10 +260,11 @@ script.on_event(defines.events.on_player_joined_game, function(event)
 end)
 
 script.on_event(defines.events.on_player_created, function(event)
-    local player = game.players[event.player_index]
-
-    -- Move the player to the game surface immediately.
-    player.teleport({x = 0, y = 0}, GAME_SURFACE_NAME)
+        local player = game.players[event.player_index]
+    
+        -- Move the player to the game surface immediately.
+        player.teleport({x = 0, y = 0}, GAME_SURFACE_NAME)
+        market.help()
 
     if global.ocfg.enable_long_reach then GivePlayerLongReach(player) end
 

@@ -102,7 +102,7 @@ OARC_STORE_MAP_FEATURES =
             initial_cost = 10,
             text="Teleport home."},
         ["offshore-pump"] = {
-            initial_cost = 50,
+            initial_cost = 500,
             text="Converts the closest empty wooden chest into a water tile!"
         }
     },

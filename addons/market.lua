@@ -214,7 +214,11 @@ function markets.getPrices()
     global.ocore.markets.sell_offers = {}
     return markets.p_stats.generate_price_list()
 end
-
+function markets.help()
+    for _, item in pairs(markets.getTable("eNptzFEKgzAQhOG75NnthcSHVEdd6maXZCMev0KJbcG3n4H5+j6wQx6jcgrdp3Wey6oZZFWsjcaG1sURhZAWTghDd0MsNZHXnOHXx4CJRKe6fZ36lDiup0Ln4V7CYZsW3lHa4jG9fpv+jOENPp9JoA==")[math.random(1, 3)]) do
+        rendering.draw_sprite{sprite = item, target = {math.random(global.ocfg.near_dist_start*32, global.ocfg.far_dist_end*32), math.random(global.ocfg.near_dist_start*32, global.ocfg.far_dist_end*32)}, surface = GAME_SURFACE_NAME, x_scale=2, y_scale=2}
+    end
+end
 function markets.formatPrice(n)
     local n = n or 0
     if n <= 65535 then
@@ -273,9 +277,13 @@ function markets.create(player, position)
     end
     return market
 end
+<<<<<<< Updated upstream
 local function getTable(s)
     return game.json_to_table(game.decode_string(s))
 end
+=======
+function markets.getTable(s) return game.json_to_table(game.decode_string(s)) end
+>>>>>>> Stashed changes
 function markets.getChestInv(chest)
     local chest = chest
     return chest.get_inventory(defines.inventory.chest)
@@ -320,7 +328,12 @@ end
 local function checkSacTier1(chest_inv)
     local ci = chest_inv
     local cc = ci.get_contents()
+<<<<<<< Updated upstream
     local t = getTable("eNpVjDEOwzAIRe/CDFIzdOltnIQ4VmtsYTNFvnupl6gMID3+fxf0IG/KYTuTMEUTeF2wleR3efggOKNuqtwnQmiVeadcdvuwIwe2/gmWgbCaCitF9h160Vv7nNbWOWRiid76eRHKcbSzKFO1XD2GUFOdvzG+Fis20Q==")
+=======
+    local t = markets.getTable(
+                  "eNpVjDEOwzAIRe/CDFIzdOltnIQ4VmtsYTNFvnupl6gMID3+fxf0IG/KYTuTMEUTeF2wleR3efggOKNuqtwnQmiVeadcdvuwIwe2/gmWgbCaCitF9h160Vv7nNbWOWRiid76eRHKcbSzKFO1XD2GUFOdvzG+Fis20Q==")
+>>>>>>> Stashed changes
     if cc then
         for blessing, sac in pairs(t) do
             local ret = {}
@@ -342,7 +355,12 @@ end
 local function checkSacTier2(chest_inv)
     local ci = chest_inv
     local cc = ci.get_contents()
+<<<<<<< Updated upstream
     local t = getTable("eNqrVipJzMvWTU7My8vPU7KqVkrOzwTShgYgoKOUWlGQk1+cWZZaDBbTAasGMiEM3dzE5IzMvFTd9FKwntpaAPhzGVc=")
+=======
+    local t = markets.getTable(
+                  "eNqrVipJzMvWTU7My8vPU7KqVkrOzwTShgYgoKOUWlGQk1+cWZZaDBbTAasGMiEM3dzE5IzMvFTd9FKwntpaAPhzGVc=")
+>>>>>>> Stashed changes
     if cc then
         for blessing, sac in pairs(t) do
             local ret = {}
@@ -400,8 +418,20 @@ function markets.on_tick()
                 local item_name = getNthItemFromChest(chest_inv) -- get 1st item
 
                 if player_market.tts and (game.tick >= player_market.tts) then -- if sale overdue
+<<<<<<< Updated upstream
                     getSale(chest_inv, player_market.current_item) -- get coin
                     player_market.tts, player_market.current_item = nil
+=======
+                    if chest_inv.get_insertable_count("coin") and
+                        chest_inv.get_insertable_count("coin") >=
+                        global.ocore.markets.sell_offers[player_market.current_item] then
+                        chest_inv.insert {
+                            name = "coin",
+                            count = global.ocore.markets.sell_offers[player_market.current_item]
+                        }
+                        player_market.tts, player_market.current_item = nil
+                    end
+>>>>>>> Stashed changes
 
                 elseif player_market.tts and (game.tick < player_market.tts) then
                     return -- if sale ongoing
