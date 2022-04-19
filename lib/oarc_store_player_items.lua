@@ -121,7 +121,9 @@ OARC_STORE_PLAYER_ITEMS = {
             play_time_locked = false
         },
         ["linked-chest"] = {
-            cost = 5000000
+            cost = 5000000,
+            count = 1,
+            play_time_locked = false
         }
     },
 
@@ -216,7 +218,7 @@ function CreatePlayerStoreTab(tab_container, player)
             direction = "horizontal"
         }
         for item_name, item in pairs(section) do
-            if category ~= "Followers" then
+            if category ~= "Followers" and item_name ~= "linked-chest" then
             item.cost = tools.round(
                             global.ocore.markets.item_values[item_name] *
                                 item.count)
