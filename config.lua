@@ -207,7 +207,7 @@ OARC_CFG = {
         land_area_tiles = CHUNK_SIZE*3,
 
         -- Allow players to choose to spawn with a moat
-        moat_choice_enabled = true,
+        moat_choice_enabled = false,
 
         -- If you change the spawn area size, you might have to adjust this as well
         moat_size_modifier = 1,

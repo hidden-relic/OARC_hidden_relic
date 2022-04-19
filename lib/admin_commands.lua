@@ -92,16 +92,18 @@ commands.add_command("look", "Look at a player", function(command)
     end
     local target = command.parameter
     target = tools.get_player(target)
-    if not target.position then
-        if (target[1] or target.x) and (target[2] or target.y) then
-            target.position = {
-                x = (target[1] or target.x),
-                y = (target[2] or target.y)
-            }
+    if target then
+        if not target.position then
+            if (target[1] or target.x) and (target[2] or target.y) then
+                target.position = {
+                    x = (target[1] or target.x),
+                    y = (target[2] or target.y)
+                }
+            end
         end
-    end
-    if target.valid and target.position then
-        player.zoom_to_world(target.position, 1.75)
+        if target.valid and target.position then
+            player.zoom_to_world(target.position, 1.75)
+        end
     end
 end)
 
@@ -454,6 +456,101 @@ local function stack_size(item)
     end
 end
 
+commands.add_command("buddy",
+                     "supply two player names, and they will be reset and start again as buddies",
+                     function(command)
+    local player = game.players[command.player_index]
+    if not player.admin then
+        tools.error("You are not admin my friend")
+        return
+    end
+    if not command.parameter then
+        player.print(
+            "Supply 2 player names?? Do they want a moat....there are choices here.\n/buddy player1 player2 near/far true/false for moat")
+    end
+    local args = string.split(command.parameter, " ")
+    player = tools.get_player(args[1])
+    local requester = tools.get_player(args[2])
+    if player and requester then
+        local distance = args[3]
+        if not distance then 
+            game.print("You're doing it wrong..")
+            return
+        end
+        local stringtoboolean={ ["true"]=1, ["false"]=0 }
+        local moat = stringtoboolean[args[4]]
+            if not moat then 
+            game.print("You're doing it wrong..")
+            return
+        end 
+        ResetPlayerForBuddySpawn(player)
+        ResetPlayerForBuddySpawn(requester)
+        -- Create a new spawn point
+        local newSpawn = {x = 0, y = 0}
+
+        local buddyForce = CreatePlayerCustomForce(requester)
+        player.force = buddyForce
+
+        -- Find coordinates of a good place to spawn
+        if (distance == "far") then
+            newSpawn = FindUngeneratedCoordinates(global.ocfg.far_dist_start,
+                                                  global.ocfg.far_dist_end,
+                                                  player.surface)
+        elseif (distance == "near") then
+            newSpawn = FindUngeneratedCoordinates(global.ocfg.near_dist_start,
+                                                  global.ocfg.near_dist_end,
+                                                  player.surface)
+        end
+
+        -- If that fails, find a random map edge in a rand direction.
+        if ((newSpawn.x == 0) and (newSpawn.y == 0)) then
+            newSpawn = FindMapEdge(GetRandomVector(), player.surface)
+            log("Resorting to find map edge! x=" .. newSpawn.x .. ",y=" ..
+                    newSpawn.y)
+        end
+
+        -- Create that spawn in the global vars
+        local buddySpawn = {x = 0, y = 0}
+        if (moat) then
+            buddySpawn = {
+                x = newSpawn.x +
+                    (global.ocfg.spawn_config.gen_settings.land_area_tiles * 2) +
+                    10,
+                y = newSpawn.y
+            }
+        else
+            buddySpawn = {
+                x = newSpawn.x +
+                    (global.ocfg.spawn_config.gen_settings.land_area_tiles * 2),
+                y = newSpawn.y
+            }
+        end
+        ChangePlayerSpawn(player, newSpawn)
+        ChangePlayerSpawn(requester, buddySpawn)
+
+        -- Send the player there
+        QueuePlayerForDelayedSpawn(player.name, newSpawn, moat, false)
+        QueuePlayerForDelayedSpawn(requester.name, buddySpawn, moat, false)
+        SendBroadcastMsg(requester.name .. " and " .. player.name ..
+                             " are joining the game together!")
+
+        -- Unlock spawn control gui tab
+        SetOarcGuiTabEnabled(player, OARC_SPAWN_CTRL_GUI_NAME, true)
+        SetOarcGuiTabEnabled(game.players[requester.name],
+                             OARC_SPAWN_CTRL_GUI_NAME, true)
+
+        player.print({"oarc-please-wait"})
+        player.print({"", {"oarc-please-wait"}, "!"})
+        player.print({"", {"oarc-please-wait"}, "!!"})
+        requester.print({"oarc-please-wait"})
+        requester.print({"", {"oarc-please-wait"}, "!"})
+        requester.print({"", {"oarc-please-wait"}, "!!"})
+
+        global.ocore.buddyPairs[player.name] = requester.name
+        global.ocore.buddyPairs[requester.name] = player.name
+    end
+end)
+
 commands.add_command("load-logistics", "Pre-load logistic requests",
                      function(command)
     local p = game.players[command.player_index]
@@ -569,7 +666,7 @@ commands.add_command("tp", "teleport", function(command)
                 target_pos = global.ocore.last_position[player.name] or
                                  global.ocore.playerSpawns[player.name]
             elseif game.players[target_pos] then
-                if game.players.connected_players[game.players[target_pos]] then
+                if game.players[target_pos].connected then
                     target_pos = game.players[target_pos].position
                 else
                     target_pos =
