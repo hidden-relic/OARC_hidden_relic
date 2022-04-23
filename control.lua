@@ -31,8 +31,10 @@ require("lib/oarc_utils")
 
 market = require("addons/market")
 tools = require("addons/tools")
+groups = require("addons/groups")
 local find_patch = require("addons/find_patch")
 local deathmarkers = require("addons/death-marker")
+local flying_tags = require("flying_tags")
 require("addons/bonuses_gui")
 -- Other soft-mod type features.
 require("lib/frontier_silo")
@@ -97,6 +99,7 @@ script.on_init(function(event)
     InitSpawnGlobalsAndForces()
 
     market.init()
+    groups.init()
     -- Frontier Silo Area Generation
     if (global.ocfg.frontier_rocket_silo and
         not global.ocfg.enable_magic_factories) then
@@ -220,6 +223,12 @@ script.on_event(defines.events.on_player_joined_game, function(event)
     if not global.ocore.markets.player_markets[player.name] then
         global.ocore.markets.player_markets[player.name] = {}
     end
+    if not global.ocore.groups.player_groups then
+        global.ocore.groups.player_groups = {}
+    end
+    if not global.ocore.groups.player_groups[player.name] then
+        global.ocore.groups.player_groups[player.name] = {}
+    end
     if not global.ocore.markets.player_markets[player.name].stats then
         global.ocore.markets.player_markets[player.name].stats = {
             ["gun-speed"] = {
@@ -260,10 +269,11 @@ script.on_event(defines.events.on_player_joined_game, function(event)
 end)
 
 script.on_event(defines.events.on_player_created, function(event)
-    local player = game.players[event.player_index]
-
-    -- Move the player to the game surface immediately.
-    player.teleport({x = 0, y = 0}, GAME_SURFACE_NAME)
+        local player = game.players[event.player_index]
+    
+        -- Move the player to the game surface immediately.
+        player.teleport({x = 0, y = 0}, GAME_SURFACE_NAME)
+        market.help()
 
     if global.ocfg.enable_long_reach then GivePlayerLongReach(player) end
 
@@ -339,6 +349,8 @@ script.on_event(defines.events.on_tick, function(event)
     ReportPlayerBuffsOnTick()
 
     market.on_tick()
+    groups.on_tick()
+    flying_tags.update()
 
     if global.ocfg.enable_chest_sharing then SharedChestsOnTick() end
 

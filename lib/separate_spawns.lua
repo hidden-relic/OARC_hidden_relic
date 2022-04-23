@@ -21,11 +21,23 @@ local crash_site = require("crash-site")
 function InitSpawnGlobalsAndForces()
 
     if (global.oarc_players == nil) then global.oarc_players = {} end
+    if (global.flying_tags == nil) then global.flying_tags = {} end
 
     -- Core global to help me organize shit.
     if (global.ocore == nil) then global.ocore = {} end
     if (global.ocore.done_with_speed == nil) then
         global.ocore.done_with_speed = {}
+    end
+    if (global.ocore.groups == nil) then
+        global.ocore.groups = {
+            config = {
+                ["small-biter"] = {max_count = 7, price = 1000},
+                ["medium-biter"] = {max_count = 5, price = 5000},
+                ["big-biter"] = {max_count = 3, price = 25000},
+                ["behemoth-biter"] = {max_count = 1, price = 100000}
+            },
+            player_groups = {}
+        }
     end
     -- if (global.ocore.spy == nil) then
     --     global.ocore.spy = {}
@@ -359,7 +371,8 @@ function SendPlayerToNewSpawnAndCreateIt(delayedSpawn)
     crash_site.create_crash_site(game.surfaces[GAME_SURFACE_NAME], {
         x = delayedSpawn.pos.x + 15,
         y = delayedSpawn.pos.y - 25
-    }, {["gun-turret"] = 2,
+    }, {
+        ["gun-turret"] = 2,
         ["electronic-circuit"] = math.random(100, 200),
         ["iron-gear-wheel"] = math.random(50, 100),
         ["copper-cable"] = math.random(100, 200),
@@ -682,6 +695,22 @@ function ResetPlayerAndDestroyForce(player)
 
     RemoveOrResetPlayer(player, false, false, true, true)
     SeparateSpawnsPlayerCreated(player.index, false)
+end
+
+function ResetPlayerForBuddySpawn(player)
+    local player_old_force = player.force
+
+    player.force = global.ocfg.main_force
+
+    if ((#player_old_force.players == 0) and
+        (player_old_force.name ~= global.ocfg.main_force)) then
+        SendBroadcastMsg("Team " .. player_old_force.name ..
+                             " has been destroyed! All buildings will slowly be destroyed now.")
+        log("DestroyForce - FORCE DESTROYED: " .. player_old_force.name)
+        game.merge_forces(player_old_force, global.ocore.destroyed_force)
+    end
+
+    RemoveOrResetPlayer(player, false, false, true, true)
 end
 
 function ResetPlayerAndAbandonForce(player)

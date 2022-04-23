@@ -225,7 +225,7 @@ function DisplaySpawnOptions(player)
 
     -- Awesome buddy spawning system
     if (not global.ocfg.enable_vanilla_spawns) then
-        if global.ocfg.enable_shared_spawns and global.ocfg.enable_buddy_spawn then
+        if global.ocfg.enable_buddy_spawn then
             local buddySpawnFrame = sGui.add{name = "spawn_buddy_flow",
                                             type = "frame",
                                             direction="vertical",

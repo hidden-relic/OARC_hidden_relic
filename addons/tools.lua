@@ -2,6 +2,7 @@ require('stdlib/string')
 local Color = require('util/Colors')
 
 local tools = {}
+tools.MAX_INT32 = 2147483647
 
 function tools.sortByValue(t)
     local keys = {}
@@ -517,6 +518,29 @@ function tools.replace(player, e1, e2)
     p("tile replacements: " .. bp_tile_count)
     -- else
     --     player.print("Not a valid blueprint")
+end
+
+function tools.getDistance(pos1, pos2)
+    local pos1 = {x = pos1.x or pos1[1], y = pos1.y or pos1[2]}
+    local pos2 = {x = pos2.x or pos2[1], y = pos2.y or pos2[2]}
+    local a = math.abs(pos1.x - pos2.x)
+    local b = math.abs(pos1.y - pos2.y)
+    local c = math.sqrt(a ^ 2 + b ^ 2)
+    return c
+end
+
+function tools.getClosest(pos, list)
+    local x, y = pos.x or pos[1], pos.y or pos[2]
+    local closest = tools.MAX_INT32
+    for _, posenum in pairs(list) do
+        local distance = tools.getDistance(pos, posenum)
+        if distance < closest then
+            x, y = posenum.x, posenum.y
+            closest = distance
+        end
+    end
+    if closest == tools.MAX_INT32 then return end
+    return {position = {x, y}, distance = closest}
 end
 
 return tools
