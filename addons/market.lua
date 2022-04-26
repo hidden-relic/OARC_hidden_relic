@@ -189,6 +189,8 @@ function markets.init()
     markets.formatPrices()
 end
 
+
+
 function markets.getPrices()
     global.ocore.markets.buy_offers = {}
     global.ocore.markets.sell_offers = {}

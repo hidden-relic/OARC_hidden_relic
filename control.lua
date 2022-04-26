@@ -341,6 +341,10 @@ script.on_event(defines.events.on_tick, function(event)
     end
 
     if game.tick % 60 == 0 then tools.FlyingTime(game.tick) end
+    if global.slow_game_tick and (game.tick >= global.slow_game_tick) then
+        global.slow_game_tick = nil
+        game.speed = 1
+    end
 
     DelayedSpawnOnTick()
 

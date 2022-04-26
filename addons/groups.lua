@@ -48,7 +48,7 @@ function groups.giveUnit(player, unit_name, count)
         groups.createGroup(player)
         if global.ocore.groups.config[unit_name] then
             local bug = {}
-            if global.ocore.groups.player_groups[player.name].group then
+            if global.ocore.groups.player_groups[player.name].group and global.ocore.groups.player_groups[player.name].group.valid then
                 if global.ocore.groups.player_groups[player.name].group.members[1] then
                     local count = global.ocore.groups.player_groups[player.name]
                                       .count
