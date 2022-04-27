@@ -221,36 +221,38 @@ function markets.teleGui(player)
     local surface = player.surface
     if not global.ocore.markets.tele_surface then return end
     if surface == game.surfaces[GAME_SURFACE_NAME] then
-        if global.ocore.markets.teles[player.name][1] and global.ocore.markets.teles[player.name][9] then
-        local area = {
-            left_top = global.ocore.markets.teles[player.name][1],
-            right_bottom = global.ocore.markets.teles[player.name][9]
-        }
-        if CheckIfInArea(position, area) then
-            if not player.gui.center.tele_top then
-                local top = player.gui.center.add {
-                    type = "frame",
-                    name = "tele_top",
-                    caption = "Market Tele",
-                    direction = "vertical"
-                }
-                local main_flow = top.add {
-                    type = "flow",
-                    name = "tele_flow",
-                    direction = "horizontal"
-                }
-                local button = main_flow.add {
-                    type = "button",
-                    name = "tele_button",
-                    caption = "Go!"
-                }
-            end
-            if not player.gui.center.tele_top.visible then
-                player.gui.center.tele_top.visible = true
-            end
-        else
-            if player.gui.center.tele_top and player.gui.center.tele_top.visible then
-                player.gui.center.tele_top.visible = false
+        if global.ocore.markets.teles and global.ocore.markets.teles[player.name] then
+            if global.ocore.markets.teles[player.name][1] and global.ocore.markets.teles[player.name][9] then
+            local area = {
+                left_top = global.ocore.markets.teles[player.name][1],
+                right_bottom = global.ocore.markets.teles[player.name][9]
+            }
+            if CheckIfInArea(position, area) then
+                if not player.gui.center.tele_top then
+                    local top = player.gui.center.add {
+                        type = "frame",
+                        name = "tele_top",
+                        caption = "Market Tele",
+                        direction = "vertical"
+                    }
+                    local main_flow = top.add {
+                        type = "flow",
+                        name = "tele_flow",
+                        direction = "horizontal"
+                    }
+                    local button = main_flow.add {
+                        type = "button",
+                        name = "tele_button",
+                        caption = "Go!"
+                    }
+                end
+                if not player.gui.center.tele_top.visible then
+                    player.gui.center.tele_top.visible = true
+                end
+            else
+                if player.gui.center.tele_top and player.gui.center.tele_top.visible then
+                    player.gui.center.tele_top.visible = false
+                end
             end
         end
     else return end
