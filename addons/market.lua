@@ -221,6 +221,7 @@ function markets.teleGui(player)
     local surface = player.surface
     if not global.ocore.markets.tele_surface then return end
     if surface == game.surfaces[GAME_SURFACE_NAME] then
+        if global.ocore.markets.teles[player.name][1] and global.ocore.markets.teles[player.name][9] then
         local area = {
             left_top = global.ocore.markets.teles[player.name][1],
             right_bottom = global.ocore.markets.teles[player.name][9]
@@ -252,6 +253,7 @@ function markets.teleGui(player)
                 player.gui.center.tele_top.visible = false
             end
         end
+    else return end
     elseif surface == global.ocore.markets.tele_surface[player.name] then
         local area = {
             left_top = {x = -1, y = 12},
