@@ -929,28 +929,6 @@ function MagicCentrifugeOnTick()
     end
 end
 
-COIN_MULTIPLIER = 2
-
-COIN_GENERATION_CHANCES = {
-    ["small-biter"] = 1,
-    ["medium-biter"] = 2,
-    ["big-biter"] = 10,
-    ["behemoth-biter"] = 25,
-
-    ["small-spitter"] = 1,
-    ["medium-spitter"] = 2,
-    ["big-spitter"] = 10,
-    ["behemoth-spitter"] = 25,
-
-    ["small-worm-turret"] = 3,
-    ["medium-worm-turret"] = 8,
-    ["big-worm-turret"] = 22,
-    ["behemoth-worm-turret"] = 55,
-
-    ["biter-spawner"] = 50,
-    ["spitter-spawner"] = 50,
-}
-
 function CoinsFromEnemiesOnPostEntityDied(event)
     if (not event.prototype or not event.prototype.name) then return end
 

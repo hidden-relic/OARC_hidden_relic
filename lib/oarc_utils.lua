@@ -19,7 +19,7 @@ TICKS_PER_HOUR = TICKS_PER_MINUTE * 60
 MAX_INT32_POS = 2147483647
 MAX_INT32_NEG = -2147483648
 
-PLAYER_HOURLY_RUN_BONUS = 0.0125
+PLAYER_HOURLY_RUN_BONUS = 0.018
 PLAYER_HOURLY_HANDCRAFT_BONUS = 0.075
 PLAYER_HOURLY_MINING_BONUS = 0.05
 PLAYER_HOURLY_REACH_BONUS = 3
@@ -1484,7 +1484,7 @@ function CreateGameSurface()
         local nauvis_difficulty_settings = game.difficulty_settings
         nauvis_difficulty_settings.technology_price_multiplier =
             TECHNOLOGY_PRICE_MULTIPLIER or 1
-        local nauvis_settings = game.surfaces["nauvis"].map_gen_settings
+            local nauvis_settings = game.surfaces["nauvis"].map_gen_settings
 
         if global.ocfg.enable_vanilla_spawns then
             nauvis_settings.starting_points =

@@ -184,6 +184,8 @@ script.on_event(defines.events.on_gui_click, function(event)
 
     ClickOarcGuiButton(event)
 
+    market.teleClick(event)
+
     if global.ocfg.enable_coin_shop then ClickOarcStoreButton(event) end
 
     GameOptionsGuiClick(event)
@@ -204,6 +206,11 @@ end)
 -- Player Events
 ----------------------------------------
 
+script.on_event(defines.events.on_player_changed_position, function(event)
+    local player = game.players[event.player_index]
+    market.teleGui(player)
+end)
+
 script.on_event(defines.events.on_pre_player_died,
                 function(event) deathmarkers.playerDied(event) end)
 script.on_event(defines.events.on_pre_player_mined_item,
@@ -223,6 +230,7 @@ script.on_event(defines.events.on_player_joined_game, function(event)
     if not global.ocore.markets.player_markets[player.name] then
         global.ocore.markets.player_markets[player.name] = {}
     end
+    if not global.ocore.markets.teles then global.ocore.markets.teles = {} end
     if not global.ocore.groups.player_groups then
         global.ocore.groups.player_groups = {}
     end
@@ -269,11 +277,11 @@ script.on_event(defines.events.on_player_joined_game, function(event)
 end)
 
 script.on_event(defines.events.on_player_created, function(event)
-        local player = game.players[event.player_index]
-    
-        -- Move the player to the game surface immediately.
-        player.teleport({x = 0, y = 0}, GAME_SURFACE_NAME)
-        market.help()
+    local player = game.players[event.player_index]
+
+    -- Move the player to the game surface immediately.
+    player.teleport({x = 0, y = 0}, GAME_SURFACE_NAME)
+    market.help()
 
     if global.ocfg.enable_long_reach then GivePlayerLongReach(player) end
 
@@ -341,10 +349,6 @@ script.on_event(defines.events.on_tick, function(event)
     end
 
     if game.tick % 60 == 0 then tools.FlyingTime(game.tick) end
-    if global.slow_game_tick and (game.tick >= global.slow_game_tick) then
-        global.slow_game_tick = nil
-        game.speed = 1
-    end
 
     DelayedSpawnOnTick()
 
@@ -589,9 +593,9 @@ script.on_event(defines.events.on_market_item_purchased, function(event)
     local mults = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0.75, 0.5, 0.25}
 
     if player_market.market and player_market.market.valid then
-        local offers = player_market.market.get_market_items()
-        local offer = offers[event.offer_index]
-        if event.offer_index <= 20 then
+        local offers = player_market.market.get_market_items() -- get all offers
+        local offer = offers[event.offer_index] -- get this offer
+        if event.offer_index <= 14 then -- if this offer is in the 'upgrades' section
 
             local price = 0
             for _, single_price in pairs(offer.price) do
@@ -636,6 +640,8 @@ script.on_event(defines.events.on_market_item_purchased, function(event)
                                         .current
                                 stat.multiplier = stat.multiplier +
                                                       item.offer.modifier
+                                player.character_health_bonus =
+                                    player.character_health_bonus - item.offer.modifier * (count - 1)
                                 stat.lvl = stat.lvl + 1
                                 item.price =
                                     market.formatPrice(math.ceil(price * 1.1))
@@ -645,6 +651,11 @@ script.on_event(defines.events.on_market_item_purchased, function(event)
                                         .current
                                 stat.multiplier = stat.multiplier +
                                                       item.offer.modifier
+                                                      player.print("stat.multiplier: "..stat.multiplier)
+                                                      player.print("item.offer.modifier: "..item.offer.modifier)
+                                                      player.print("player.force.mining_drill_productivity_bonus: "..player.force.mining_drill_productivity_bonus)
+                                                      player.force.mining_drill_productivity_bonus = player.force.mining_drill_productivity_bonus - item.offer.modifier * (count - 1)
+                                                      player.print("player.force.mining_drill_productivity_bonus: "..player.force.mining_drill_productivity_bonus)
                                 stat.lvl = stat.lvl + 1
                                 item.price =
                                     market.formatPrice(math.ceil(price * 1.08))
@@ -660,7 +671,7 @@ script.on_event(defines.events.on_market_item_purchased, function(event)
                             player_market.sell_speed_lvl =
                                 player_market.sell_speed_lvl + 1
                             player_market.sell_speed_multiplier =
-                                mults[player_market.sell_speed_lvl]
+                                mults[stat.lvl]
                             item.price =
                                 market.formatPrice(tools.round(price * 1.5))
                             if player_market.sell_speed_lvl == 13 then

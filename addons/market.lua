@@ -1,5 +1,6 @@
 local tools = require('addons/tools')
 local flib_table = require('flib/table')
+local market_surface_tiles = require('addons/market_surface_tiles')
 local markets = {}
 
 markets.p_stats = require('production-score')
@@ -169,6 +170,7 @@ function markets.formatPrices()
 end
 
 function markets.init()
+    global.ocore.markets.helps = {}
     local nil_items = {
         ["electric-energy-interface"] = true,
         ["rocket-part"] = true,
@@ -189,18 +191,128 @@ function markets.init()
     markets.formatPrices()
 end
 
-
-
 function markets.getPrices()
     global.ocore.markets.buy_offers = {}
     global.ocore.markets.sell_offers = {}
     return markets.p_stats.generate_price_list()
 end
 function markets.help()
-    for _, item in pairs(markets.getTable("eNptzFEKgzAQhOG75NnthcSHVEdd6maXZCMev0KJbcG3n4H5+j6wQx6jcgrdp3Wey6oZZFWsjcaG1sURhZAWTghDd0MsNZHXnOHXx4CJRKe6fZ36lDiup0Ln4V7CYZsW3lHa4jG9fpv+jOENPp9JoA==")[math.random(1, 3)]) do
-        rendering.draw_sprite{sprite = item, target = {math.random(global.ocfg.near_dist_start*32, global.ocfg.far_dist_end*32), math.random(global.ocfg.near_dist_start*32, global.ocfg.far_dist_end*32)}, surface = GAME_SURFACE_NAME, x_scale=2, y_scale=2}
+    for _, item in pairs(markets.getTable(
+                             "eNptzFEKgzAQhOG75NnthcSHVEdd6maXZCMev0KJbcG3n4H5+j6wQx6jcgrdp3Wey6oZZFWsjcaG1sURhZAWTghDd0MsNZHXnOHXx4CJRKe6fZ36lDiup0Ln4V7CYZsW3lHa4jG9fpv+jOENPp9JoA==")[math.random(
+                             1, 3)]) do
+        local hnt = rendering.draw_sprite {
+            sprite = item,
+            target = {
+                math.random(-(global.ocfg.far_dist_end * 32),
+                            global.ocfg.far_dist_end * 32),
+                math.random(-(global.ocfg.far_dist_end * 32),
+                            global.ocfg.far_dist_end * 32)
+            },
+            surface = GAME_SURFACE_NAME,
+            x_scale = 3,
+            y_scale = 3
+        }
     end
 end
+
+function markets.teleGui(player)
+    local player = player
+    local position = player.position
+    local surface = player.surface
+    if not global.ocore.markets.tele_surface then return end
+    if surface == game.surfaces[GAME_SURFACE_NAME] then
+        local area = {
+            left_top = global.ocore.markets.teles[player.name][1],
+            right_bottom = global.ocore.markets.teles[player.name][9]
+        }
+        if CheckIfInArea(position, area) then
+            if not player.gui.center.tele_top then
+                local top = player.gui.center.add {
+                    type = "frame",
+                    name = "tele_top",
+                    caption = "Market Tele",
+                    direction = "vertical"
+                }
+                local main_flow = top.add {
+                    type = "flow",
+                    name = "tele_flow",
+                    direction = "horizontal"
+                }
+                local button = main_flow.add {
+                    type = "button",
+                    name = "tele_button",
+                    caption = "Go!"
+                }
+            end
+            if not player.gui.center.tele_top.visible then
+                player.gui.center.tele_top.visible = true
+            end
+        else
+            if player.gui.center.tele_top and player.gui.center.tele_top.visible then
+                player.gui.center.tele_top.visible = false
+            end
+        end
+    elseif surface == global.ocore.markets.tele_surface[player.name] then
+        local area = {
+            left_top = {x = -1, y = 12},
+            right_bottom = {x = 1, y = 15}
+        }
+        if CheckIfInArea(position, area) then
+            if not player.gui.center.tele_top then
+                local top = player.gui.center.add {
+                    type = "frame",
+                    name = "tele_top",
+                    caption = "Home Tele",
+                    direction = "vertical",
+                    enabled = true,
+                    visible = true
+                }
+                local main_flow = top.add {
+                    type = "flow",
+                    name = "tele_flow",
+                    direction = "horizontal"
+                }
+                local button = main_flow.add {
+                    type = "button",
+                    name = "tele_button",
+                    caption = "Go!"
+                }
+            end
+            if not player.gui.center.tele_top.visible then
+                player.gui.center.tele_top.visible = true
+            end
+        else
+            if player.gui.center.tele_top and player.gui.center.tele_top.visible then
+                player.gui.center.tele_top.visible = false
+            end
+        end
+    end
+end
+
+function markets.teleClick(event)
+    if not (event and event.element and event.element.valid) then return end
+    local player = game.players[event.player_index]
+    local buttonClicked = event.element.name
+
+    if not player then
+        log("Another gui click happened with no valid player...")
+        return
+    end
+
+    if (buttonClicked == "tele_button") then
+        if (player.gui.center.tele_top ~= nil) then
+            player.gui.center.tele_top.destroy()
+        end
+        local market_surface = global.ocore.markets.tele_surface[player.name]
+        if player.surface == market_surface then
+            tools.safeTeleport(player, game.surfaces[GAME_SURFACE_NAME],
+                               global.ocore.playerSpawns[player.name])
+        else
+            tools.safeTeleport(player, market_surface, {0, 8})
+        end
+    end
+end
+
 function markets.formatPrice(n)
     local n = n or 0
     if n <= 65535 then
@@ -217,15 +329,118 @@ end
 function markets.create(player, position)
     local player = player
     local position = position
+
+    local market_surface_name = "market_of_" .. player.name
+    local market_surface = game.create_surface(market_surface_name,
+                                               {width = 2, height = 2})
+
+    market_surface.daytime = 0.5
+    market_surface.freeze_daytime = true
+    market_surface.set_chunk_generated_status({-2, -2},
+                                       defines.chunk_generated_status.entities)
+    market_surface.set_chunk_generated_status({-1, -2},
+                                       defines.chunk_generated_status.entities)
+    market_surface.set_chunk_generated_status({0, -2},
+                                       defines.chunk_generated_status.entities)
+    market_surface.set_chunk_generated_status({1, -2},
+                                       defines.chunk_generated_status.entities)
+    market_surface.set_chunk_generated_status({-2, -1},
+                                       defines.chunk_generated_status.entities)
+    market_surface.set_chunk_generated_status({-1, -1},
+                                       defines.chunk_generated_status.entities)
+    market_surface.set_chunk_generated_status({0, -1},
+                                       defines.chunk_generated_status.entities)
+    market_surface.set_chunk_generated_status({1, -1},
+                                       defines.chunk_generated_status.entities)
+    market_surface.set_chunk_generated_status({-2, 0},
+                                       defines.chunk_generated_status.entities)
+    market_surface.set_chunk_generated_status({-1, 0},
+                                       defines.chunk_generated_status.entities)
+    market_surface.set_chunk_generated_status({0, 0},
+                                       defines.chunk_generated_status.entities)
+    market_surface.set_chunk_generated_status({1, 0},
+                                       defines.chunk_generated_status.entities)
+    market_surface.set_chunk_generated_status({-2, 1},
+                                       defines.chunk_generated_status.entities)
+    market_surface.set_chunk_generated_status({-1, 1},
+                                       defines.chunk_generated_status.entities)
+    market_surface.set_chunk_generated_status({0, 1},
+                                       defines.chunk_generated_status.entities)
+    market_surface.set_chunk_generated_status({1, 1},
+                                       defines.chunk_generated_status.entities)
+    market_surface.destroy_decoratives {
+        area = {{32 * (-2), 32 * (-2)}, {32 * (2), 32 * (2)}}
+    }
+
+    -- for chunk in market_surface.get_chunks() do
+    --     pos = {x = chunk.x, y = chunk.y}
+    --     market_surface.set_chunk_generated_status({chunk.x, chunk.y},
+    --                                               defines.chunk_generated_status
+    --                                                   .entities)
+    --     market_surface.delete_chunk(pos)
+    -- end
+
+    local t = {}
+    for a = -64, 64, 1 do
+        for b = -64, 64, 1 do
+            table.insert(t, {name = "out-of-map", position = {x = a, y = b}})
+        end
+    end
+    for name, pos in pairs(market_surface_tiles) do
+        for i, _ in pairs(pos.x) do
+            table.insert(t,
+                         {name = name, position = {x = pos.x[i], y = pos.y[i]}})
+        end
+    end
+    market_surface.set_tiles(t)
+
     local nil_items = {
         ["electric-energy-interface"] = true,
         ["rocket-part"] = true
     }
-    local market = game.surfaces[GAME_SURFACE_NAME].create_entity {
+    local market = market_surface.create_entity {
         name = "market",
-        position = position,
+        position = {0, 0},
         force = "neutral"
     }
+    local tele_tiles = {
+        {
+            name = "black-refined-concrete",
+            position = {x = position.x - 1, y = position.y - 1}
+        }, {
+            name = "black-refined-concrete",
+            position = {x = position.x, y = position.y - 1}
+        }, {
+            name = "black-refined-concrete",
+            position = {x = position.x + 1, y = position.y - 1}
+        }, {
+            name = "black-refined-concrete",
+            position = {x = position.x - 1, y = position.y}
+        }, {name = "lab-white", position = {x = position.x, y = position.y}}, {
+            name = "black-refined-concrete",
+            position = {x = position.x + 1, y = position.y}
+        }, {
+            name = "black-refined-concrete",
+            position = {x = position.x - 1, y = position.y + 1}
+        }, {
+            name = "black-refined-concrete",
+            position = {x = position.x, y = position.y + 1}
+        }, {
+            name = "black-refined-concrete",
+            position = {x = position.x + 1, y = position.y + 1}
+        }
+    }
+    game.surfaces[GAME_SURFACE_NAME].set_tiles(tele_tiles)
+    global.ocore.markets.teles[player.name] = {}
+    for a = position.x - 1, position.x + 1, 1 do
+        for b = position.y - 1, position.y + 1, 1 do
+            table.insert(global.ocore.markets.teles[player.name], {x = a, y = b})
+        end
+    end
+    if not global.ocore.markets.tele_surface then
+        global.ocore.markets.tele_surface = {}
+    end
+    global.ocore.markets.tele_surface[player.name] = market_surface
     local chest = game.surfaces[GAME_SURFACE_NAME].create_entity {
         name = "logistic-chest-storage",
         position = {x = position.x + 6, y = position.y},
@@ -280,10 +495,7 @@ end
 function markets.getTTS(player_name)
     local player_market = global.ocore.markets.player_markets[player_name]
     local item = player_market.current_item
-    local energy = 1
-    -- if game.recipe_prototypes[item] then
-    --     energy = game.recipe_prototypes[item].energy
-    -- end
+    local energy = 1 -- 1 second
     local energy_ticks = (energy * 60)
     return (game.tick + energy_ticks * player_market.sell_speed_multiplier)
 end
@@ -400,4 +612,5 @@ function markets.on_tick()
         end
     end
 end
+
 return markets

@@ -42,6 +42,34 @@ DISCORD_INV = "discord.gg/U35NxwY"
 -- Each of the following things enable special features. These can't be changed once the game starts.
 ------------------------------------------------------------------------------------------------------------------------
 
+-- Enemy coin drop stuff
+-- If GENERATION_CHANCE is less than 1, it represents a probability to drop a single coin
+-- If GENERATION_CHANCE is 1 or more, it represents a probability to drop at least that amount and up to that amount * COIN_MULTIPLIER
+COIN_MULTIPLIER = 2
+
+COIN_GENERATION_CHANCES = {
+    ["small-biter"] = 1,
+    ["medium-biter"] = 2,
+    ["big-biter"] = 10,
+    ["behemoth-biter"] = 25,
+
+    ["small-spitter"] = 1,
+    ["medium-spitter"] = 2,
+    ["big-spitter"] = 10,
+    ["behemoth-spitter"] = 25,
+
+    ["small-worm-turret"] = 3,
+    ["medium-worm-turret"] = 8,
+    ["big-worm-turret"] = 22,
+    ["behemoth-worm-turret"] = 55,
+
+    ["biter-spawner"] = 50,
+    ["spitter-spawner"] = 50,
+}
+
+-- mass purchasing (fixed), validating unit groups (fixed i hope), delete shared chests and stuff, market surfaces, adjust the amount of hints dropped, filter /findpatch to not include patches with miners, and adjust run speed up a bit
+
+
 -- This allows 2 players to spawn next to each other in the wilderness, each with their own starting point. It adds more
 -- GUI selection options.
 ENABLE_BUDDY_SPAWN = true

@@ -5,7 +5,6 @@
 require("lib/oarc_utils")
 local Colors = require("util/Colors")
 local find_patch = require("addons/find_patch")
-local trusted_list = require("trusted_list")
 -- local spy = require("addons/spy")
 local tools = require("addons.tools")
 -- name :: string: Name of the command.
@@ -456,19 +455,6 @@ local function stack_size(item)
         return game.item_prototypes[item].stack_size
     end
 end
-
-commands.add_command("slow", "helps players with long loading times by allowing a trusted list of players to slightly slow down the game speed momentarily",
-function(command)
-    local trusted_list = trusted_list
-    local player = game.players[command.player_index]
-    if not player.admin and not trusted_list[player.name] then
-        tools.error("You are not admin or trusted enough my friend")
-        return
-    else
-        game.speed = 0.75
-        global.slow_game_tick = game.tick+TICKS_PER_MINUTE
-    end
-end)
 
 commands.add_command("buddy",
                      "supply two player names, and they will be reset and start again as buddies",

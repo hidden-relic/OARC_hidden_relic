@@ -43,7 +43,7 @@ end
 
 function tools.notify(player, notify_message, play_sound)
     notify_message = notify_message or ''
-    player.print({'notification.msg', notify_message})
+    player.print({'notify.msg', notify_message})
     if play_sound ~= false then
         play_sound = play_sound or 'utility/wire_connect_pole'
         if player then player.play_sound {path = play_sound} end

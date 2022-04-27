@@ -48,7 +48,7 @@ function groups.giveUnit(player, unit_name, count)
         groups.createGroup(player)
         if global.ocore.groups.config[unit_name] then
             local bug = {}
-            if global.ocore.groups.player_groups[player.name].group and global.ocore.groups.player_groups[player.name].group.valid then
+            if global.ocore.groups.player_groups[player.name].group then
                 if global.ocore.groups.player_groups[player.name].group.members[1] then
                     local count = global.ocore.groups.player_groups[player.name]
                                       .count
@@ -150,6 +150,9 @@ end
 function groups.on_tick()
     if (game.tick % 60 == 0) then
         for _, player in pairs(game.connected_players) do
+            if not player.character or not player.character.valid then
+                return
+            end
             if global.ocore.groups.player_groups and
                 global.ocore.groups.player_groups[player.name] then
                 if global.ocore.groups.player_groups[player.name].group then
