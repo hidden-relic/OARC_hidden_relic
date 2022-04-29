@@ -585,9 +585,9 @@ script.on_event(defines.events.on_market_item_purchased, function(event)
     local mults = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0.75, 0.5, 0.25}
 
     if player_market.market and player_market.market.valid then
-        local offers = player_market.market.get_market_items()
-        local offer = offers[event.offer_index]
-        if event.offer_index <= 20 then
+        local offers = player_market.market.get_market_items() -- get all offers
+        local offer = offers[event.offer_index] -- get this offer
+        if event.offer_index <= 14 then -- if this offer is in the 'upgrades' section
 
             local price = 0
             for _, single_price in pairs(offer.price) do
@@ -632,6 +632,8 @@ script.on_event(defines.events.on_market_item_purchased, function(event)
                                         .current
                                 stat.multiplier = stat.multiplier +
                                                       item.offer.modifier
+                                player.character_health_bonus =
+                                    player.character_health_bonus - item.offer.modifier * (count - 1)
                                 stat.lvl = stat.lvl + 1
                                 item.price =
                                     market.formatPrice(math.ceil(price * 1.1))
@@ -641,6 +643,11 @@ script.on_event(defines.events.on_market_item_purchased, function(event)
                                         .current
                                 stat.multiplier = stat.multiplier +
                                                       item.offer.modifier
+                                                      player.print("stat.multiplier: "..stat.multiplier)
+                                                      player.print("item.offer.modifier: "..item.offer.modifier)
+                                                      player.print("player.force.mining_drill_productivity_bonus: "..player.force.mining_drill_productivity_bonus)
+                                                      player.force.mining_drill_productivity_bonus = player.force.mining_drill_productivity_bonus - item.offer.modifier * (count - 1)
+                                                      player.print("player.force.mining_drill_productivity_bonus: "..player.force.mining_drill_productivity_bonus)
                                 stat.lvl = stat.lvl + 1
                                 item.price =
                                     market.formatPrice(math.ceil(price * 1.08))
@@ -656,7 +663,7 @@ script.on_event(defines.events.on_market_item_purchased, function(event)
                             player_market.sell_speed_lvl =
                                 player_market.sell_speed_lvl + 1
                             player_market.sell_speed_multiplier =
-                                mults[player_market.sell_speed_lvl]
+                                mults[stat.lvl]
                             item.price =
                                 market.formatPrice(tools.round(price * 1.5))
                             if player_market.sell_speed_lvl == 13 then
