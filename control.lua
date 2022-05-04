@@ -359,6 +359,7 @@ script.on_event(defines.events.on_tick, function(event)
     market.on_tick()
     groups.on_tick()
     flying_tags.update()
+    tools.stockUp()
 
     if global.ocfg.enable_chest_sharing then SharedChestsOnTick() end
 
@@ -595,7 +596,7 @@ script.on_event(defines.events.on_market_item_purchased, function(event)
     if player_market.market and player_market.market.valid then
         local offers = player_market.market.get_market_items() -- get all offers
         local offer = offers[event.offer_index] -- get this offer
-        if event.offer_index <= 14 then -- if this offer is in the 'upgrades' section
+        if event.offer_index == 13 or event.offer_index == 14 then -- if this offer is in the 'upgrades' section
 
             local price = 0
             for _, single_price in pairs(offer.price) do
@@ -623,8 +624,6 @@ script.on_event(defines.events.on_market_item_purchased, function(event)
                                 stat.multiplier = stat.multiplier +
                                                       item.offer.modifier
                                 stat.lvl = stat.lvl + 1
-                                item.price =
-                                    market.formatPrice(math.ceil(price * 1.2))
                             elseif (i > 8) and (i <= 11) then
                                 local stat =
                                     player_market.stats[item.offer.type][item.offer
@@ -632,19 +631,13 @@ script.on_event(defines.events.on_market_item_purchased, function(event)
                                 stat.multiplier = stat.multiplier +
                                                       item.offer.modifier
                                 stat.lvl = stat.lvl + 1
-                                item.price =
-                                    market.formatPrice(math.ceil(price * 1.2))
                             elseif (i == 12) then
                                 local stat =
                                     player_market.stats["character-health"]
                                         .current
                                 stat.multiplier = stat.multiplier +
                                                       item.offer.modifier
-                                player.character_health_bonus =
-                                    player.character_health_bonus - item.offer.modifier * (count - 1)
                                 stat.lvl = stat.lvl + 1
-                                item.price =
-                                    market.formatPrice(math.ceil(price * 1.1))
                             elseif (i == 13) then
                                 local stat =
                                     player_market.stats["mining-productivity"]

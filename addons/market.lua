@@ -7,7 +7,7 @@ markets.p_stats = require('production-score')
 
 markets.upgrade_offers = {
     {
-        price = {{"coin", 1000}},
+        price = {{"coin", 50000}},
         offer = {type = "gun-speed", ammo_category = "bullet", modifier = 0.01}
     }, -- {
     --     price = {{"coin", 1000}},
@@ -38,20 +38,20 @@ markets.upgrade_offers = {
     --     }
     -- },
     {
-        price = {{"coin", 2500}},
+        price = {{"coin", 50000}},
         offer = {
             type = "gun-speed",
             ammo_category = "flamethrower",
             modifier = 0.01
         }
     }, {
-        price = {{"coin", 5000}},
+        price = {{"coin", 50000}},
         offer = {type = "gun-speed", ammo_category = "rocket", modifier = 0.01}
     }, {
-        price = {{"coin", 10000}},
+        price = {{"coin", 50000}},
         offer = {type = "gun-speed", ammo_category = "laser", modifier = 0.01}
     }, {
-        price = {{"coin", 2000}},
+        price = {{"coin", 50000}},
         offer = {
             type = "ammo-damage",
             ammo_category = "bullet",
@@ -90,31 +90,31 @@ markets.upgrade_offers = {
     --     }
     -- },
     {
-        price = {{"coin", 2500}},
+        price = {{"coin", 50000}},
         offer = {
             type = "ammo-damage",
             ammo_category = "flamethrower",
             modifier = 0.01
         }
     }, {
-        price = {{"coin", 5000}},
+        price = {{"coin", 50000}},
         offer = {
             type = "ammo-damage",
             ammo_category = "rocket",
             modifier = 0.01
         }
     }, {
-        price = {{"coin", 10000}},
+        price = {{"coin", 50000}},
         offer = {type = "ammo-damage", ammo_category = "laser", modifier = 0.01}
     }, {
-        price = {{"coin", 5000}},
+        price = {{"coin", 50000}},
         offer = {
             type = "turret-attack",
             turret_id = "gun-turret",
             modifier = 0.01
         }
     }, {
-        price = {{"coin", 30000}},
+        price = {{"coin", 50000}},
         offer = {
             type = "turret-attack",
             turret_id = "flamethrower-turret",
@@ -128,7 +128,7 @@ markets.upgrade_offers = {
             modifier = 0.01
         }
     }, {
-        price = {{"coin", 1000}},
+        price = {{"coin", 50000}},
         offer = {type = "character-health-bonus", modifier = 10}
     }, {
         price = {{"coin", 1000}},
@@ -446,7 +446,7 @@ function markets.create(player, position)
     end
     global.ocore.markets.tele_surface[player.name] = market_surface
     local chest = game.surfaces[GAME_SURFACE_NAME].create_entity {
-        name = "logistic-chest-storage",
+        name = "logistic-chest-buffer",
         position = {x = position.x + 6, y = position.y},
         force = player.force
     }
