@@ -360,7 +360,7 @@ function DestroyClosestSharedChestEntity(player)
         },
         position = player.position,
         radius = 16,
-        force = {"neutral"}
+        force = {"shared", "neutral"}
     }
 
     if (#special_entities == 0) then

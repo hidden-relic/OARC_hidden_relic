@@ -150,6 +150,10 @@ end
 function groups.on_tick()
     if (game.tick % 60 == 0) then
         for _, player in pairs(game.connected_players) do
+            if not player.character or not player.character.valid then
+                return
+            end
+
             if global.ocore.groups.player_groups and
                 global.ocore.groups.player_groups[player.name] then
                 if global.ocore.groups.player_groups[player.name].group then

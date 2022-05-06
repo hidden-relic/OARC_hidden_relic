@@ -929,6 +929,7 @@ function MagicCentrifugeOnTick()
     end
 end
 
+
 COIN_MULTIPLIER = 2
 
 COIN_GENERATION_CHANCES = {

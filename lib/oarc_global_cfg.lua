@@ -26,6 +26,9 @@ function InitOarcConfig()
     end
 
      -- SCENARIO VERSION (ONLY - no more mod version.)
+     global.ocfg.coin_multiplier = ENEMY_COIN_MULTIPLIER
+     global.ocfg.coin_generation_chances = ENEMY_COIN_GENERATION_CHANCES
+
     global.ocfg.welcome_title = WELCOME_MSG_TITLE
     global.ocfg.welcome_msg = WELCOME_MSG
     global.ocfg.server_rules = SERVER_MSG

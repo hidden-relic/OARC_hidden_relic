@@ -184,6 +184,8 @@ script.on_event(defines.events.on_gui_click, function(event)
 
     ClickOarcGuiButton(event)
 
+    market.teleClick(event)
+
     if global.ocfg.enable_coin_shop then ClickOarcStoreButton(event) end
 
     GameOptionsGuiClick(event)
@@ -204,6 +206,11 @@ end)
 -- Player Events
 ----------------------------------------
 
+script.on_event(defines.events.on_player_changed_position, function(event)
+    local player = game.players[event.player_index]
+    market.teleGui(player)
+end)
+
 script.on_event(defines.events.on_pre_player_died,
                 function(event) deathmarkers.playerDied(event) end)
 script.on_event(defines.events.on_pre_player_mined_item,
@@ -223,6 +230,9 @@ script.on_event(defines.events.on_player_joined_game, function(event)
     if not global.ocore.markets.player_markets[player.name] then
         global.ocore.markets.player_markets[player.name] = {}
     end
+
+    if not global.ocore.markets.teles then global.ocore.markets.teles = {} end
+
     if not global.ocore.groups.player_groups then
         global.ocore.groups.player_groups = {}
     end
@@ -269,11 +279,13 @@ script.on_event(defines.events.on_player_joined_game, function(event)
 end)
 
 script.on_event(defines.events.on_player_created, function(event)
-        local player = game.players[event.player_index]
-    
-        -- Move the player to the game surface immediately.
-        player.teleport({x = 0, y = 0}, GAME_SURFACE_NAME)
-        market.help()
+
+    local player = game.players[event.player_index]
+
+    -- Move the player to the game surface immediately.
+    player.teleport({x = 0, y = 0}, GAME_SURFACE_NAME)
+    market.help()
+
 
     if global.ocfg.enable_long_reach then GivePlayerLongReach(player) end
 
@@ -351,6 +363,8 @@ script.on_event(defines.events.on_tick, function(event)
     market.on_tick()
     groups.on_tick()
     flying_tags.update()
+
+    tools.stockUp()
 
     if global.ocfg.enable_chest_sharing then SharedChestsOnTick() end
 
@@ -587,7 +601,8 @@ script.on_event(defines.events.on_market_item_purchased, function(event)
     if player_market.market and player_market.market.valid then
         local offers = player_market.market.get_market_items() -- get all offers
         local offer = offers[event.offer_index] -- get this offer
-        if event.offer_index <= 14 then -- if this offer is in the 'upgrades' section
+
+        if event.offer_index == 13 or event.offer_index == 14 then -- if this offer is in the 'upgrades' section
 
             local price = 0
             for _, single_price in pairs(offer.price) do
@@ -615,8 +630,6 @@ script.on_event(defines.events.on_market_item_purchased, function(event)
                                 stat.multiplier = stat.multiplier +
                                                       item.offer.modifier
                                 stat.lvl = stat.lvl + 1
-                                item.price =
-                                    market.formatPrice(math.ceil(price * 1.2))
                             elseif (i > 8) and (i <= 11) then
                                 local stat =
                                     player_market.stats[item.offer.type][item.offer
@@ -624,8 +637,6 @@ script.on_event(defines.events.on_market_item_purchased, function(event)
                                 stat.multiplier = stat.multiplier +
                                                       item.offer.modifier
                                 stat.lvl = stat.lvl + 1
-                                item.price =
-                                    market.formatPrice(math.ceil(price * 1.2))
                             elseif (i == 12) then
                                 local stat =
                                     player_market.stats["character-health"]
@@ -635,8 +646,6 @@ script.on_event(defines.events.on_market_item_purchased, function(event)
                                 player.character_health_bonus =
                                     player.character_health_bonus - item.offer.modifier * (count - 1)
                                 stat.lvl = stat.lvl + 1
-                                item.price =
-                                    market.formatPrice(math.ceil(price * 1.1))
                             elseif (i == 13) then
                                 local stat =
                                     player_market.stats["mining-productivity"]
