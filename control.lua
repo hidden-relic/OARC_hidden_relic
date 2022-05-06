@@ -644,11 +644,7 @@ script.on_event(defines.events.on_market_item_purchased, function(event)
                                         .current
                                 stat.multiplier = stat.multiplier +
                                                       item.offer.modifier
-                                                      player.print("stat.multiplier: "..stat.multiplier)
-                                                      player.print("item.offer.modifier: "..item.offer.modifier)
-                                                      player.print("player.force.mining_drill_productivity_bonus: "..player.force.mining_drill_productivity_bonus)
                                                       player.force.mining_drill_productivity_bonus = player.force.mining_drill_productivity_bonus - item.offer.modifier * (count - 1)
-                                                      player.print("player.force.mining_drill_productivity_bonus: "..player.force.mining_drill_productivity_bonus)
                                 stat.lvl = stat.lvl + 1
                                 item.price =
                                     market.formatPrice(math.ceil(price * 1.08))
