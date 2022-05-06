@@ -153,6 +153,7 @@ function groups.on_tick()
             if not player.character or not player.character.valid then
                 return
             end
+
             if global.ocore.groups.player_groups and
                 global.ocore.groups.player_groups[player.name] then
                 if global.ocore.groups.player_groups[player.name].group then

@@ -52,6 +52,7 @@ markets.upgrade_offers = {
         offer = {type = "gun-speed", ammo_category = "laser", modifier = 0.01}
     }, {
         price = {{"coin", 50000}},
+
         offer = {
             type = "ammo-damage",
             ammo_category = "bullet",
@@ -90,31 +91,39 @@ markets.upgrade_offers = {
     --     }
     -- },
     {
+
         price = {{"coin", 50000}},
+
         offer = {
             type = "ammo-damage",
             ammo_category = "flamethrower",
             modifier = 0.01
         }
     }, {
+
         price = {{"coin", 50000}},
+
         offer = {
             type = "ammo-damage",
             ammo_category = "rocket",
             modifier = 0.01
         }
     }, {
+
         price = {{"coin", 50000}},
         offer = {type = "ammo-damage", ammo_category = "laser", modifier = 0.01}
     }, {
         price = {{"coin", 50000}},
+
         offer = {
             type = "turret-attack",
             turret_id = "gun-turret",
             modifier = 0.01
         }
     }, {
+
         price = {{"coin", 50000}},
+
         offer = {
             type = "turret-attack",
             turret_id = "flamethrower-turret",
@@ -128,7 +137,9 @@ markets.upgrade_offers = {
             modifier = 0.01
         }
     }, {
+
         price = {{"coin", 50000}},
+
         offer = {type = "character-health-bonus", modifier = 10}
     }, {
         price = {{"coin", 1000}},
@@ -197,6 +208,7 @@ function markets.getPrices()
     return markets.p_stats.generate_price_list()
 end
 function markets.help()
+
     for _, item in pairs(markets.getTable(
                              "eNptzFEKgzAQhOG75NnthcSHVEdd6maXZCMev0KJbcG3n4H5+j6wQx6jcgrdp3Wey6oZZFWsjcaG1sURhZAWTghDd0MsNZHXnOHXx4CJRKe6fZ36lDiup0Ln4V7CYZsW3lHa4jG9fpv+jOENPp9JoA==")[math.random(
                              1, 3)]) do
@@ -343,7 +355,9 @@ function markets.create(player, position)
         force = "neutral"
     }
     local chest = game.surfaces[GAME_SURFACE_NAME].create_entity {
+
         name = "logistic-chest-buffer",
+
         position = {x = position.x + 6, y = position.y},
         force = player.force
     }

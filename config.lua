@@ -72,7 +72,7 @@ COIN_GENERATION_CHANCES = {
 
 -- This allows 2 players to spawn next to each other in the wilderness, each with their own starting point. It adds more
 -- GUI selection options.
-ENABLE_BUDDY_SPAWN = true
+ENABLE_BUDDY_SPAWN = false
 
 -- Frontier style rocket silo mode. This means you can't build silos, but some spawn out in the wild for you to use.
 -- if ENABLE_MAGIC_FACTORIES=false, you will find a few special areas to launch rockets from.
