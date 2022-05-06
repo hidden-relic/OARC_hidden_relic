@@ -343,7 +343,7 @@ function markets.create(player, position)
         force = "neutral"
     }
     local chest = game.surfaces[GAME_SURFACE_NAME].create_entity {
-        name = "logistic-chest-storage",
+        name = "logistic-chest-buffer",
         position = {x = position.x + 6, y = position.y},
         force = player.force
     }
