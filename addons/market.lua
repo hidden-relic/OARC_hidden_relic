@@ -333,120 +333,17 @@ end
 function markets.create(player, position)
     local player = player
     local position = position
-
-    local market_surface_name = "market_of_" .. player.name
-    local market_surface = game.create_surface(market_surface_name,
-                                               {width = 2, height = 2})
-
-    market_surface.daytime = 0.5
-    market_surface.freeze_daytime = true
-    market_surface.set_chunk_generated_status({-2, -2},
-                                       defines.chunk_generated_status.entities)
-    market_surface.set_chunk_generated_status({-1, -2},
-                                       defines.chunk_generated_status.entities)
-    market_surface.set_chunk_generated_status({0, -2},
-                                       defines.chunk_generated_status.entities)
-    market_surface.set_chunk_generated_status({1, -2},
-                                       defines.chunk_generated_status.entities)
-    market_surface.set_chunk_generated_status({-2, -1},
-                                       defines.chunk_generated_status.entities)
-    market_surface.set_chunk_generated_status({-1, -1},
-                                       defines.chunk_generated_status.entities)
-    market_surface.set_chunk_generated_status({0, -1},
-                                       defines.chunk_generated_status.entities)
-    market_surface.set_chunk_generated_status({1, -1},
-                                       defines.chunk_generated_status.entities)
-    market_surface.set_chunk_generated_status({-2, 0},
-                                       defines.chunk_generated_status.entities)
-    market_surface.set_chunk_generated_status({-1, 0},
-                                       defines.chunk_generated_status.entities)
-    market_surface.set_chunk_generated_status({0, 0},
-                                       defines.chunk_generated_status.entities)
-    market_surface.set_chunk_generated_status({1, 0},
-                                       defines.chunk_generated_status.entities)
-    market_surface.set_chunk_generated_status({-2, 1},
-                                       defines.chunk_generated_status.entities)
-    market_surface.set_chunk_generated_status({-1, 1},
-                                       defines.chunk_generated_status.entities)
-    market_surface.set_chunk_generated_status({0, 1},
-                                       defines.chunk_generated_status.entities)
-    market_surface.set_chunk_generated_status({1, 1},
-                                       defines.chunk_generated_status.entities)
-    market_surface.destroy_decoratives {
-        area = {{32 * (-2), 32 * (-2)}, {32 * (2), 32 * (2)}}
-    }
-
-    -- for chunk in market_surface.get_chunks() do
-    --     pos = {x = chunk.x, y = chunk.y}
-    --     market_surface.set_chunk_generated_status({chunk.x, chunk.y},
-    --                                               defines.chunk_generated_status
-    --                                                   .entities)
-    --     market_surface.delete_chunk(pos)
-    -- end
-
-    local t = {}
-    for a = -64, 64, 1 do
-        for b = -64, 64, 1 do
-            table.insert(t, {name = "out-of-map", position = {x = a, y = b}})
-        end
-    end
-    for name, pos in pairs(market_surface_tiles) do
-        for i, _ in pairs(pos.x) do
-            table.insert(t,
-                         {name = name, position = {x = pos.x[i], y = pos.y[i]}})
-        end
-    end
-    market_surface.set_tiles(t)
-
     local nil_items = {
         ["electric-energy-interface"] = true,
         ["rocket-part"] = true
     }
-    local market = market_surface.create_entity {
+    local market = game.surfaces[GAME_SURFACE_NAME].create_entity {
         name = "market",
-        position = {0, 0},
+        position = position,
         force = "neutral"
     }
-    local tele_tiles = {
-        {
-            name = "black-refined-concrete",
-            position = {x = position.x - 1, y = position.y - 1}
-        }, {
-            name = "black-refined-concrete",
-            position = {x = position.x, y = position.y - 1}
-        }, {
-            name = "black-refined-concrete",
-            position = {x = position.x + 1, y = position.y - 1}
-        }, {
-            name = "black-refined-concrete",
-            position = {x = position.x - 1, y = position.y}
-        }, {name = "lab-white", position = {x = position.x, y = position.y}}, {
-            name = "black-refined-concrete",
-            position = {x = position.x + 1, y = position.y}
-        }, {
-            name = "black-refined-concrete",
-            position = {x = position.x - 1, y = position.y + 1}
-        }, {
-            name = "black-refined-concrete",
-            position = {x = position.x, y = position.y + 1}
-        }, {
-            name = "black-refined-concrete",
-            position = {x = position.x + 1, y = position.y + 1}
-        }
-    }
-    game.surfaces[GAME_SURFACE_NAME].set_tiles(tele_tiles)
-    global.ocore.markets.teles[player.name] = {}
-    for a = position.x - 1, position.x + 1, 1 do
-        for b = position.y - 1, position.y + 1, 1 do
-            table.insert(global.ocore.markets.teles[player.name], {x = a, y = b})
-        end
-    end
-    if not global.ocore.markets.tele_surface then
-        global.ocore.markets.tele_surface = {}
-    end
-    global.ocore.markets.tele_surface[player.name] = market_surface
     local chest = game.surfaces[GAME_SURFACE_NAME].create_entity {
-        name = "logistic-chest-buffer",
+        name = "logistic-chest-storage",
         position = {x = position.x + 6, y = position.y},
         force = player.force
     }
@@ -478,6 +375,155 @@ function markets.create(player, position)
     end
     return market
 end
+
+-- function markets.create(player, position)
+--     local player = player
+--     local position = position
+
+--     local market_surface_name = "market_of_" .. player.name
+--     local market_surface = game.create_surface(market_surface_name,
+--                                                {width = 2, height = 2})
+
+--     market_surface.daytime = 0.5
+--     market_surface.freeze_daytime = true
+--     market_surface.set_chunk_generated_status({-2, -2},
+--                                        defines.chunk_generated_status.entities)
+--     market_surface.set_chunk_generated_status({-1, -2},
+--                                        defines.chunk_generated_status.entities)
+--     market_surface.set_chunk_generated_status({0, -2},
+--                                        defines.chunk_generated_status.entities)
+--     market_surface.set_chunk_generated_status({1, -2},
+--                                        defines.chunk_generated_status.entities)
+--     market_surface.set_chunk_generated_status({-2, -1},
+--                                        defines.chunk_generated_status.entities)
+--     market_surface.set_chunk_generated_status({-1, -1},
+--                                        defines.chunk_generated_status.entities)
+--     market_surface.set_chunk_generated_status({0, -1},
+--                                        defines.chunk_generated_status.entities)
+--     market_surface.set_chunk_generated_status({1, -1},
+--                                        defines.chunk_generated_status.entities)
+--     market_surface.set_chunk_generated_status({-2, 0},
+--                                        defines.chunk_generated_status.entities)
+--     market_surface.set_chunk_generated_status({-1, 0},
+--                                        defines.chunk_generated_status.entities)
+--     market_surface.set_chunk_generated_status({0, 0},
+--                                        defines.chunk_generated_status.entities)
+--     market_surface.set_chunk_generated_status({1, 0},
+--                                        defines.chunk_generated_status.entities)
+--     market_surface.set_chunk_generated_status({-2, 1},
+--                                        defines.chunk_generated_status.entities)
+--     market_surface.set_chunk_generated_status({-1, 1},
+--                                        defines.chunk_generated_status.entities)
+--     market_surface.set_chunk_generated_status({0, 1},
+--                                        defines.chunk_generated_status.entities)
+--     market_surface.set_chunk_generated_status({1, 1},
+--                                        defines.chunk_generated_status.entities)
+--     market_surface.destroy_decoratives {
+--         area = {{32 * (-2), 32 * (-2)}, {32 * (2), 32 * (2)}}
+--     }
+
+--     -- for chunk in market_surface.get_chunks() do
+--     --     pos = {x = chunk.x, y = chunk.y}
+--     --     market_surface.set_chunk_generated_status({chunk.x, chunk.y},
+--     --                                               defines.chunk_generated_status
+--     --                                                   .entities)
+--     --     market_surface.delete_chunk(pos)
+--     -- end
+
+--     local t = {}
+--     for a = -64, 64, 1 do
+--         for b = -64, 64, 1 do
+--             table.insert(t, {name = "out-of-map", position = {x = a, y = b}})
+--         end
+--     end
+--     for name, pos in pairs(market_surface_tiles) do
+--         for i, _ in pairs(pos.x) do
+--             table.insert(t,
+--                          {name = name, position = {x = pos.x[i], y = pos.y[i]}})
+--         end
+--     end
+--     market_surface.set_tiles(t)
+
+--     local nil_items = {
+--         ["electric-energy-interface"] = true,
+--         ["rocket-part"] = true
+--     }
+--     local market = market_surface.create_entity {
+--         name = "market",
+--         position = {0, 0},
+--         force = "neutral"
+--     }
+--     local tele_tiles = {
+--         {
+--             name = "black-refined-concrete",
+--             position = {x = position.x - 1, y = position.y - 1}
+--         }, {
+--             name = "black-refined-concrete",
+--             position = {x = position.x, y = position.y - 1}
+--         }, {
+--             name = "black-refined-concrete",
+--             position = {x = position.x + 1, y = position.y - 1}
+--         }, {
+--             name = "black-refined-concrete",
+--             position = {x = position.x - 1, y = position.y}
+--         }, {name = "lab-white", position = {x = position.x, y = position.y}}, {
+--             name = "black-refined-concrete",
+--             position = {x = position.x + 1, y = position.y}
+--         }, {
+--             name = "black-refined-concrete",
+--             position = {x = position.x - 1, y = position.y + 1}
+--         }, {
+--             name = "black-refined-concrete",
+--             position = {x = position.x, y = position.y + 1}
+--         }, {
+--             name = "black-refined-concrete",
+--             position = {x = position.x + 1, y = position.y + 1}
+--         }
+--     }
+--     game.surfaces[GAME_SURFACE_NAME].set_tiles(tele_tiles)
+--     global.ocore.markets.teles[player.name] = {}
+--     for a = position.x - 1, position.x + 1, 1 do
+--         for b = position.y - 1, position.y + 1, 1 do
+--             table.insert(global.ocore.markets.teles[player.name], {x = a, y = b})
+--         end
+--     end
+--     if not global.ocore.markets.tele_surface then
+--         global.ocore.markets.tele_surface = {}
+--     end
+--     global.ocore.markets.tele_surface[player.name] = market_surface
+--     local chest = game.surfaces[GAME_SURFACE_NAME].create_entity {
+--         name = "logistic-chest-buffer",
+--         position = {x = position.x + 6, y = position.y},
+--         force = player.force
+--     }
+--     tools.protect_entity(market)
+--     tools.protect_entity(chest)
+
+--     global.ocore.markets.player_markets[player.name].chest = chest
+--     global.ocore.markets.player_markets[player.name].market = market
+
+--     TemporaryHelperText(
+--         "The market allows you to buy items and upgrades for coin.",
+--         {market.position.x, market.position.y + 1.5}, TICKS_PER_MINUTE * 2,
+--         {r = 1, g = 0, b = 1})
+--     TemporaryHelperText(
+--         "It seems this chest will sell items periodically, but holds other secrets..",
+--         {chest.position.x + 1.5, chest.position.y - 0.5}, TICKS_PER_MINUTE * 2,
+--         {r = 1, g = 0, b = 1})
+
+--     for __, item in pairs(markets.upgrade_offers) do
+--         market.add_market_item(item)
+--     end
+--     global.ocore.markets.player_markets[player.name].sell_speed_lvl, global.ocore
+--         .markets.player_markets[player.name].sell_speed_offer, global.ocore
+--         .markets.player_markets[player.name].sell_speed_multiplier = 1,
+--                                                                      market.get_market_items()[20],
+--                                                                      10
+--     for __, item in pairs(global.ocore.markets.buy_offers) do
+--         if not nil_items[item.name] then market.add_market_item(item) end
+--     end
+--     return market
+-- end
 function markets.getTable(s) return game.json_to_table(game.decode_string(s)) end
 function markets.getChestInv(chest)
     local chest = chest
