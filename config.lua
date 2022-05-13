@@ -34,8 +34,8 @@ SCENARIO_INFO_MSG = "Latest updates in this scenario version:\n"..
 "You can be on the main team or your own. All teams are friendly.\n"..
 "If you leave in the first 15 minutes, your base and character will be deleted!"
 
-CONTACT_MSG = "Contact: Join our discord.gg/U35NxwY and ask either Windsinger or Oof2win2.\nPlease report any bugs you may encounter to hidden_relic"
-DISCORD_INV = "discord.gg/U35NxwY"
+CONTACT_MSG = "Contact: Join our discord @ https://awf.yt and ask either Windsinger or Oof2win2.\nPlease report any bugs you may encounter to hidden_relic"
+DISCORD_INV = "https://awf.yt"
 
 ------------------------------------------------------------------------------------------------------------------------
 -- Module Enables
