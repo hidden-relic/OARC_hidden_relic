@@ -654,8 +654,6 @@ script.on_event(defines.events.on_market_item_purchased, function(event)
                                                       item.offer.modifier
                                                       player.force.mining_drill_productivity_bonus = player.force.mining_drill_productivity_bonus - item.offer.modifier * (count - 1)
                                 stat.lvl = stat.lvl + 1
-                                item.price =
-                                    market.formatPrice(math.ceil(price * 1.08))
                             end
                         else
                             if global.ocore.done_with_speed[player.name] ~= nil then
