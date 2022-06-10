@@ -596,7 +596,7 @@ script.on_event(defines.events.on_market_item_purchased, function(event)
     local player = game.players[event.player_index]
     local player_market = global.ocore.markets.player_markets[player.name]
     local count = event.count
-    local mults = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0.75, 0.5, 0.25}
+    local mults = {10, 9.23, 8.46, 7.69, 6.92, 6.15, 5.38, 4.61, 3.84, 3.07, 2.31, 1.54, 0.75}
 
     if player_market.market and player_market.market.valid then
         local offers = player_market.market.get_market_items() -- get all offers

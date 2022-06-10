@@ -473,16 +473,16 @@ commands.add_command("buddy",
     local requester = tools.get_player(args[2])
     if player and requester then
         local distance = args[3]
-        if not distance then 
+        if not distance then
             game.print("You're doing it wrong..")
             return
         end
-        local stringtoboolean={ ["true"]=1, ["false"]=0 }
+        local stringtoboolean = {["true"] = 1, ["false"] = 0}
         local moat = stringtoboolean[args[4]]
-            if not moat then 
+        if not moat then
             game.print("You're doing it wrong..")
             return
-        end 
+        end
         ResetPlayerForBuddySpawn(player)
         ResetPlayerForBuddySpawn(requester)
         -- Create a new spawn point
@@ -621,9 +621,11 @@ end)
 commands.add_command("get",
                      "get <item_name> [<count>]\nneeds the game name (\"iron-plate\" no quotes). if no count is given, you'll get 1 stack",
                      function(command)
-    local args = string.split(command.parameter, " ")
-    local player, item_name, count = game.players[command.player_index],
-                                     args[1], args[2]
+    local player, item_name, count = game.players[command.player_index], "", ""
+    if command.parameter then
+        local args = string.split(command.parameter, " ")
+        item_name, count = args[1], args[2]
+    end
     if not player.admin then
         tools.error("You are not admin my friend")
         return

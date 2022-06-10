@@ -6,7 +6,7 @@ function CreateBonusesGuiTab(tab_container, player)
     local tab_container = tab_container
     if global.oarc_bonuses == nil then global.oarc_bonuses = {} end
 
-    global.oarc_bonuses[player.name] = getPlayerBonuses(player, true)
+    global.oarc_bonuses[player.name] = getPlayerBonuses(player)
     local stats = global.ocore.markets.player_markets[player.name].stats
 
     local bonuses_flow = tab_container.add {

@@ -87,16 +87,27 @@ end
 function tools.formatMarketBonuses(player)
     local player = tools.get_player(player)
     if player then
-        if global.ocore.markets and global.ocore.markets.player_markets and global.ocore.markets.player_markets[player.name] and global.ocore.markets.player_markets[player.name].stats then
+        if global.ocore.markets and global.ocore.markets.player_markets and
+            global.ocore.markets.player_markets[player.name] and
+            global.ocore.markets.player_markets[player.name].stats then
             local stats = global.ocore.markets.player_markets[player.name].stats
-            local str = "[color=blue]Bonuses for [/color][color=orange]"..player.name.."[/color][color=blue]:[/color]\n"
+            local str = "[color=blue]Bonuses for [/color][color=orange]" ..
+                            player.name .. "[/color][color=blue]:[/color]\n"
             for type, item in pairs(stats) do
-                str = str.."[color=purple]["..type.."][/color]\n"
+                str = str .. "[color=purple][" .. type .. "][/color]\n"
                 for name, data in pairs(item) do
                     if type == "sell-speed" then
-                        str = str.."[color=cyan]-- ["..name.."]:[/color] \t[color=orange]LVL: [/color][color=green]"..data.lvl.."[/color] \t[color=orange]SECONDS: [/color][color=green]"..data.formatted.."%[/color]\n"
+                        str = str .. "[color=cyan]-- [" .. name ..
+                                  "]:[/color] \t[color=orange]LVL: [/color][color=green]" ..
+                                  data.lvl ..
+                                  "[/color] \t[color=orange]SECONDS: [/color][color=green]" ..
+                                  data.formatted .. "%[/color]\n"
                     else
-                    str = str.."[color=cyan]-- ["..name.."]:[/color] \t[color=orange]LVL: [/color][color=green]"..data.lvl.."[/color] \t[color=orange]BONUS: [/color][color=green]"..data.formatted.."%[/color]\n"
+                        str = str .. "[color=cyan]-- [" .. name ..
+                                  "]:[/color] \t[color=orange]LVL: [/color][color=green]" ..
+                                  data.lvl ..
+                                  "[/color] \t[color=orange]BONUS: [/color][color=green]" ..
+                                  data.formatted .. "%[/color]\n"
                     end
                 end
             end
@@ -118,19 +129,32 @@ function matChest()
 end
 
 function tools.stockUp()
-    if material_chest and material_chest.valid then
-        local chest_inv = material_chest.get_inventory(defines.inventory.chest)
-        chest_inv.clear()
-        local list = game.surfaces[GAME_SURFACE_NAME].find_entities_filtered {type = "entity-ghost", force = material_chest.force}
-        for _, ghost in pairs(list) do
-            if ghost.ghost_name == "curved-rail" or ghost.ghost_name ==
-                "straight-rail" then
-                if chest_inv.can_insert("rail") then
-                    chest_inv.insert {name = "rail", count = 1}
-                end
-            else
-                if chest_inv.can_insert(ghost.ghost_name) then
-                    chest_inv.insert {name = ghost.ghost_name, count = 1}
+    if (game.tick % 60 == 0) then
+        if material_chest and material_chest.valid then
+            local chest_inv = material_chest.get_inventory(defines.inventory
+                                                               .chest)
+            chest_inv.clear()
+            local list = game.surfaces[GAME_SURFACE_NAME]
+                             .find_entities_filtered {
+                type = "entity-ghost",
+                force = material_chest.force
+            }
+            if chest_inv.can_insert("landfill") then
+                chest_inv.insert {name = "landfill", count = 100}
+            end
+            if chest_inv.can_insert("cliff-explosives") then
+                chest_inv.insert {name = "cliff-explosives", count = 10}
+            end
+            for _, ghost in pairs(list) do
+                if ghost.ghost_name == "curved-rail" or ghost.ghost_name ==
+                    "straight-rail" then
+                    if chest_inv.can_insert("rail") then
+                        chest_inv.insert {name = "rail", count = 1}
+                    end
+                else
+                    if chest_inv.can_insert(ghost.ghost_name) then
+                        chest_inv.insert {name = ghost.ghost_name, count = 1}
+                    end
                 end
             end
         end
@@ -449,6 +473,18 @@ end
 function tools.getItem(player, item_name, count)
     local items = game.item_prototypes
     local player = player
+    if not item_name then
+        if game.player.selected then
+            item_name = game.player.selected.name
+            if item_name == "curved-rail" or item_name == "straight-rail" then
+                item_name = "rail"
+            end
+        end
+    end
+    if not item_name then
+        tools.error("You are not admin my friend")
+        return
+    end
     if items[item_name] then
         local count = count or items[item_name].stack_size
         player.insert {name = item_name, count = count}
