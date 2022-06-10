@@ -602,7 +602,7 @@ script.on_event(defines.events.on_market_item_purchased, function(event)
         local offers = player_market.market.get_market_items() -- get all offers
         local offer = offers[event.offer_index] -- get this offer
 
-        if event.offer_index == 13 or event.offer_index == 14 then -- if this offer is in the 'upgrades' section
+        if event.offer_index <= 14 then -- if this offer is in the 'upgrades' section
 
             local price = 0
             for _, single_price in pairs(offer.price) do
@@ -668,7 +668,7 @@ script.on_event(defines.events.on_market_item_purchased, function(event)
                             player_market.sell_speed_multiplier =
                                 mults[stat.lvl]
                             item.price =
-                                market.formatPrice(tools.round(price * 1.5))
+                                market.formatPrice(tools.round(price * 1.8))
                             if player_market.sell_speed_lvl == 13 then
                                 global.ocore.done_with_speed[player.name] = true
                                 item.price = market.formatPrice(MAX_INT32_POS)
