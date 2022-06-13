@@ -48,15 +48,15 @@ DISCORD_INV = "discord.gg/U35NxwY"
 COIN_MULTIPLIER = 2
 
 COIN_GENERATION_CHANCES = {
-    ["small-biter"] = 0.01,
-    ["medium-biter"] = 0.02,
-    ["big-biter"] = 0.05,
-    ["behemoth-biter"] = 1,
+    ["small-biter"] = 0, --0.01,
+    ["medium-biter"] = 0, --0.02,
+    ["big-biter"] = 0, --0.05,
+    ["behemoth-biter"] = 0, --1,
 
-    ["small-spitter"] = 0.01,
-    ["medium-spitter"] = 0.02,
-    ["big-spitter"] = 0.05,
-    ["behemoth-spitter"] = 1,
+    ["small-spitter"] = 0, --0.01,
+    ["medium-spitter"] = 0, --0.02,
+    ["big-spitter"] = 0, --0.05,
+    ["behemoth-spitter"] = 0, -- 1,
 
     ["small-worm-turret"] = 5,
     ["medium-worm-turret"] = 10,
