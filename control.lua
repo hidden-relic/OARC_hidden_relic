@@ -581,9 +581,6 @@ script.on_event(defines.events.on_entity_damaged, function(event)
 end)
 
 script.on_event(defines.events.on_entity_died, function(event)
-    if (game.surfaces[event.surface_index].name ~= GAME_SURFACE_NAME) then
-        return
-    end
     if event.cause.name == "artillery-turret" then
         table.insert(COIN_DENY_LIST, event.entity.position)
     end

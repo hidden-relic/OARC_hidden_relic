@@ -150,7 +150,7 @@ function TabChangeOarcGui(event)
     -- Clear all tab contents
     for i, t in pairs(otabs.tabs) do t.content.clear() end
 
-    SetOarGuiTabContent(player, selected_tab_name)
+    SetOarcGuiTabContent(player, selected_tab_name)
 end
 
 function FakeTabChangeEventOarcGui(player)
@@ -241,7 +241,7 @@ function AddOarcGuiTab(player, tab_name)
     if (otabs.selected_tab_index == nil) then otabs.selected_tab_index = 1 end
 end
 
-function SetOarGuiTabContent(player, tab_name)
+function SetOarcGuiTabContent(player, tab_name)
     if (not DoesOarcGuiExist(player)) then return end
 
     local otabs = GetOarcGuiTabsPane(player)

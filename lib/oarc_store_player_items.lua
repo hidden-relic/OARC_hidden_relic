@@ -119,11 +119,6 @@ OARC_STORE_PLAYER_ITEMS = {
             cost = 100,
             count = 1,
             play_time_locked = false
-        },
-        ["linked-chest"] = {
-            cost = 5000000,
-            count = 1,
-            play_time_locked = false
         }
     },
 

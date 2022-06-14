@@ -142,7 +142,7 @@ markets.upgrade_offers = {
 
         offer = {type = "character-health-bonus", modifier = 10}
     }, {
-        price = {{"coin", 1000}},
+        price = {{"coin", 50000}},
         offer = {type = "mining-drill-productivity-bonus", modifier = 0.01}
     }, {
         price = {{amount = 10000, name = "coin", type = "item"}},

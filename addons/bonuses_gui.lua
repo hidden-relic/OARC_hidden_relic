@@ -6,7 +6,7 @@ function CreateBonusesGuiTab(tab_container, player)
     local tab_container = tab_container
     if global.oarc_bonuses == nil then global.oarc_bonuses = {} end
 
-    global.oarc_bonuses[player.name] = getPlayerBonuses(player, true)
+    global.oarc_bonuses[player.name] = getPlayerBonuses(player)
     local stats = global.ocore.markets.player_markets[player.name].stats
 
     local bonuses_flow = tab_container.add {
@@ -53,10 +53,10 @@ function CreateBonusesGuiTab(tab_container, player)
     local stat_text = ""
     local label_name_parent = "gun-speed_info"
     AddLabel(stats_flow, label_name_parent, "[gun speed]", my_robot_label_style)
-    for name, data in pairs(stats["gun-speed"]) do
+    for name, stats in pairs(stats["gun-speed"]) do
         local label_name_child = label_name_parent .. name .. "_info"
-        stat_text = name .. "\t::\t[LVL]: " .. data.lvl .. "\t[BONUS]: " ..
-                        data.multiplier*100 .. "%"
+        stat_text = name .. "\t::\t[LVL]: " .. stats.lvl .. "\t[BONUS]: " ..
+                        stats.multiplier*100 .. "%"
         AddLabel(stats_flow, label_name_child, stat_text, my_speed_label_style)
     end
     AddSpacerLine(stats_flow)
@@ -64,10 +64,10 @@ function CreateBonusesGuiTab(tab_container, player)
     label_name_parent = "ammo-damage_info"
     AddLabel(stats_flow, label_name_parent, "[ammo damage]",
              my_robot_label_style)
-    for name, data in pairs(stats["ammo-damage"]) do
+    for name, stats in pairs(stats["ammo-damage"]) do
         local label_name_child = label_name_parent .. name .. "_info"
-        stat_text = name .. "\t::\t[LVL]: " .. data.lvl .. "\t[BONUS]: " ..
-                        data.multiplier*100 .. "%"
+        stat_text = name .. "\t::\t[LVL]: " .. stats.lvl .. "\t[BONUS]: " ..
+                        stats.multiplier*100 .. "%"
         AddLabel(stats_flow, label_name_child, stat_text, my_reach_label_style)
     end
     AddSpacerLine(stats_flow)
@@ -75,10 +75,10 @@ function CreateBonusesGuiTab(tab_container, player)
     label_name_parent = "turret-attack_info"
     AddLabel(stats_flow, label_name_parent, "[turret attack]",
              my_robot_label_style)
-    for name, data in pairs(stats["turret-attack"]) do
+    for name, stats in pairs(stats["turret-attack"]) do
         local label_name_child = label_name_parent .. name .. "_info"
-        stat_text = name .. "\t::\t[LVL]: " .. data.lvl .. "\t[BONUS]: " ..
-                        data.multiplier*100 .. "%"
+        stat_text = name .. "\t::\t[LVL]: " .. stats.lvl .. "\t[BONUS]: " ..
+                        stats.multiplier*100 .. "%"
         AddLabel(stats_flow, label_name_child, stat_text, my_inv_label_style)
     end
     AddSpacerLine(stats_flow)
