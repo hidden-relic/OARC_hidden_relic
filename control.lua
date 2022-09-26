@@ -135,17 +135,17 @@ script.on_init(function(event)
     -- ###### FAGC ######
 
     -- clear the logging file every restart to keep it minimal size
-    game.write_file("fagc-actions.txt", "", true, 0)
+    game.write_file("fagc-actions.txt", "", false, 0)
 
 end)
 
 script.on_event(defines.events.on_player_banned, function (e)
-    text = "ban;\"" .. e.player_name .. "\";\"" .. (e.by_player or "") .. "\";\"" .. (e.reason or "") .. "\""
+    local text = "ban;" .. e.player_name .. ";" .. (e.by_player or "") .. ";" .. (e.reason or "") .. "\n"
     game.write_file("fagc-actions.txt", text, true, 0)
 end)
 
 script.on_event(defines.events.on_player_unbanned, function (e)
-    text = "unban;\"" .. e.player_name .. "\";\"" .. (e.by_player or "") .. "\";\"" .. (e.reason or "") .. "\""
+    local text = "unban;" .. e.player_name .. ";" .. (e.by_player or "") .. ";" .. (e.reason or "") .. "\n"
     game.write_file("fagc-actions.txt", text, true, 0)
 end)
 
