@@ -131,8 +131,6 @@ script.on_init(function(event)
                               {x = -32, y = -30}, 37, "Spawn",
                               {0.9, 0.3, 0.3, 0.8})
 
-end)
-
     -- ###### FAGC ######
 
     -- clear the logging file every restart to keep it minimal size
