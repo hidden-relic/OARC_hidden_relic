@@ -953,20 +953,20 @@ COIN_GENERATION_CHANCES = {
 }
 
 function CoinsFromEnemiesOnPostEntityDied(event)
-    if (not event.prototype or not event.prototype.name) then return end
+    if (not event.entity or not game.entity_prototypes[event.entity.name]) then return end
 
     local coin_chance = nil
-    if (COIN_GENERATION_CHANCES[event.prototype.name]) then
-        coin_chance = COIN_GENERATION_CHANCES[event.prototype.name]
+    if (COIN_GENERATION_CHANCES[event.entity_prototypes[event.entity.name]]) then
+        coin_chance = COIN_GENERATION_CHANCES[event.entity_prototypes[event.entity.name]]
     end
 
     if (coin_chance) then
-        DropCoins(event.position, coin_chance, event.force)
+        DropCoins(coin_chance, event.cause.associated_player)
     end
 end
 
 -- Drop coins, force is optional, decon is applied if force is not nil.
-function DropCoins(pos, count, force)
+function DropCoins(count, player)
 
     local drop_amount = 0
 
@@ -982,5 +982,5 @@ function DropCoins(pos, count, force)
     end
 
     if drop_amount == 0 then return end
-    game.surfaces[GAME_SURFACE_NAME].spill_item_stack(pos, {name="coin", count=math.floor(drop_amount)}, true, force, false) -- Set nil to force to auto decon.
+    markets[player.name]:deposit(drop_amount)
 end

@@ -3,7 +3,6 @@
 --
 -- Code that handles everything regarding giving each player a separate spawn
 -- Includes the GUI stuff
-local market = require("addons/market")
 require("lib/oarc_utils")
 require("config")
 local crash_site = require("crash-site")
@@ -85,8 +84,6 @@ function InitSpawnGlobalsAndForces()
     if (global.ocore.buddySpawnOpts == nil) then
         global.ocore.buddySpawnOpts = {}
     end
-
-    if (global.ocore.markets == nil) then global.ocore.markets = {} end
 
     -- Silo info
     if (global.siloPosition == nil) then global.siloPosition = {} end
@@ -329,19 +326,10 @@ function SendPlayerToNewSpawnAndCreateIt(delayedSpawn)
         }, -- Ctrl  
         {x = delayedSpawn.pos.x + x_dist, y = delayedSpawn.pos.y}) -- Status
 
-        if not global.ocore then global.ocore = {} end
-        if not global.ocore.markets then global.ocore.markets = {} end
-        if not global.ocore.markets.player_markets then
-            global.ocore.markets.player_markets = {}
-        end
-        if not global.ocore.markets.player_markets[player.name] or
-            (global.ocore.markets.player_markets[player.name] == nil) then
-            global.ocore.markets.player_markets[player.name] = {}
-        end
-        market.create(player, {
+        markets[player.name]:create_sell_chest{
             x = delayedSpawn.pos.x + x_dist - 3,
             y = delayedSpawn.pos.y - 1
-        }) -- market
+        }
 
         SharedChestsSpawnOutput(player, {
             x = delayedSpawn.pos.x + x_dist,
@@ -756,22 +744,7 @@ function RemoveOrResetPlayer(player, remove_player, remove_force, remove_base,
     player.teleport({x = 0, y = 0}, GAME_SURFACE_NAME)
     local player_old_force = player.force
     player.force = global.ocfg.main_force
-    if global.ocore.markets.player_markets then
-        if global.ocore.markets.player_markets[player.name] then
-            if global.ocore.markets.player_markets[player.name].market and
-                global.ocore.markets.player_markets[player.name].market.valid then
-                global.ocore.markets.player_markets[player.name].market
-                    .destroy()
-            end
-            if global.ocore.markets.player_markets[player.name].market and
-                global.ocore.markets.player_markets[player.name].market.valid then
-                global.ocore.markets.player_markets[player.name].chest.destroy()
-            end
-            if global.ocore.markets.player_markets[player.name] then
-                global.ocore.markets.player_markets[player.name] = nil
-            end
-        end
-    end
+    if markets[player.name] then markets[player.name] = nil end
     -- Clear globals
     CleanupPlayerGlobals(player.name) -- Except global.ocore.uniqueSpawns
 

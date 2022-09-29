@@ -10,8 +10,6 @@
 
 -- That's a LOT of settings.
 function InitOarcConfig()
-    
-    global.bonus = {}
 
     global.ocfg = {}
     global.ocfg.debug = DEBUG_MODE

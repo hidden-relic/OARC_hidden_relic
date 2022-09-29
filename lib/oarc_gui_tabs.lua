@@ -16,7 +16,6 @@ OARC_TAGS_GUI_TAB_NAME = "Name Tags"
 OARC_ROCKETS_GUI_TAB_NAME = "Rockets"
 OARC_SHARED_ITEMS_GUI_TAB_NAME = "Shared Items"
 OARC_NOTEPAD_GUI_TAB_NAME = "Notepad"
-OARC_BONUSES_GUI_TAB_NAME = "Bonuses"
 
 local OARC_GUI_TAB_CONTENT_FUNCTIONS = {}
 OARC_GUI_TAB_CONTENT_FUNCTIONS["Server Info"] = CreateGameOptionsTab
@@ -26,7 +25,6 @@ OARC_GUI_TAB_CONTENT_FUNCTIONS["Name Tags"] = CreateTagGuiTab
 OARC_GUI_TAB_CONTENT_FUNCTIONS["Rockets"] = CreateRocketGuiTab
 OARC_GUI_TAB_CONTENT_FUNCTIONS["Shared Items"] = CreateSharedItemsGuiTab
 OARC_GUI_TAB_CONTENT_FUNCTIONS["Notepad"] = CreateNotepadGuiTab
-OARC_GUI_TAB_CONTENT_FUNCTIONS["Bonuses"] = CreateBonusesGuiTab
 
 function InitOarcGuiTabs(player)
     CreateOarcGuiButton(player)
@@ -63,9 +61,6 @@ function InitOarcGuiTabs(player)
 
     AddOarcGuiTab(player, OARC_NOTEPAD_GUI_TAB_NAME)
     SetOarcGuiTabEnabled(player, OARC_NOTEPAD_GUI_TAB_NAME, true)
-
-    AddOarcGuiTab(player, OARC_BONUSES_GUI_TAB_NAME)
-    SetOarcGuiTabEnabled(player, OARC_BONUSES_GUI_TAB_NAME, true)
 
     HideOarcGui(player)
 end
