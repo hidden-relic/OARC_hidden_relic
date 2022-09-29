@@ -269,7 +269,7 @@ end
 function Market.on_tick()
     if (game.tick % 10 == 0) and markets then
         for index, player in pairs(game.players) do
-            if markets[player.name].sell_chest and
+            if markets[player.name] and markets[player.name].sell_chest and
                 markets[player.name].sell_chest.valid then
                 markets[player.name]:check_sell_chest()
             end
