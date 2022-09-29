@@ -249,6 +249,8 @@ script.on_event(defines.events.on_player_created, function(event)
     -- Move the player to the game surface immediately.
     player.teleport({x = 0, y = 0}, GAME_SURFACE_NAME)
 
+    if not markets then markets = {}
+
     markets[player.name]=market:new{player=player}
     markets[player.name]:init()
 
