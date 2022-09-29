@@ -5,16 +5,6 @@ local console = {
     color = {1, 1, 1, 1}
 }
 
-local function in_table(tbl, val)
-    if type(tbl) == "table" then
-        for index, value in pairs(tbl) do
-            if value == val then return index end
-        end
-    else
-        return
-    end
-end
-
 local color = require("utils/color_presets")
 
 -- control.lua
@@ -39,13 +29,12 @@ local color = require("utils/color_presets")
 -- Generic Utility Includes
 require("lib/oarc_utils")
 
-market = require("addons/market")
+local market = require("addons/market")
 tools = require("addons/tools")
 groups = require("addons/groups")
 local find_patch = require("addons/find_patch")
 local deathmarkers = require("addons/death-marker")
 local flying_tags = require("flying_tags")
-require("addons/bonuses_gui")
 -- Other soft-mod type features.
 require("lib/frontier_silo")
 require("lib/tag")
@@ -82,7 +71,6 @@ require("compat/factoriomaps")
 
 -- Create a new surface so we can modify map settings at the start.
 GAME_SURFACE_NAME = "oarc"
-COIN_DENY_LIST = {}
 
 commands.add_command("trigger-map-cleanup",
                      "Force immediate removal of all expired chunks (unused chunk removal mod)",
@@ -109,7 +97,7 @@ script.on_init(function(event)
     -- MUST be before other stuff, but after surface creation.
     InitSpawnGlobalsAndForces()
 
-    market.init()
+    markets={}
     groups.init()
     -- Frontier Silo Area Generation
     if (global.ocfg.frontier_rocket_silo and
@@ -182,6 +170,21 @@ script.on_event(defines.events.on_gui_click, function(event)
     -- Don't interfere with other mod related stuff.
     if (event.element.get_mod() ~= nil) then return end
 
+    if not (event and event.element and event.element.valid) then return end
+    local player = game.players[event.player_index]
+
+    if event.element == markets[player.name].market_button then
+        markets[player.name]:toggle_market_gui()
+    end
+    if markets[player.name].item_buttons and markets[player.name].item_buttons[event.element.name] then
+        local button = markets[player.name].item_buttons[event.element.name]
+        markets[player.name]:purchase(button.name)
+    end
+    if markets[player.name].upgrade_buttons and markets[player.name].upgrade_buttons[event.element.name] then
+        local button = markets[player.name].upgrade_buttons[event.element.name]
+        markets[player.name]:upgrade(button.name)
+    end
+    
     if global.ocfg.enable_tags then TagGuiClick(event) end
 
     WelcomeTextGuiClick(event)
@@ -194,8 +197,6 @@ script.on_event(defines.events.on_gui_click, function(event)
     SharedSpawnJoinWaitMenuClick(event)
 
     ClickOarcGuiButton(event)
-
-    market.teleClick(event)
 
     if global.ocfg.enable_coin_shop then ClickOarcStoreButton(event) end
 
@@ -217,11 +218,6 @@ end)
 -- Player Events
 ----------------------------------------
 
-script.on_event(defines.events.on_player_changed_position, function(event)
-    local player = game.players[event.player_index]
-    market.teleGui(player)
-end)
-
 script.on_event(defines.events.on_pre_player_died,
                 function(event) deathmarkers.playerDied(event) end)
 script.on_event(defines.events.on_pre_player_mined_item,
@@ -235,56 +231,13 @@ script.on_event(defines.events.on_player_joined_game, function(event)
     if (global.oarc_players[player.name] == nil) then
         global.oarc_players[player.name] = {}
     end
-    if not global.ocore.markets.player_markets then
-        global.ocore.markets.player_markets = {}
-    end
-    if not global.ocore.markets.player_markets[player.name] then
-        global.ocore.markets.player_markets[player.name] = {}
-    end
 
-    if not global.ocore.markets.teles then global.ocore.markets.teles = {} end
 
     if not global.ocore.groups.player_groups then
         global.ocore.groups.player_groups = {}
     end
     if not global.ocore.groups.player_groups[player.name] then
         global.ocore.groups.player_groups[player.name] = {}
-    end
-    if not global.ocore.markets.player_markets[player.name].stats then
-        global.ocore.markets.player_markets[player.name].stats = {
-            ["gun-speed"] = {
-                ["bullet"] = {["lvl"] = 1, ["multiplier"] = 0},
-                -- ["shotgun-shell"] = {["lvl"] = 1, ["multiplier"] = 0},
-                -- ["landmine"] = {["lvl"] = 1, ["multiplier"] = 0},
-                -- ["grenade"] = {["lvl"] = 1, ["multiplier"] = 0},
-                -- ["cannon-shell"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["flamethrower"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["rocket"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["laser"] = {["lvl"] = 1, ["multiplier"] = 0}
-            },
-            ["ammo-damage"] = {
-                ["bullet"] = {["lvl"] = 1, ["multiplier"] = 0},
-                -- ["shotgun-shell"] = {["lvl"] = 1, ["multiplier"] = 0},
-                -- ["landmine"] = {["lvl"] = 1, ["multiplier"] = 0},
-                -- ["grenade"] = {["lvl"] = 1, ["multiplier"] = 0},
-                -- ["cannon-shell"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["flamethrower"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["rocket"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["laser"] = {["lvl"] = 1, ["multiplier"] = 0}
-            },
-            ["turret-attack"] = {
-                ["gun-turret"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["flamethrower-turret"] = {["lvl"] = 1, ["multiplier"] = 0},
-                ["laser-turret"] = {["lvl"] = 1, ["multiplier"] = 0}
-            },
-            ["character-health"] = {
-                ["current"] = {["lvl"] = 1, ["multiplier"] = 0}
-            },
-            ["mining-productivity"] = {
-                ["current"] = {["lvl"] = 1, ["multiplier"] = 0}
-            },
-            ["sell-speed"] = {["current"] = {["lvl"] = 1, ["multiplier"] = 10}}
-        }
     end
     deathmarkers.init(event)
 end)
@@ -295,7 +248,10 @@ script.on_event(defines.events.on_player_created, function(event)
 
     -- Move the player to the game surface immediately.
     player.teleport({x = 0, y = 0}, GAME_SURFACE_NAME)
-    market.help()
+
+    markets[player.name]=market:new{player=player}
+    markets[player.name]:init()
+
 
     if global.ocfg.enable_long_reach then GivePlayerLongReach(player) end
 
@@ -580,23 +536,12 @@ script.on_event(defines.events.on_entity_damaged, function(event)
 
 end)
 
-script.on_event(defines.events.on_entity_died, function(event)
-    if event.cause.name == "artillery-turret" then
-        table.insert(COIN_DENY_LIST, event.entity.position)
-    end
-end)
-
 script.on_event(defines.events.on_post_entity_died, function(event)
     if (game.surfaces[event.surface_index].name ~= GAME_SURFACE_NAME) then
         return
     end
     if global.ocfg.enable_coin_shop then
-        if not in_table(COIN_DENY_LIST, event.position) then
-            CoinsFromEnemiesOnPostEntityDied(event)
-        else
-            COIN_DENY_LIST[in_table(COIN_DENY_LIST, event.position)] = nil
-            return
-        end
+        CoinsFromEnemiesOnPostEntityDied(event)
     end
 end, {
     {filter = "type", type = "unit"}, {filter = "type", type = "unit-spawner"},
@@ -609,106 +554,5 @@ end, {
 script.on_event(defines.events.on_resource_depleted, function(event)
     if global.ocfg.enable_miner_decon then
         OarcAutoDeconOnResourceDepleted(event)
-    end
-end)
-
---------------------------------------------
-script.on_event(defines.events.on_market_item_purchased, function(event)
-    local player = game.players[event.player_index]
-    local player_market = global.ocore.markets.player_markets[player.name]
-    local count = event.count
-    local mults = {
-        10, 9.23, 8.46, 7.69, 6.92, 6.15, 5.38, 4.61, 3.84, 3.07, 2.31, 1.54,
-        0.75
-    }
-
-    if player_market.market and player_market.market.valid then
-        local offers = player_market.market.get_market_items() -- get all offers
-        local offer = offers[event.offer_index] -- get this offer
-        local t_price = 0
-
-        if event.offer_index == 13 or event.offer_index == 14 then -- if this offer is in the 'upgrades' section
-
-            local price = 0
-            for _, single_price in pairs(offer.price) do
-                price = price + single_price.amount
-            end
-            if count > 1 then
-                local refund = 0
-                refund = price * (count - 1)
-                player.insert {name = "coin", count = refund}
-            end
-            --[[
-            {
-                price = {{"coin", 1000}},
-                offer = {type = "gun-speed", ammo_category = "bullet", modifier = 0.01}
-            }
-]]
-            t_price = price
-        end
-        for i, item in ipairs(offers) do
-            if i == event.offer_index then
-                if i <= 14 then
-                    if i <= 13 then
-                        if i <= 8 then
-                            local stat =
-                                player_market.stats[item.offer.type][item.offer
-                                    .ammo_category]
-                            stat.multiplier = stat.multiplier +
-                                                  item.offer.modifier
-                            stat.lvl = stat.lvl + 1
-                        elseif (i > 8) and (i <= 11) then
-                            local stat =
-                                player_market.stats[item.offer.type][item.offer
-                                    .turret_id]
-                            stat.multiplier = stat.multiplier +
-                                                  item.offer.modifier
-                            stat.lvl = stat.lvl + 1
-                        elseif (i == 12) then
-                            local stat =
-                                player_market.stats["character-health"].current
-                            stat.multiplier = stat.multiplier +
-                                                  item.offer.modifier
-                            player.character_health_bonus =
-                                player.character_health_bonus -
-                                    item.offer.modifier * (count - 1)
-                            stat.lvl = stat.lvl + 1
-                        elseif (i == 13) then
-                            local stat =
-                                player_market.stats["mining-productivity"]
-                                    .current
-                            stat.multiplier = stat.multiplier +
-                                                  item.offer.modifier
-                            player.force.mining_drill_productivity_bonus =
-                                player.force.mining_drill_productivity_bonus -
-                                    item.offer.modifier * (count - 1)
-                            stat.lvl = stat.lvl + 1
-                            item.price =
-                                market.formatPrice(math.ceil(t_price * 1.08))
-                        end
-                    else
-                        if global.ocore.done_with_speed[player.name] ~= nil then
-                            return
-                        end
-                        local stat = player_market.stats["sell-speed"].current
-                        stat.lvl = stat.lvl + 1
-                        stat.multiplier = mults[stat.lvl]
-                        player_market.sell_speed_lvl =
-                            player_market.sell_speed_lvl + 1
-                        player_market.sell_speed_multiplier = mults[stat.lvl]
-                        item.price = market.formatPrice(
-                                         tools.round(t_price * 1.5))
-                        if player_market.sell_speed_lvl == 13 then
-                            global.ocore.done_with_speed[player.name] = true
-                            item.price = market.formatPrice(MAX_INT32_POS)
-                        end
-                    end
-                end
-            end
-        end
-        player_market.market.clear_market_items()
-        for __, item in pairs(offers) do
-            player_market.market.add_market_item(item)
-        end
     end
 end)
