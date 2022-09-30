@@ -71,7 +71,7 @@ Market.upgrades["sell-speed"] = {
         o.upgrades["sell-speed"].lvl = o.upgrades["sell-speed"].lvl + 1
         o.upgrades["sell-speed"].cost = o.upgrades["sell-speed"].cost +
                                             o.upgrades["sell-speed"].cost * 2
-                                            return true
+        return true
     end
 }
 
@@ -89,7 +89,6 @@ function Market:create_sell_chest(position)
     }
     tools.protect_entity(self.sell_chest)
 end
-
 
 function Market:create_market_button()
     self.button_flow = gui.get_button_flow(self.player)
@@ -164,9 +163,8 @@ function Market:update()
     end
     for index, button in pairs(self.upgrade_buttons) do
         button.caption = self.upgrades[index].lvl
-        button.tooltip =
-            self.upgrades[index].name .. "\n[item=coin] " ..
-                self.upgrades[index].cost
+        button.tooltip = self.upgrades[index].name .. "\n[item=coin] " ..
+                             self.upgrades[index].cost
     end
 end
 
@@ -181,9 +179,8 @@ local function get_chest_inv(chest)
 end
 
 function Market:get_nth_item_from_chest(n)
-    if (get_chest_inv(self.sell_chest) == nil) or (get_chest_inv(self.sell_chest).is_empty()) then
-        return
-    end
+    if (get_chest_inv(self.sell_chest) == nil) or
+        (get_chest_inv(self.sell_chest).is_empty()) then return end
     local t = {}
     local n = n or 1
     local contents = get_chest_inv(self.sell_chest).get_contents()
@@ -204,7 +201,10 @@ function Market:check_for_sale()
     if not self.ticks_to_sell then
         if not self:get_nth_item_from_chest() then return end
         self.item_for_sale = self:get_nth_item_from_chest()
-        get_chest_inv(self.sell_chest).remove({name = self.item_for_sale, count = 1})
+        get_chest_inv(self.sell_chest).remove({
+            name = self.item_for_sale,
+            count = 1
+        })
         self.ticks_to_sell = game.tick +
                                  (60 *
                                      self.upgrades["sell-speed"].t[self.upgrades["sell-speed"]
@@ -267,10 +267,10 @@ end
 
 function Market.on_tick()
     if (game.tick % 10 == 0) and markets then
-        for index, player in pairs(game.players) do
-            if markets[player.name].sell_chest and
-                markets[player.name].sell_chest.valid then
-                markets[player.name]:check_sell_chest()
+        for index, entry in pairs(markets) do
+            if not entry or not entry.sell_chest then return end
+            if entry.sell_chest and entry.sell_chest.valid then
+                entry:check_sell_chest()
             end
         end
     end
