@@ -63,10 +63,11 @@ end
 Market.upgrades["sell-speed"] = {
     name = "Sell Speed",
     lvl = 1,
-    t = {5, 4.5, 4, 3.5, 3, 2.5, 2, 1, 0.5, 0.25},
+    t = {5, 4.8, 4.5, 4.1, 3.6, 3, 2.4, 1.7, 0.6, 0.25},
     cost = 10000,
     increase = function(o)
         if o.upgrades["sell-speed"].lvl == 10 then return nil end
+        self:withdraw(o.upgrades["sell-speed"].cost)
         o.upgrades["sell-speed"].lvl = o.upgrades["sell-speed"].lvl + 1
         o.upgrades["sell-speed"].cost = o.upgrades["sell-speed"].cost +
                                             o.upgrades["sell-speed"].cost * 2
@@ -76,9 +77,7 @@ Market.upgrades["sell-speed"] = {
 
 function Market:upgrade(bonus)
     if math.floor(self.balance / self.upgrades[bonus].cost) >= 1 then
-        if self.upgrades[bonus].increase(self) then
-        self:withdraw(self.upgrades[bonus].cost)
-        end
+        self.upgrades[bonus].increase(self)
     end
 end
 
@@ -268,11 +267,10 @@ end
 
 function Market.on_tick()
     if (game.tick % 10 == 0) and markets then
-        for index, entry in pairs(markets) do
-            if not entry or not entry.sell_chest then return end
-            if entry.sell_chest and
-                entry.sell_chest.valid then
-                entry:check_sell_chest()
+        for index, player in pairs(game.players) do
+            if markets[player.name].sell_chest and
+                markets[player.name].sell_chest.valid then
+                markets[player.name]:check_sell_chest()
             end
         end
     end
