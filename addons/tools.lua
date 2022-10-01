@@ -88,7 +88,7 @@ function matChest()
 end
 
 function tools.stockUp()
-    if (game.tick % 60 == 0) then
+    if (game.tick % 1800 == 0) then
         if material_chest and material_chest.valid then
             local chest_inv = material_chest.get_inventory(defines.inventory
                                                                .chest)

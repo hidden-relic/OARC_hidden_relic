@@ -196,7 +196,9 @@ script.on_event(defines.events.on_gui_click, function(event)
     end
     if markets[player.name].item_buttons and markets[player.name].item_buttons[event.element.name] then
         local button = markets[player.name].item_buttons[event.element.name]
-        markets[player.name]:purchase(button.name)
+        local click = event.button
+        local shift = event.shift
+        markets[player.name]:purchase(button.name, click, shift)
     end
     if markets[player.name].upgrade_buttons and markets[player.name].upgrade_buttons[event.element.name] then
         local button = markets[player.name].upgrade_buttons[event.element.name]
@@ -518,6 +520,10 @@ script.on_event(defines.events.on_gui_text_changed,
 -- For capturing player escaping custom GUI so we can close it using ESC key.
 ----------------------------------------
 script.on_event(defines.events.on_gui_closed, function(event)
+    local player = game.players[event.player_index]
+    if event.element and event.element == markets[player.name].main_frame then
+        markets[player.name]:close_gui()
+    end
     OarcGuiOnGuiClosedEvent(event)
     if global.ocfg.enable_coin_shop then OarcStoreOnGuiClosedEvent(event) end
     WelcomeTextGuiClosedEvent(event)

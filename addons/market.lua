@@ -3,7 +3,7 @@ local tools = require("addons.tools")
 local prodscore = require('production-score')
 local flib_table = require('flib.table')
 
-local Market = {balance = 0, market_gui_visible = false, upgrades = {}}
+local Market = {balance = 0, upgrades = {}}
 
 function Market:new(o)
     o = o or {}
@@ -44,13 +44,26 @@ function Market:withdraw(v)
     end
 end
 
-function Market:purchase(item)
+function Market:purchase(item, click, shift)
     local item = item
     local value = self.item_values[item]
-    if math.floor(self.balance / value) >= 1 and
-        self.player.can_insert {name = item} then
-        self:withdraw(value)
-        self.player.insert {name = item}
+    local i = nil
+    if click == 2 then i = 1 end
+    if click == 4 then
+        if not shift then
+            i = 5
+        else
+            i = math.floor(self.balance / value)
+        end
+    end
+    if i then
+        for x = 1, i do
+            if math.floor(self.balance / value) >= 1 and
+                self.player.can_insert {name = item} then
+                self:withdraw(value)
+                self.player.insert {name = item}
+            end
+        end
     end
 end
 
@@ -60,23 +73,8 @@ function Market:sell(item)
     self:deposit(value)
 end
 
-Market.upgrades["sell-speed"] = {
-    name = "Sell Speed",
-    lvl = 1,
-    t = {5, 4.8, 4.5, 4.1, 3.6, 3, 2.4, 1.7, 0.6, 0.25},
-    cost = 10000,
-    increase = function(o)
-        if o.upgrades["sell-speed"].lvl == 10 then return nil end
-        self:withdraw(o.upgrades["sell-speed"].cost)
-        o.upgrades["sell-speed"].lvl = o.upgrades["sell-speed"].lvl + 1
-        o.upgrades["sell-speed"].cost = o.upgrades["sell-speed"].cost +
-                                            o.upgrades["sell-speed"].cost * 2
-        return true
-    end
-}
-
 function Market:upgrade(bonus)
-    if math.floor(self.balance / self.upgrades[bonus].cost) >= 1 then
+    if self.balance >= self.upgrades[bonus].cost then
         self.upgrades[bonus].increase(self)
     end
 end
@@ -106,7 +104,7 @@ function Market:create_market_gui()
     self.main_frame = self.frame_flow.add {
         type = "frame",
         direction = "vertical",
-        visible = self.market_gui_visible
+        visible = false
     }
     self.main_flow = self.main_frame.add {type = "flow", direction = "vertical"}
     self.items_frame = self.main_flow.add {
@@ -132,22 +130,199 @@ function Market:create_market_gui()
             }
         }
     end
+    self.upgrades_frame = self.main_flow.add {
+        type = "frame",
+        direction = "vertical"
+    }
+    self.upgrades_flow = self.upgrades_frame.add {
+        type = "scroll-pane",
+        direction = "vertical"
+    }
+
+    self.upgrades_table = self.upgrades_flow.add {
+        type = "table",
+        column_count = 20
+    }
     self.upgrade_buttons = {}
-    self.upgrade_buttons["sell-speed"] =
-        self.item_table.add {
-            name = "sell-speed",
+    for name, upgrade in pairs(self.upgrades) do
+        self.upgrade_buttons[name] = self.upgrades_table.add {
+            name = name,
             type = "sprite-button",
-            sprite = "utility/character_running_speed_modifier_constant",
-            caption = self.upgrades["sell-speed"].lvl,
-            tooltip = "Sell Speed\n[item=coin] " ..
-                self.upgrades["sell-speed"].cost
+            sprite = upgrade.sprite,
+            number = upgrade.lvl,
+            tooltip = upgrade.name .. "\n[item=coin] " .. upgrade.cost
         }
+    end
 end
+
+Market.upgrades["sell-speed"] = {
+    name = "Sell Speed",
+    lvl = 1,
+    cost = 10000,
+    sprite = "utility/character_running_speed_modifier_constant",
+    t = {5, 4.8, 4.5, 4.1, 3.6, 3, 2.4, 1.7, 0.6, 0.25},
+    increase = function(o)
+        if o.upgrades["sell-speed"].lvl == 10 then return nil end
+        local current_cost = o.upgrades["sell-speed"].cost
+        o.upgrades["sell-speed"].lvl = o.upgrades["sell-speed"].lvl + 1
+        o.upgrades["sell-speed"].cost = o.upgrades["sell-speed"].cost +
+                                            o.upgrades["sell-speed"].cost * 2
+        o:withdraw(current_cost)
+        return true
+    end
+}
+
+Market.upgrades["ammo-damage"] = {
+    name = "Ammo Damage",
+    lvl = 1,
+    cost = 10000,
+    sprite = "technology/physical-projectile-damage-7",
+    t = {
+        {type = "ammo-damage", ammo_category = "bullet", modifier = 0.1},
+        {type = "ammo-damage", ammo_category = "rocket", modifier = 0.1},
+        {type = "ammo-damage", ammo_category = "flamethrower", modifier = 0.1},
+        {type = "ammo-damage", ammo_category = "laser", modifier = 0.1}
+    },
+    increase = function(o)
+        local current_cost = o.upgrades["ammo-damage"].cost
+        o.upgrades["ammo-damage"].lvl = o.upgrades["ammo-damage"].lvl + 1
+        o.upgrades["ammo-damage"].cost =
+            o.upgrades["ammo-damage"].cost + o.upgrades["ammo-damage"].cost *
+                0.2
+        for _, effect in pairs(o.upgrades["ammo-damage"].t) do
+            o.player.force.set_ammo_damage_modifier(effect.ammo_category,
+                                                    o.player.force
+                                                        .get_ammo_damage_modifier(
+                                                        effect.ammo_category) +
+                                                        effect.modifier)
+            o:withdraw(current_cost)
+            return true
+        end
+    end
+}
+
+Market.upgrades["turret-attack"] = {
+    name = "Turret Attack",
+    lvl = 1,
+    cost = 10000,
+    sprite = "technology/energy-weapons-damage-4",
+    t = {
+        {type = "turret-attack", turret_id = "gun-turret", modifier = 0.1},
+        {
+            type = "turret-attack",
+            turret_id = "flamethrower-turret",
+            modifier = 0.1
+        }, {type = "turret-attack", turret_id = "laser-turret", modifier = 0.1}
+    },
+    increase = function(o)
+        local current_cost = o.upgrades["turret-attack"].cost
+        o.upgrades["turret-attack"].lvl = o.upgrades["turret-attack"].lvl + 1
+        o.upgrades["turret-attack"].cost =
+            o.upgrades["turret-attack"].cost + o.upgrades["turret-attack"].cost *
+                0.2
+        for _, effect in pairs(o.upgrades["turret-attack"].t) do
+            o.player.force.set_turret_attack_modifier(effect.turret_id, o.player
+                                                          .force
+                                                          .get_turret_attack_modifier(
+                                                          effect.turret_id) +
+                                                          effect.modifier)
+            o:withdraw(current_cost)
+            return true
+        end
+    end
+}
+
+Market.upgrades["gun-speed"] = {
+    name = "Gun Speed",
+    lvl = 1,
+    cost = 10000,
+    sprite = "technology/weapon-shooting-speed-4",
+    t = {
+        {type = "gun-speed", ammo_category = "bullet", modifier = 0.1},
+        {type = "gun-speed", ammo_category = "rocket", modifier = 0.1},
+        {type = "gun-speed", ammo_category = "laser", modifier = 0.1}
+    },
+    increase = function(o)
+        local current_cost = o.upgrades["gun-speed"].cost
+        o.upgrades["gun-speed"].lvl = o.upgrades["gun-speed"].lvl + 1
+        o.upgrades["gun-speed"].cost = o.upgrades["gun-speed"].cost +
+                                           o.upgrades["gun-speed"].cost * 0.2
+        for _, effect in pairs(o.upgrades["gun-speed"].t) do
+            o.player.force.set_gun_speed_modifier(effect.ammo_category, o.player
+                                                      .force
+                                                      .get_gun_speed_modifier(
+                                                      effect.ammo_category) +
+                                                      effect.modifier)
+            o:withdraw(current_cost)
+            return true
+        end
+    end
+}
+
+Market.upgrades["mining-drill-productivity-bonus"] = {
+    name = "Mining Drill Productivity",
+    lvl = 1,
+    cost = 10000,
+    sprite = "technology/mining-productivity-1",
+    t = {{type = "mining-drill-productivity-bonus", modifier = 0.1}},
+    increase = function(o)
+        local current_cost = o.upgrades["mining-drill-productivity-bonus"].cost
+        o.upgrades["mining-drill-productivity-bonus"].lvl =
+            o.upgrades["mining-drill-productivity-bonus"].lvl + 1
+        o.upgrades["mining-drill-productivity-bonus"].cost =
+            o.upgrades["mining-drill-productivity-bonus"].cost +
+                o.upgrades["mining-drill-productivity-bonus"].cost * 0.2
+        for _, effect in pairs(o.upgrades["mining-drill-productivity-bonus"].t) do
+            o.player.force.mining_drill_productivity_bonus = o.player.force
+                                                                 .mining_drill_productivity_bonus +
+                                                                 effect.modifier
+            o:withdraw(current_cost)
+            return true
+        end
+    end
+}
+
+Market.upgrades["maximum-following-robots-count"] = {
+    name = "Follower Robot Count",
+    lvl = 1,
+    cost = 10000,
+    sprite = "technology/follower-robot-count-1",
+    t = {{type = "maximum-following-robots-count", modifier = 5}},
+    increase = function(o)
+        local current_cost = o.upgrades["maximum-following-robots-count"].cost
+        o.upgrades["maximum-following-robots-count"].lvl =
+            o.upgrades["maximum-following-robots-count"].lvl + 1
+        o.upgrades["maximum-following-robots-count"].cost =
+            o.upgrades["maximum-following-robots-count"].cost +
+                o.upgrades["maximum-following-robots-count"].cost * 0.2
+        for _, effect in pairs(o.upgrades["maximum-following-robots-count"].t) do
+            o.player.force.maximum_following_robot_count = o.player.force
+                                                               .maximum_following_robot_count +
+                                                               effect.modifier
+            o:withdraw(current_cost)
+            return true
+        end
+    end
+}
 
 function Market:toggle_market_gui()
     self:update()
-    self.market_gui_visible = not self.market_gui_visible
-    self.main_frame.visible = self.market_gui_visible
+    if self.main_frame.visible == true then
+        self:close_gui()
+    else
+        self:open_gui()
+    end
+end
+
+function Market:close_gui()
+    if (self.main_frame == nil) then return end
+    self.main_frame.visible = false
+    self.player.opened = nil
+end
+
+function Market:open_gui()
+    self.main_frame.visible = true
+    self.player.opened = self.main_frame
 end
 
 function Market:update()
@@ -162,7 +337,7 @@ function Market:update()
         }
     end
     for index, button in pairs(self.upgrade_buttons) do
-        button.caption = self.upgrades[index].lvl
+        button.number = self.upgrades[index].lvl
         button.tooltip = self.upgrades[index].name .. "\n[item=coin] " ..
                              self.upgrades[index].cost
     end

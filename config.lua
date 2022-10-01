@@ -72,7 +72,7 @@ COIN_GENERATION_CHANCES = {
 
 -- This allows 2 players to spawn next to each other in the wilderness, each with their own starting point. It adds more
 -- GUI selection options.
-ENABLE_BUDDY_SPAWN = false
+ENABLE_BUDDY_SPAWN = true
 
 -- Frontier style rocket silo mode. This means you can't build silos, but some spawn out in the wild for you to use.
 -- if ENABLE_MAGIC_FACTORIES=false, you will find a few special areas to launch rockets from.
@@ -391,7 +391,7 @@ MAIN_FORCE = "Main Force"
 
 -- Enable if players can allow others to join their base.
 -- And specify how many including the host are allowed.
-ENABLE_SHARED_SPAWNS = false
+ENABLE_SHARED_SPAWNS = true
 MAX_PLAYERS_AT_SHARED_SPAWN = 5
 
 -- Share local team chat with all teams
