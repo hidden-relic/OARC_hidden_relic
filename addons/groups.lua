@@ -65,7 +65,7 @@ function Group:add(pet)
                 self.group.add_member(new_pet)
                 flying_tag.create(new_tag)
                 self.player.print({
-                    "groups.pet_added", self.pet_data[pet].color,
+                    "groups.pet_added", self.pet_data[pet].color[1]..", "..self.pet_data[pet].color[2]..", "..self.pet_data[pet].color[3],
                     new_pet.localised_name, self:get_count()
                 })
             end
