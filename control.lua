@@ -30,7 +30,7 @@ local color = require("utils/color_presets")
 require("lib/oarc_utils")
 
 local market = require("addons/market")
-tools = require("addons/tools")
+local tools = require("addons/tools")
 local group = require("addons/groups")
 local find_patch = require("addons/find_patch")
 local deathmarkers = require("addons/death-marker")
@@ -191,18 +191,20 @@ script.on_event(defines.events.on_gui_click, function(event)
     if not (event and event.element and event.element.valid) then return end
     local player = game.players[event.player_index]
 
-    if event.element == markets[player.name].market_button then
-        markets[player.name]:toggle_market_gui()
-    end
-    if markets[player.name].item_buttons and markets[player.name].item_buttons[event.element.name] then
-        local button = markets[player.name].item_buttons[event.element.name]
-        local click = event.button
-        local shift = event.shift
-        markets[player.name]:purchase(button.name, click, shift)
-    end
-    if markets[player.name].upgrade_buttons and markets[player.name].upgrade_buttons[event.element.name] then
-        local button = markets[player.name].upgrade_buttons[event.element.name]
-        markets[player.name]:upgrade(button.name)
+    if markets then
+        if event.element == markets[player.name].market_button then
+            markets[player.name]:toggle_market_gui()
+        end
+        if markets[player.name].item_buttons and markets[player.name].item_buttons[event.element.name] then
+            local button = markets[player.name].item_buttons[event.element.name]
+            local click = event.button
+            local shift = event.shift
+            markets[player.name]:purchase(button.name, click, shift)
+        end
+        if markets[player.name].upgrade_buttons and markets[player.name].upgrade_buttons[event.element.name] then
+            local button = markets[player.name].upgrade_buttons[event.element.name]
+            markets[player.name]:upgrade(button.name)
+        end
     end
     
     if global.ocfg.enable_tags then TagGuiClick(event) end
