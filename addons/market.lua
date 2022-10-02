@@ -305,6 +305,28 @@ Market.upgrades["maximum-following-robots-count"] = {
     end
 }
 
+Market.upgrades["group-limit"] = {
+    name = "Pet Limit",
+    lvl = 1,
+    cost = 10000,
+    sprite = "entity/small-biter",
+    t = {},
+    increase = function(o)
+        local upgrade = o.upgrades["group-limit"]
+        if groups[o.player.name]:get_count() < groups[o.player.name].max then
+            local current_cost = upgrade.cost
+            upgrade.lvl = upgrade.lvl + 1
+            upgrade.cost = upgrade.cost + upgrade.cost * 0.25
+            groups[o.player.name].limit = groups[o.player.name].limit + 1
+            o:withdraw(current_cost)
+            return true
+        else
+            o.player.print("Max buddies allowed")
+            return false
+        end
+    end
+}
+
 function Market:toggle_market_gui()
     self:update()
     if self.main_frame.visible == true then
@@ -326,11 +348,12 @@ function Market:open_gui()
 end
 
 function Market:update()
-    self.market_button.number = self.balance
-    self.market_button.tooltip = "[item=coin] " .. self.balance
+    local balance = math.floor(self.balance)
+    self.market_button.number = balance
+    self.market_button.tooltip = "[item=coin] " .. balance
     for index, button in pairs(self.item_buttons) do
         local value = self.item_values[index]
-        button.number = math.floor(self.balance / value)
+        button.number = math.floor(balance / value)
         button.tooltip = {
             "tooltips.market_items", button.name,
             game.item_prototypes[button.name].localised_name, value
@@ -339,7 +362,7 @@ function Market:update()
     for index, button in pairs(self.upgrade_buttons) do
         button.number = self.upgrades[index].lvl
         button.tooltip = self.upgrades[index].name .. "\n[item=coin] " ..
-                             self.upgrades[index].cost
+                             math.ceil(self.upgrades[index].cost)
     end
 end
 

@@ -31,7 +31,7 @@ require("lib/oarc_utils")
 
 local market = require("addons/market")
 tools = require("addons/tools")
-groups = require("addons/groups")
+local group = require("addons/groups")
 local find_patch = require("addons/find_patch")
 local deathmarkers = require("addons/death-marker")
 local flying_tags = require("flying_tags")
@@ -98,7 +98,7 @@ script.on_init(function(event)
     InitSpawnGlobalsAndForces()
 
     markets={}
-    groups.init()
+    groups={}
     -- Frontier Silo Area Generation
     if (global.ocfg.frontier_rocket_silo and
         not global.ocfg.enable_magic_factories) then
@@ -252,13 +252,6 @@ script.on_event(defines.events.on_player_joined_game, function(event)
         global.oarc_players[player.name] = {}
     end
 
-
-    if not global.ocore.groups.player_groups then
-        global.ocore.groups.player_groups = {}
-    end
-    if not global.ocore.groups.player_groups[player.name] then
-        global.ocore.groups.player_groups[player.name] = {}
-    end
     deathmarkers.init(event)
 end)
 
@@ -270,10 +263,11 @@ script.on_event(defines.events.on_player_created, function(event)
     player.teleport({x = 0, y = 0}, GAME_SURFACE_NAME)
 
     if not markets then markets = {} end
-
     markets[player.name]=market:new{player=player}
     markets[player.name]:init()
-
+    
+    if not groups then groups = {} end
+    groups[player.name]=group:new{player=player}
 
     if global.ocfg.enable_long_reach then GivePlayerLongReach(player) end
 
@@ -349,7 +343,7 @@ script.on_event(defines.events.on_tick, function(event)
     ReportPlayerBuffsOnTick()
 
     market.on_tick()
-    groups.on_tick()
+    group.on_tick()
     flying_tags.update()
 
     tools.stockUp()

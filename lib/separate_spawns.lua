@@ -24,20 +24,7 @@ function InitSpawnGlobalsAndForces()
 
     -- Core global to help me organize shit.
     if (global.ocore == nil) then global.ocore = {} end
-    if (global.ocore.done_with_speed == nil) then
-        global.ocore.done_with_speed = {}
-    end
-    if (global.ocore.groups == nil) then
-        global.ocore.groups = {
-            config = {
-                ["small-biter"] = {max_count = 7, price = 1000},
-                ["medium-biter"] = {max_count = 5, price = 5000},
-                ["big-biter"] = {max_count = 3, price = 25000},
-                ["behemoth-biter"] = {max_count = 1, price = 100000}
-            },
-            player_groups = {}
-        }
-    end
+    
     -- if (global.ocore.spy == nil) then
     --     global.ocore.spy = {}
     --     global.ocore.spy.stalking = {}

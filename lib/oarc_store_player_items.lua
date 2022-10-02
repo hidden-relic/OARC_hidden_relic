@@ -246,26 +246,14 @@ function CreatePlayerStoreTab(tab_container, player)
                 btn.enabled = false
             end
             if (category == "Followers") then
-                local t = {
-                    ["small-biter"] = "small",
-                    ["medium-biter"] = "medium",
-                    ["big-biter"] = "big",
-                    ["behemoth-biter"] = "behemoth"
-                }
-                if global.ocore.groups.player_groups[player.name] then
-                    if global.ocore.groups.player_groups[player.name].count then
-                        local amount =
-                            global.ocore.groups.player_groups[player.name].count
-                        if amount[t[item_name]] >=
-                            global.ocore.groups.config[item_name].max_count then
-                            btn.enabled = false
-                        else
-                            btn.enabled = true
-                        end
-                    end
+                if groups[player.name] and groups[player.name].total < groups[player.name].limit then
+                    btn.enabled = true
+                else
+                    btn.enabled = false
                 end
             end
         end
+
         local line2 = tab_container.add {
             type = "line",
             direction = "horizontal"
@@ -289,7 +277,7 @@ function OarcPlayerStoreButton(event)
 
     if (wallet >= item.cost) then
         if category == "Followers" then
-            groups.giveUnit(player, button.name)
+            groups[player.name]:add(button.name)
             markets[player.name]:withdraw(item.cost)
             return
         end
