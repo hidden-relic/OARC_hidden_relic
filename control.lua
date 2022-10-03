@@ -97,8 +97,8 @@ script.on_init(function(event)
     -- MUST be before other stuff, but after surface creation.
     InitSpawnGlobalsAndForces()
 
-    markets={}
-    groups={}
+    global.markets={}
+    global.groups={}
     -- Frontier Silo Area Generation
     if (global.ocfg.frontier_rocket_silo and
         not global.ocfg.enable_magic_factories) then
@@ -191,19 +191,19 @@ script.on_event(defines.events.on_gui_click, function(event)
     if not (event and event.element and event.element.valid) then return end
     local player = game.players[event.player_index]
 
-    if markets then
-        if event.element == markets[player.name].market_button then
-            markets[player.name]:toggle_market_gui()
+    if global.markets then
+        if event.element == global.markets[player.name].market_button then
+            global.markets[player.name]:toggle_market_gui()
         end
-        if markets[player.name].item_buttons and markets[player.name].item_buttons[event.element.name] then
-            local button = markets[player.name].item_buttons[event.element.name]
+        if global.markets[player.name].item_buttons and global.markets[player.name].item_buttons[event.element.name] then
+            local button = global.markets[player.name].item_buttons[event.element.name]
             local click = event.button
             local shift = event.shift
-            markets[player.name]:purchase(button.name, click, shift)
+            global.markets[player.name]:purchase(button.name, click, shift)
         end
-        if markets[player.name].upgrade_buttons and markets[player.name].upgrade_buttons[event.element.name] then
-            local button = markets[player.name].upgrade_buttons[event.element.name]
-            markets[player.name]:upgrade(button.name)
+        if global.markets[player.name].upgrade_buttons and global.markets[player.name].upgrade_buttons[event.element.name] then
+            local button = global.markets[player.name].upgrade_buttons[event.element.name]
+            global.markets[player.name]:upgrade(button.name)
         end
     end
     
@@ -264,12 +264,12 @@ script.on_event(defines.events.on_player_created, function(event)
     -- Move the player to the game surface immediately.
     player.teleport({x = 0, y = 0}, GAME_SURFACE_NAME)
 
-    if not markets then markets = {} end
-    markets[player.name]=market:new{player=player}
-    markets[player.name]:init()
+    if not global.markets then global.markets = {} end
+    global.markets[player.name]=market:new{player=player}
+    global.markets[player.name]:init()
     
-    if not groups then groups = {} end
-    groups[player.name]=group:new{player=player}
+    if not global.groups then global.groups = {} end
+    global.groups[player.name]=group:new{player=player}
 
     if global.ocfg.enable_long_reach then GivePlayerLongReach(player) end
 
@@ -517,8 +517,8 @@ script.on_event(defines.events.on_gui_text_changed,
 ----------------------------------------
 script.on_event(defines.events.on_gui_closed, function(event)
     local player = game.players[event.player_index]
-    if event.element and event.element == markets[player.name].main_frame then
-        markets[player.name]:close_gui()
+    if event.element and event.element == global.markets[player.name].main_frame then
+        global.markets[player.name]:close_gui()
     end
     OarcGuiOnGuiClosedEvent(event)
     if global.ocfg.enable_coin_shop then OarcStoreOnGuiClosedEvent(event) end

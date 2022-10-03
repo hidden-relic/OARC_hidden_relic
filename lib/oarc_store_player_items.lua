@@ -191,7 +191,7 @@ function CreatePlayerStoreTab(tab_container, player)
     local player_inv = player.get_main_inventory()
     if (player_inv == nil) then return end
 
-    local wallet = markets[player.name].balance
+    local wallet = global.markets[player.name].balance
     AddLabel(tab_container, "player_store_wallet_lbl",
              "Coins Available: " .. wallet .. "  [item=coin]",
              {top_margin = 5, bottom_margin = 5})
@@ -214,7 +214,7 @@ function CreatePlayerStoreTab(tab_container, player)
         }
         for item_name, item in pairs(section) do
             if category ~= "Followers" and item_name ~= "linked-chest" then
-            item.cost = markets[player.name].item_values[item_name] *
+            item.cost = global.markets[player.name].item_values[item_name] *
                                 item.count
             end
             local color = "[color=green]"
@@ -270,7 +270,7 @@ function OarcPlayerStoreButton(event)
     local player_inv = player.get_inventory(defines.inventory.character_main)
     if (player_inv == nil) then return end
 
-    local wallet = markets[player.name].balance
+    local wallet = global.markets[player.name].balance
     local category = button.parent.name
 
     local item = OARC_STORE_PLAYER_ITEMS[category][button.name]
@@ -278,11 +278,11 @@ function OarcPlayerStoreButton(event)
     if (wallet >= item.cost) then
         if category == "Followers" then
             groups[player.name]:add(button.name)
-            markets[player.name]:withdraw(item.cost)
+            global.markets[player.name]:withdraw(item.cost)
             return
         end
         player_inv.insert({name = button.name, count = item.count})
-        markets[player.name]:withdraw(item.cost)
+        global.markets[player.name]:withdraw(item.cost)
 
         if (button.parent and button.parent.parent and
             button.parent.parent.player_store_wallet_lbl) then

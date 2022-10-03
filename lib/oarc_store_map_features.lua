@@ -127,7 +127,7 @@ OARC_STORE_MAP_FEATURES =
 
 function CreateMapFeatureStoreTab(tab_container, player)
 
-    local wallet = markets[player.name].balance
+    local wallet = global.markets[player.name].balance
     AddLabel(tab_container,
         "map_feature_store_wallet_lbl",
         "Coins Available: " .. wallet .. "  [item=coin]",
@@ -264,7 +264,7 @@ function OarcMapFeatureStoreButton(event)
     local button = event.element
     local player = game.players[event.player_index]
 
-    local wallet = markets[player.name].balance
+    local wallet = global.markets[player.name].balance
 
     local map_feature = OARC_STORE_MAP_FEATURES[button.parent.name][button.name]
 
@@ -324,7 +324,7 @@ function OarcMapFeatureStoreButton(event)
 
     -- On success, we deduct money
     if (result) then
-        markets[player.name]:withdraw(cost)
+        global.markets[player.name]:withdraw(cost)
     end
 
     -- Refresh GUI:

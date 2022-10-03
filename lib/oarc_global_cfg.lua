@@ -15,7 +15,7 @@ function InitOarcConfig()
     global.ocfg.debug = DEBUG_MODE
 
     global.ocore = {}
-    global.ocore.markets = {}
+    global.markets = {}
 
     if (game.active_mods["clean-tutorial-grid"]) then
         global.ocfg.locked_build_area_tile = "clean-tutorial-grid"

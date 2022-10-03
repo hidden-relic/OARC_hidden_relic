@@ -982,5 +982,5 @@ function DropCoins(count, player)
     end
 
     if drop_amount == 0 then return end
-    markets[player.name]:deposit(drop_amount)
+    global.markets[player.name]:deposit(drop_amount)
 end

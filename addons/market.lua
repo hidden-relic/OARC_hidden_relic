@@ -464,8 +464,8 @@ function Market:check_sac()
 end
 
 function Market.on_tick()
-    if (game.tick % 10 == 0) and markets then
-        for index, entry in pairs(markets) do
+    if (game.tick % 10 == 0) and global.markets then
+        for index, entry in pairs(global.markets) do
             if not entry or not entry.sell_chest then return end
             if entry.sell_chest and entry.sell_chest.valid then
                 entry:check_sell_chest()

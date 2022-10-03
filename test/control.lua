@@ -794,7 +794,7 @@ end)
 --------------------------------------------
 script.on_event(defines.events.on_market_item_purchased, function(event)
     local player = game.players[event.player_index]
-    local player_market = global.ocore.markets.player_markets[player.name]
+    local player_market = global.ocore.global.markets.player_global.markets[player.name]
     local count = event.count
 
     if player_market.market and player_market.market.valid then
