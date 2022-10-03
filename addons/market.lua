@@ -6,10 +6,10 @@ local flib_table = require('flib.table')
 local Market = {balance = 0, upgrades = {}}
 
 function Market:new(o)
-    o = o or {}
-    setmetatable(o, self)
-    self.__index = self
-    return self
+    o = o or {}             -- this sets o to itself (if arg o is passed in) if not, create empty table called o
+    setmetatable(o, self)   -- set o's metatable to Market's metatable
+    self.__index = self     -- sets passed in var's lookup to Market
+    return o             -- return 
 end
 
 function Market:init()
