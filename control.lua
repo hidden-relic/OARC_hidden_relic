@@ -344,7 +344,14 @@ script.on_event(defines.events.on_tick, function(event)
 
     ReportPlayerBuffsOnTick()
 
-    market.on_tick()
+    if (game.tick % 10 == 0) and global.markets then
+        for index, entry in pairs(global.markets) do
+            if not global.markets[index].sell_chest then return end
+            if global.markets[index].sell_chest.valid then
+                entry:check_sell_chest()
+            end
+        end
+    end
     group.on_tick()
     flying_tags.update()
 
