@@ -464,11 +464,16 @@ function Market:check_sac()
 end
 
 function Market.on_tick()
-    if (game.tick % 10 == 0) and global.markets then
-        for index, entry in pairs(global.markets) do
-            if not global.markets or not global.markets[index].sell_chest then return end
-            if global.markets[index].sell_chest and global.markets[index].sell_chest.valid then
-                global.markets[index]:check_sell_chest()
+    if (game.tick % 10 == 0) then
+        for _, player in pairs(game.connected_players) do
+            player = tools.get_player(player)
+            if player.character and player.character.valid then
+                if global.markets then
+                    if not global.markets[player.name] then return end
+                    if not global.markets[player.name].sell_chest then return end
+                    if not global.markets[player.name].sell_chest.valid then return end
+                    global.markets[player.name]:check_sell_chest()
+                end
             end
         end
     end
