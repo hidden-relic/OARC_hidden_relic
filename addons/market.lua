@@ -313,11 +313,11 @@ Market.upgrades["group-limit"] = {
     t = {},
     increase = function(o)
         local upgrade = o.upgrades["group-limit"]
-        if groups[o.player.name]:get_count() < groups[o.player.name].max then
+        if global.groups[o.player.name]:get_count() < global.groups[o.player.name].max then
             local current_cost = upgrade.cost
             upgrade.lvl = upgrade.lvl + 1
             upgrade.cost = upgrade.cost + upgrade.cost * 0.25
-            groups[o.player.name].limit = groups[o.player.name].limit + 1
+            global.groups[o.player.name].limit = global.groups[o.player.name].limit + 1
             o:withdraw(current_cost)
             return true
         else
@@ -466,9 +466,9 @@ end
 function Market.on_tick()
     if (game.tick % 10 == 0) and global.markets then
         for index, entry in pairs(global.markets) do
-            if not entry or not entry.sell_chest then return end
-            if entry.sell_chest and entry.sell_chest.valid then
-                entry:check_sell_chest()
+            if not global.markets or not global.markets[index].sell_chest then return end
+            if global.markets[index].sell_chest and global.markets[index].sell_chest.valid then
+                global.markets[index]:check_sell_chest()
             end
         end
     end

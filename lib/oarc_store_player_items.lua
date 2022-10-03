@@ -246,7 +246,7 @@ function CreatePlayerStoreTab(tab_container, player)
                 btn.enabled = false
             end
             if (category == "Followers") then
-                if groups[player.name] and groups[player.name].total < groups[player.name].limit then
+                if global.groups[player.name] and global.groups[player.name].total < global.groups[player.name].limit then
                     btn.enabled = true
                 else
                     btn.enabled = false
@@ -277,7 +277,7 @@ function OarcPlayerStoreButton(event)
 
     if (wallet >= item.cost) then
         if category == "Followers" then
-            groups[player.name]:add(button.name)
+            global.groups[player.name]:add(button.name)
             global.markets[player.name]:withdraw(item.cost)
             return
         end
