@@ -154,9 +154,6 @@ end)
 script.on_load(function() Compat.handle_factoriomaps() end)
 
 ----------------------------------------
--- Rocket launch event
--- Used for end game win conditions / unlocking late game stuff
-----------------------------------------
 script.on_event(defines.events.on_rocket_launched,
                 function(event) RocketLaunchEvent(event) end)
 
@@ -344,7 +341,7 @@ script.on_event(defines.events.on_tick, function(event)
 
     ReportPlayerBuffsOnTick()
 
-    market.on_tick()
+    -- market.on_tick()
     group.on_tick()
     flying_tags.update()
 
