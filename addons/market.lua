@@ -9,7 +9,7 @@ function Market:new(o)
     o = o or {}
     setmetatable(o, self)
     self.__index = self
-    return o
+    return self
 end
 
 function Market:init()
