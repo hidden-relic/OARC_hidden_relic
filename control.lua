@@ -191,8 +191,8 @@ script.on_event(defines.events.on_gui_click, function(event)
     if not (event and event.element and event.element.valid) then return end
     local player = game.players[event.player_index]
 
-    if global.markets then
-        if event.element == global.markets[player.name].market_button then
+    if global.markets and global.markets[player.name] then
+        if global.markets[player.name].market_button and event.element == global.markets[player.name].market_button then
             global.markets[player.name]:toggle_market_gui()
         end
         if global.markets[player.name].item_buttons and global.markets[player.name].item_buttons[event.element.name] then
