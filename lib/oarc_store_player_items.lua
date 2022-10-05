@@ -214,7 +214,7 @@ function CreatePlayerStoreTab(tab_container, player)
         }
         for item_name, item in pairs(section) do
             if category ~= "Followers" and item_name ~= "linked-chest" then
-            item.cost = global.markets[player.name].item_values[item_name] *
+            item.cost = global.markets.item_values[item_name] *
                                 item.count
             end
             local color = "[color=green]"
@@ -278,11 +278,11 @@ function OarcPlayerStoreButton(event)
     if (wallet >= item.cost) then
         if category == "Followers" then
             global.groups[player.name]:add(button.name)
-            global.markets[player.name]:withdraw(item.cost)
+            market.withdraw(player, item.cost)
             return
         end
         player_inv.insert({name = button.name, count = item.count})
-        global.markets[player.name]:withdraw(item.cost)
+        market.withdraw(player, item.cost)
 
         if (button.parent and button.parent.parent and
             button.parent.parent.player_store_wallet_lbl) then

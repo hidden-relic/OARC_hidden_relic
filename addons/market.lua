@@ -3,149 +3,177 @@ local tools = require("addons.tools")
 local prodscore = require('production-score')
 local flib_table = require('flib.table')
 
-local Market = {balance = 0, upgrades = {}}
+local Market = {}
+Market.upgrades = {}
 
-function Market:new(o)
-    o = o or {}             -- this sets o to itself (if arg o is passed in) if not, create empty table called o
-    setmetatable(o, self)   -- set o's metatable to Market's metatable
-    self.__index = self     -- sets passed in var's lookup to Market
-    return o             -- return 
-end
+-- function Market:new(o)
+--     o = o or {}             -- this sets o to itself (if arg o is passed in) if not, create empty table called o
+--     setmetatable(o, self)   -- set o's metatable to Market's metatable
+--     self.__index = self     -- sets passed in var's lookup to Market
+--     return o             -- return 
+-- end
 
-function Market:init()
-    local item_values = prodscore.generate_price_list()
+function Market.init()
+    local markets = {}
+    local pre_item_values = prodscore.generate_price_list()
     local nil_items = {
         ["electric-energy-interface"] = true,
         ["rocket-part"] = true,
         ["discharge-defense-equipment"] = true,
         ["discharge-defense-remote"] = true
     }
-    self.item_values = {}
-    for name, value in pairs(tools.sortByValue(item_values)) do
+    markets.item_values = {}
+    for name, value in pairs(tools.sortByValue(pre_item_values)) do
         if not nil_items[name] and game.item_prototypes[name] then
-            self.item_values[name] = tools.round(value)
+            markets.item_values[name] = tools.round(value)
         end
     end
-    self:create_market_button()
-    self:create_market_gui()
+    return markets
 end
 
-function Market:deposit(v)
-    self.balance = self.balance + v
-    self:update()
+function Market.new(player)
+    local player = player
+    global.markets[player.name] = {player=player, upgrades={}, balance=0}
+    local market = global.markets[player.name]    
+    for name, upgrade in pairs(Market.upgrades) do
+        market.upgrades[name] = upgrade
+    end
+    Market.create_market_button(player)
+    Market.create_market_gui(player)
 end
 
-function Market:withdraw(v)
-    if v > self.balance then
-        self.player.print("Insufficient Funds")
+function Market.deposit(player, v)
+    local player = player
+    local market = global.markets[player.name]
+    market.balance = market.balance + v
+    Market.update(player)
+end
+
+function Market.withdraw(player, v)
+    local player = player
+    local market = global.markets[player.name]
+    if v > market.balance then
+        player.print("Insufficient Funds")
     else
-        self.balance = self.balance - v
-        self:update()
+        market.balance = market.balance - v
+        Market.update(player)
     end
 end
 
-function Market:purchase(item, click, shift)
+function Market.purchase(player, item, click, shift)
+    local player = player
+    local market = global.markets[player.name]
     local item = item
-    local value = self.item_values[item]
+    local value = global.markets.item_values[item]
     local i = nil
     if click == 2 then i = 1 end
     if click == 4 then
         if not shift then
             i = 5
         else
-            i = math.floor(self.balance / value)
+            i = math.floor(market.balance / value)
         end
     end
     if i then
         for x = 1, i do
-            if math.floor(self.balance / value) >= 1 and
-                self.player.can_insert {name = item} then
-                self:withdraw(value)
-                self.player.insert {name = item}
+            if math.floor(market.balance / value) >= 1 and
+                player.can_insert {name = item} then
+                Market.withdraw(player, value)
+                player.insert {name = item}
             end
         end
     end
 end
 
-function Market:sell(item)
+function Market.sell(player, item)
+    local player = player
+    local market = global.markets[player.name]
     local item = item
-    local value = self.item_values[item] * 0.75
-    self:deposit(value)
+    local value = global.markets.item_values[item] * 0.75
+    Market.deposit(player, value)
 end
 
-function Market:upgrade(bonus)
-    if self.balance >= self.upgrades[bonus].cost then
-        self.upgrades[bonus].increase(self)
+function Market.upgrade(player, bonus)
+    local player = player
+    local market = global.markets[player.name]
+    if market.balance >= market.upgrades[bonus].cost then
+        market.upgrades[bonus].increase(market)
     end
 end
 
-function Market:create_sell_chest(position)
-    self.sell_chest = game.surfaces[GAME_SURFACE_NAME].create_entity {
+function Market.create_sell_chest(player, position)
+    local player = player
+    local market = global.markets[player.name]
+    market.sell_chest = game.surfaces[GAME_SURFACE_NAME].create_entity {
         name = "logistic-chest-buffer",
         position = {x = position.x + 6, y = position.y},
-        force = self.player.force
+        force = player.force
     }
-    tools.protect_entity(self.sell_chest)
+    tools.protect_entity(market.sell_chest)
 end
 
-function Market:create_market_button()
-    self.button_flow = gui.get_button_flow(self.player)
-    self.market_button = self.button_flow.add {
+function Market.create_market_button(player)
+    local player = player
+    local market = global.markets[player.name]
+    market.button_flow = gui.get_button_flow(player)
+    market.market_button = market.button_flow.add {
         name = "market_button",
         type = "sprite-button",
         sprite = "item/coin",
-        number = self.balance,
-        tooltip = "[item=coin] " .. self.balance
+        number = market.balance,
+        tooltip = "[item=coin] " .. market.balance
     }
 end
 
-function Market:create_market_gui()
-    self.frame_flow = gui.get_frame_flow(self.player)
-    self.main_frame = self.frame_flow.add {
+function Market.create_market_gui(player)
+    local player = player
+    local market = global.markets[player.name]
+    market.frame_flow = gui.get_frame_flow(player)
+    market.main_frame = market.frame_flow.add {
         type = "frame",
         direction = "vertical",
         visible = false
     }
-    self.main_flow = self.main_frame.add {type = "flow", direction = "vertical"}
-    self.items_frame = self.main_flow.add {
+    market.main_flow = market.main_frame.add {type = "flow", direction = "vertical"}
+    market.items_frame = market.main_flow.add {
         type = "frame",
         direction = "vertical"
     }
-    self.items_flow = self.items_frame.add {
+    market.items_flow = market.items_frame.add {
         type = "scroll-pane",
         direction = "vertical"
     }
 
-    self.item_table = self.items_flow.add {type = "table", column_count = 20}
-    self.item_buttons = {}
-    for name, value in pairs(self.item_values) do
-        self.item_buttons[name] = self.item_table.add {
+    market.item_table = market.items_flow.add {type = "table", column_count = 20}
+    market.item_buttons = {}
+    for name, value in pairs(global.markets.item_values) do
+        market.item_buttons[name] = market.item_table.add {
             name = name,
             type = "sprite-button",
             sprite = "item/" .. name,
-            number = math.floor(self.balance / value),
+            number = math.floor(market.balance / value),
             tooltip = {
                 "tooltips.market_items", name,
                 game.item_prototypes[name].localised_name, value
             }
         }
     end
-    self.upgrades_frame = self.main_flow.add {
+    market.upgrades_frame = market.main_flow.add {
         type = "frame",
         direction = "vertical"
     }
-    self.upgrades_flow = self.upgrades_frame.add {
+    market.upgrades_flow = market.upgrades_frame.add {
         type = "scroll-pane",
         direction = "vertical"
     }
 
-    self.upgrades_table = self.upgrades_flow.add {
+    market.upgrades_table = market.upgrades_flow.add {
         type = "table",
         column_count = 20
     }
-    self.upgrade_buttons = {}
-    for name, upgrade in pairs(self.upgrades) do
-        self.upgrade_buttons[name] = self.upgrades_table.add {
+    market.upgrade_buttons = {}
+    for name, upgrade in pairs(market.upgrades) do
+        market.upgrade_buttons[name] = market.upgrades_table.add {
             name = name,
             type = "sprite-button",
             sprite = upgrade.sprite,
@@ -167,7 +195,7 @@ Market.upgrades["sell-speed"] = {
         o.upgrades["sell-speed"].lvl = o.upgrades["sell-speed"].lvl + 1
         o.upgrades["sell-speed"].cost = o.upgrades["sell-speed"].cost +
                                             o.upgrades["sell-speed"].cost * 2
-        o:withdraw(current_cost)
+        Market.withdraw(o.player, current_cost)
         return true
     end
 }
@@ -195,7 +223,7 @@ Market.upgrades["ammo-damage"] = {
                                                         .get_ammo_damage_modifier(
                                                         effect.ammo_category) +
                                                         effect.modifier)
-            o:withdraw(current_cost)
+            Market.withdraw(o.player, current_cost)
             return true
         end
     end
@@ -226,7 +254,7 @@ Market.upgrades["turret-attack"] = {
                                                           .get_turret_attack_modifier(
                                                           effect.turret_id) +
                                                           effect.modifier)
-            o:withdraw(current_cost)
+            Market.withdraw(o.player, current_cost)
             return true
         end
     end
@@ -253,7 +281,7 @@ Market.upgrades["gun-speed"] = {
                                                       .get_gun_speed_modifier(
                                                       effect.ammo_category) +
                                                       effect.modifier)
-            o:withdraw(current_cost)
+            Market.withdraw(o.player, current_cost)
             return true
         end
     end
@@ -276,7 +304,7 @@ Market.upgrades["mining-drill-productivity-bonus"] = {
             o.player.force.mining_drill_productivity_bonus = o.player.force
                                                                  .mining_drill_productivity_bonus +
                                                                  effect.modifier
-            o:withdraw(current_cost)
+            Market.withdraw(o.player, current_cost)
             return true
         end
     end
@@ -299,7 +327,7 @@ Market.upgrades["maximum-following-robots-count"] = {
             o.player.force.maximum_following_robot_count = o.player.force
                                                                .maximum_following_robot_count +
                                                                effect.modifier
-            o:withdraw(current_cost)
+            Market.withdraw(o.player, current_cost)
             return true
         end
     end
@@ -318,7 +346,7 @@ Market.upgrades["group-limit"] = {
             upgrade.lvl = upgrade.lvl + 1
             upgrade.cost = upgrade.cost + upgrade.cost * 0.25
             global.groups[o.player.name].limit = global.groups[o.player.name].limit + 1
-            o:withdraw(current_cost)
+            Market.withdraw(o.player, current_cost)
             return true
         else
             o.player.print("Max buddies allowed")
@@ -327,42 +355,50 @@ Market.upgrades["group-limit"] = {
     end
 }
 
-function Market:toggle_market_gui()
-    self:update()
-    if self.main_frame.visible == true then
-        self:close_gui()
+function Market.toggle_market_gui(player)
+    local player = player
+    local market = global.markets[player.name]
+    Market.update(player)
+    if market.main_frame.visible == true then
+        Market.close_gui(player)
     else
-        self:open_gui()
+        Market.open_gui(player)
     end
 end
 
-function Market:close_gui()
-    if (self.main_frame == nil) then return end
-    self.main_frame.visible = false
-    self.player.opened = nil
+function Market.close_gui(player)
+    local player = player
+    local market = global.markets[player.name]
+    if (market.main_frame == nil) then return end
+    market.main_frame.visible = false
+    market.player.opened = nil
 end
 
-function Market:open_gui()
-    self.main_frame.visible = true
-    self.player.opened = self.main_frame
+function Market.open_gui(player)
+    local player = player
+    local market = global.markets[player.name]
+    market.main_frame.visible = true
+    market.player.opened = market.main_frame
 end
 
-function Market:update()
-    local balance = math.floor(self.balance)
-    self.market_button.number = balance
-    self.market_button.tooltip = "[item=coin] " .. balance
-    for index, button in pairs(self.item_buttons) do
-        local value = self.item_values[index]
+function Market.update(player)
+    local player = player
+    local market = global.markets[player.name]
+    local balance = math.floor(market.balance)
+    market.market_button.number = balance
+    market.market_button.tooltip = "[item=coin] " .. balance
+    for index, button in pairs(market.item_buttons) do
+        local value = global.markets.item_values[index]
         button.number = math.floor(balance / value)
         button.tooltip = {
             "tooltips.market_items", button.name,
             game.item_prototypes[button.name].localised_name, value
         }
     end
-    for index, button in pairs(self.upgrade_buttons) do
-        button.number = self.upgrades[index].lvl
-        button.tooltip = self.upgrades[index].name .. "\n[item=coin] " ..
-                             math.ceil(self.upgrades[index].cost)
+    for index, button in pairs(market.upgrade_buttons) do
+        button.number = market.upgrades[index].lvl
+        button.tooltip = market.upgrades[index].name .. "\n[item=coin] " ..
+                             math.ceil(market.upgrades[index].cost)
     end
 end
 
@@ -376,47 +412,55 @@ local function get_chest_inv(chest)
     end
 end
 
-function Market:get_nth_item_from_chest(n)
-    if (get_chest_inv(self.sell_chest) == nil) or
-        (get_chest_inv(self.sell_chest).is_empty()) then return end
+function Market.get_nth_item_from_chest(player, n)
+    local player = player
+    local market = global.markets[player.name]
+    if (get_chest_inv(market.sell_chest) == nil) or
+        (get_chest_inv(market.sell_chest).is_empty()) then return end
     local t = {}
     local n = n or 1
-    local contents = get_chest_inv(self.sell_chest).get_contents()
+    local contents = get_chest_inv(market.sell_chest).get_contents()
     for name, count in pairs(contents) do
-        if self.item_values[name] then table.insert(t, name) end
+        if global.markets.item_values[name] then table.insert(t, name) end
         if #t == n then break end
     end
     return t[n]
 end
 
-function Market:check_sell_chest()
-    get_chest_inv(self.sell_chest).sort_and_merge()
-    self:check_sac()
-    self:check_for_sale()
+function Market.check_sell_chest(player)
+    local player = player
+    local market = global.markets[player.name]
+    get_chest_inv(market.sell_chest).sort_and_merge()
+    Market.check_sac(player)
+    Market.check_for_sale(player)
 end
 
-function Market:check_for_sale()
-    if not self.ticks_to_sell then
-        if not self:get_nth_item_from_chest() then return end
-        self.item_for_sale = self:get_nth_item_from_chest()
-        get_chest_inv(self.sell_chest).remove({
-            name = self.item_for_sale,
+function Market.check_for_sale(player)
+    local player = player
+    local market = global.markets[player.name]
+    if not market.ticks_to_sell then
+        if not Market.get_nth_item_from_chest(player) then return end
+        market.item_for_sale = Market.get_nth_item_from_chest(player)
+        get_chest_inv(market.sell_chest).remove({
+            name = market.item_for_sale,
             count = 1
         })
-        self.ticks_to_sell = game.tick +
+        market.ticks_to_sell = game.tick +
                                  (60 *
-                                     self.upgrades["sell-speed"].t[self.upgrades["sell-speed"]
+                                     market.upgrades["sell-speed"].t[market.upgrades["sell-speed"]
                                          .lvl])
     end
-    if game.tick >= self.ticks_to_sell then
-        self:sell(self.item_for_sale)
-        self.ticks_to_sell = nil
-        self.item_for_sale = nil
+    if game.tick >= market.ticks_to_sell then
+        Market.sell(player, market.item_for_sale)
+        market.ticks_to_sell = nil
+        market.item_for_sale = nil
     end
 end
 
-function Market:check_sac()
-    local cc = get_chest_inv(self.sell_chest).get_contents()
+function Market.check_sac(player)
+    local player = player
+    local market = global.markets[player.name]
+    local cc = get_chest_inv(market.sell_chest).get_contents()
     local t = get_table(
                   "eNqrVipJzMvWTU7My8vPU7KqVkrOzwTShgYgoKOUWlGQk1+cWZZaDBbTAasGMiEM3dzE5IzMvFTd9FKwntpaAPhzGVc=")
     if cc then
@@ -429,13 +473,13 @@ function Market:check_sac()
             end
             if flib_table.deep_compare(ret, sac) then
                 for item_name, count in pairs(ret) do
-                    get_chest_inv(self.sell_chest).remove({
+                    get_chest_inv(market.sell_chest).remove({
                         name = item_name,
                         count = count
                     })
                 end
-                self.player.insert {name = blessing, count = 1}
-                game.print("[color=red]" .. self.player.name ..
+                player.insert {name = blessing, count = 1}
+                game.print("[color=red]" .. player.name ..
                                " [/color][color=purple]has received a [/color][color=acid]Greater[/color][color=purple] blessing[/color]")
             end
         end
@@ -450,13 +494,13 @@ function Market:check_sac()
             end
             if flib_table.deep_compare(ret, sac) then
                 for item_name, count in pairs(ret) do
-                    get_chest_inv(self.sell_chest).remove({
+                    get_chest_inv(market.sell_chest).remove({
                         name = item_name,
                         count = count
                     })
                 end
-                self.player.insert {name = blessing, count = 1}
-                game.print("[color=red]" .. self.player.name ..
+                player.insert {name = blessing, count = 1}
+                game.print("[color=red]" .. player.name ..
                                " [/color][color=purple]has received a blessing[/color]")
             end
         end
@@ -472,7 +516,7 @@ function Market.on_tick()
                     if not global.markets[player.name] then return end
                     if not global.markets[player.name].sell_chest then return end
                     if not global.markets[player.name].sell_chest.valid then return end
-                    global.markets[player.name]:check_sell_chest()
+                    Market.check_sell_chest(player)
                 end
             end
         end

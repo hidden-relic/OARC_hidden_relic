@@ -5,7 +5,7 @@
 -- Generic Utility Includes
 require("lib/oarc_utils")
 local tools = require("addons/tools")
-
+local market = require("addons.market")
 
 -- Used to generate placement of buildings.
 MAGIC_BUILDING_MIN_DISTANCE = 40
@@ -982,5 +982,5 @@ function DropCoins(count, player)
     end
 
     if drop_amount == 0 then return end
-    global.markets[player.name]:deposit(drop_amount)
+    market.deposit(player, drop_amount)
 end

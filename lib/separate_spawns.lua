@@ -6,7 +6,7 @@
 require("lib/oarc_utils")
 require("config")
 local crash_site = require("crash-site")
-
+local market = require("addons.market")
 --[[
   ___  _  _  ___  _____ 
  |_ _|| \| ||_ _||_   _|
@@ -313,10 +313,10 @@ function SendPlayerToNewSpawnAndCreateIt(delayedSpawn)
         }, -- Ctrl  
         {x = delayedSpawn.pos.x + x_dist, y = delayedSpawn.pos.y}) -- Status
 
-        global.markets[player.name]:create_sell_chest{
+        market.create_sell_chest(player, {
             x = delayedSpawn.pos.x + x_dist - 3,
             y = delayedSpawn.pos.y - 1
-        }
+        })
 
         SharedChestsSpawnOutput(player, {
             x = delayedSpawn.pos.x + x_dist,

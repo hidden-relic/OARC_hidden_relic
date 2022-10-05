@@ -5,6 +5,7 @@
 require("lib/shared_chests")
 require("lib/map_features")
 local mod_gui = require("mod-gui")
+local market = require("addons/market")
 
 OARC_STORE_MAP_TEXT = 
 {
@@ -324,7 +325,7 @@ function OarcMapFeatureStoreButton(event)
 
     -- On success, we deduct money
     if (result) then
-        global.markets[player.name]:withdraw(cost)
+        market.withdraw(player, cost)
     end
 
     -- Refresh GUI:

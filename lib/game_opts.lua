@@ -71,7 +71,7 @@ function CreateGameOptionsTab(tab_container, player)
     AddSpacerLine(tab_container)
 
     -- Soft Mods:
-    local soft_mods_string = "Oarc Core, Player Bonuses, Player global.markets, Sacrifice Chest, Find a Patch"
+    local soft_mods_string = "Oarc Core, Player Bonuses, Player Markets, Sacrifice Chest, Find a Patch"
     if (global.ocfg.enable_undecorator) then
         soft_mods_string = soft_mods_string .. ", Undecorator"
     end
