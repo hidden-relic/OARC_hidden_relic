@@ -2,6 +2,7 @@ local gui = require("mod-gui")
 local tools = require("addons.tools")
 local prodscore = require('production-score')
 local flib_table = require('flib.table')
+local group = require("addons.groups")
 
 local Market = {}
 Market.upgrades = {}
@@ -341,7 +342,7 @@ Market.upgrades["group-limit"] = {
     t = {},
     increase = function(o)
         local upgrade = o.upgrades["group-limit"]
-        if global.groups[o.player.name]:get_count() < global.groups[o.player.name].max then
+        if group.get_count(o.player) < global.groups[o.player.name].max then
             local current_cost = upgrade.cost
             upgrade.lvl = upgrade.lvl + 1
             upgrade.cost = upgrade.cost + upgrade.cost * 0.25

@@ -265,7 +265,7 @@ script.on_event(defines.events.on_player_created, function(event)
     market.new(player)
     
     if not global.groups then global.groups = {} end
-    global.groups[player.name]=group:new{player=player}
+    group.new(player)
 
     if global.ocfg.enable_long_reach then GivePlayerLongReach(player) end
 

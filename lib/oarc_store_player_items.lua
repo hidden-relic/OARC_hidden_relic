@@ -4,6 +4,7 @@
 local mod_gui = require("mod-gui")
 local market = require("addons/market")
 local tools = require("addons/tools")
+local group = require("addons/groups")
 
 OARC_STORE_PLAYER_ITEMS = {
     ["Guns"] = {
@@ -277,7 +278,7 @@ function OarcPlayerStoreButton(event)
 
     if (wallet >= item.cost) then
         if category == "Followers" then
-            global.groups[player.name]:add(button.name)
+            group.add(player, button.name)
             market.withdraw(player, item.cost)
             return
         end

@@ -1,14 +1,14 @@
 local tools = require('addons/tools')
 local flying_tag = require("flying_tags")
 
-local Group = {pets = {}, tags = {}, max = 50, limit = 1, total = 0}
+local Group = {}
 
-function Group:new(o)
-    o = o or {}
-    setmetatable(o, self)
-    self.__index = self
-    return o
-end
+-- function Group:new(o)
+--     o = o or {}
+--     setmetatable(o, self)
+--     self.__index = self
+--     return o
+-- end
 
 Group.pet_data = {
     ["small-biter"] = {cost = 1000, color = {121, 180, 222}},
@@ -17,73 +17,90 @@ Group.pet_data = {
     ["behemoth-biter"] = {cost = 100000, color = {94, 192, 136}}
 }
 
-function Group:create()
-    self.group = self.player.surface.create_unit_group {
-        position = self.player.position,
-        force = self.player.force
+function Group.new(player)
+    local player = player
+    global.groups[player.name] = {
+        pets = {},
+        tags = {},
+        max = 50,
+        limit = 1,
+        total = 0,
+        pet_group = {}
     }
 end
 
-function Group:get_count()
-    self.total = 0
-    for name, pets in pairs(self.pets) do
-        for index, entry in pairs(pets) do
-            if entry.valid then
-                self.total = self.total + 1
-            end
-        end
-    end
-    return self.total
+function Group.create(player)
+    local player = player
+    global.groups[player.name].pet_group = player.surface.create_unit_group {
+        position = player.position,
+        force = player.force
+    }
 end
 
-function Group:add(pet)
-    if not self.group then self:create() end
-    if (self.limit > self:get_count()) and (self:get_count() < self.max) then
-        if self.pet_data[pet] then
-            if not self.pets[pet] then self.pets[pet] = {} end
+function Group.get_count(player)
+    local player = player
+    local group = global.groups[player.name]
+    group.total = 0
+    for name, pets in pairs(group.pets) do
+        for index, entry in pairs(pets) do
+            if entry.valid then group.total = group.total + 1 end
+        end
+    end
+    return group.total
+end
 
-            local new_pet = self.player.surface.create_entity {
+function Group.add(player, pet)
+    local player = player
+    local group = global.groups[player.name]
+    if not group.pet_group or not group.pet_group.valid then Group.create(player) end
+    if (group.limit > Group.get_count(player)) and
+        (Group.get_count(player) < group.max) then
+        if Group.pet_data[pet] then
+            if not group.pets[pet] then group.pets[pet] = {} end
+
+            local new_pet = player.surface.create_entity {
                 name = pet,
-                force = self.player.force,
-                position = self.player.surface.find_non_colliding_position(pet,
-                                                                           self.player
-                                                                               .position,
-                                                                           8, 1)
+                force = player.force,
+                position = player.surface.find_non_colliding_position(pet,
+                                                                      player.position,
+                                                                      8, 1)
             }
 
             local new_tag = {
                 entity = new_pet,
                 offset = {x = 0, y = 1},
-                text = {"", self.player.name, "'s ", new_pet.localised_name},
-                color = self.pet_data[pet].color
+                text = {"", player.name, "'s ", new_pet.localised_name},
+                color = Group.pet_data[pet].color
             }
 
-            if self:get_count() < self.max then
-                table.insert(self.pets[pet], new_pet)
-                table.insert(self.tags, new_tag)
+            if Group.get_count(player) < group.max then
+                table.insert(group.pets[pet], new_pet)
+                table.insert(group.tags, new_tag)
 
-                self.group.add_member(new_pet)
+                group.pet_group.add_member(new_pet)
                 flying_tag.create(new_tag)
-                self.player.print({
-                    "groups.pet_added", self.pet_data[pet].color[1]..", "..self.pet_data[pet].color[2]..", "..self.pet_data[pet].color[3],
-                    new_pet.localised_name, self:get_count()
+                player.print({
+                    "groups.pet_added",
+                    Group.pet_data[pet].color[1] .. ", " ..
+                        Group.pet_data[pet].color[2] .. ", " ..
+                        Group.pet_data[pet].color[3], new_pet.localised_name,
+                    Group.get_count(player)
                 })
             end
         end
     else
-        self.player.print("Max buddies allowed")
+        player.print("Max buddies allowed")
     end
 end
 
 function Group.on_tick()
-    if (game.tick % 60 == 0) and groups then
-        for index, entry in pairs(groups) do
-            if not entry or not entry.group or not entry.group.valid or
-                not game.players[index].character or not game.players[index].character.valid then
-                return
-            end
-            if entry.group.members then
-                entry.group.set_command({
+    if (game.tick % 60 == 0) and global.groups then
+        for index, entry in pairs(global.groups) do
+            if not entry or not entry.pet_group or not entry.pet_group.valid or
+                not game.players[index].character or
+                not game.players[index].character.valid then return end
+            if entry.pet_group.members then
+                entry.pet_group.set_command({
                     type = defines.command.go_to_location,
                     destination_entity = game.players[index].character
                 })
