@@ -4,17 +4,17 @@ local prodscore = require('production-score')
 local flib_table = require('flib.table')
 local group = require("addons.groups")
 
-local Market = {}
-Market.upgrades = {}
+local M = {}
+M.upgrades = {}
 
--- function Market:new(o)
+-- function M:new(o)
 --     o = o or {}             -- this sets o to itself (if arg o is passed in) if not, create empty table called o
---     setmetatable(o, self)   -- set o's metatable to Market's metatable
---     self.__index = self     -- sets passed in var's lookup to Market
+--     setmetatable(o, self)   -- set o's metatable to M's metatable
+--     self.__index = self     -- sets passed in var's lookup to M
 --     return o             -- return 
 -- end
 
-function Market.init()
+function M.init()
     local markets = {}
     local pre_item_values = prodscore.generate_price_list()
     local nil_items = {
@@ -32,36 +32,34 @@ function Market.init()
     return markets
 end
 
-function Market.new(player)
+function M.new(player)
     local player = player
-    global.markets[player.name] = {player=player, upgrades={}, balance=0}
-    local market = global.markets[player.name]    
-    for name, upgrade in pairs(Market.upgrades) do
-        market.upgrades[name] = upgrade
-    end
-    Market.create_market_button(player)
-    Market.create_market_gui(player)
+    global.markets[player.name] = {player = player, upgrades = {}, balance = 0}
+    local market = global.markets[player.name]
+    for name, upgrade in pairs(M.upgrades) do market.upgrades[name] = upgrade end
+    M.create_market_button(player)
+    M.create_market_gui(player)
 end
 
-function Market.deposit(player, v)
+function M.deposit(player, v)
     local player = player
     local market = global.markets[player.name]
     market.balance = market.balance + v
-    Market.update(player)
+    M.update(player)
 end
 
-function Market.withdraw(player, v)
+function M.withdraw(player, v)
     local player = player
     local market = global.markets[player.name]
     if v > market.balance then
         player.print("Insufficient Funds")
     else
         market.balance = market.balance - v
-        Market.update(player)
+        M.update(player)
     end
 end
 
-function Market.purchase(player, item, click, shift)
+function M.purchase(player, item, click, shift)
     local player = player
     local market = global.markets[player.name]
     local item = item
@@ -79,22 +77,22 @@ function Market.purchase(player, item, click, shift)
         for x = 1, i do
             if math.floor(market.balance / value) >= 1 and
                 player.can_insert {name = item} then
-                Market.withdraw(player, value)
+                M.withdraw(player, value)
                 player.insert {name = item}
             end
         end
     end
 end
 
-function Market.sell(player, item)
+function M.sell(player, item)
     local player = player
     local market = global.markets[player.name]
     local item = item
     local value = global.markets.item_values[item] * 0.75
-    Market.deposit(player, value)
+    M.deposit(player, value)
 end
 
-function Market.upgrade(player, bonus)
+function M.upgrade(player, bonus)
     local player = player
     local market = global.markets[player.name]
     if market.balance >= market.upgrades[bonus].cost then
@@ -102,7 +100,7 @@ function Market.upgrade(player, bonus)
     end
 end
 
-function Market.create_sell_chest(player, position)
+function M.create_sell_chest(player, position)
     local player = player
     local market = global.markets[player.name]
     market.sell_chest = game.surfaces[GAME_SURFACE_NAME].create_entity {
@@ -113,7 +111,7 @@ function Market.create_sell_chest(player, position)
     tools.protect_entity(market.sell_chest)
 end
 
-function Market.create_market_button(player)
+function M.create_market_button(player)
     local player = player
     local market = global.markets[player.name]
     market.button_flow = gui.get_button_flow(player)
@@ -126,7 +124,7 @@ function Market.create_market_button(player)
     }
 end
 
-function Market.create_market_gui(player)
+function M.create_market_gui(player)
     local player = player
     local market = global.markets[player.name]
     market.frame_flow = gui.get_frame_flow(player)
@@ -135,7 +133,10 @@ function Market.create_market_gui(player)
         direction = "vertical",
         visible = false
     }
-    market.main_flow = market.main_frame.add {type = "flow", direction = "vertical"}
+    market.main_flow = market.main_frame.add {
+        type = "flow",
+        direction = "vertical"
+    }
     market.items_frame = market.main_flow.add {
         type = "frame",
         direction = "vertical"
@@ -145,7 +146,10 @@ function Market.create_market_gui(player)
         direction = "vertical"
     }
 
-    market.item_table = market.items_flow.add {type = "table", column_count = 20}
+    market.item_table = market.items_flow.add {
+        type = "table",
+        column_count = 20
+    }
     market.item_buttons = {}
     for name, value in pairs(global.markets.item_values) do
         market.item_buttons[name] = market.item_table.add {
@@ -184,7 +188,7 @@ function Market.create_market_gui(player)
     end
 end
 
-Market.upgrades["sell-speed"] = {
+M.upgrades["sell-speed"] = {
     name = "Sell Speed",
     lvl = 1,
     cost = 10000,
@@ -196,12 +200,12 @@ Market.upgrades["sell-speed"] = {
         o.upgrades["sell-speed"].lvl = o.upgrades["sell-speed"].lvl + 1
         o.upgrades["sell-speed"].cost = o.upgrades["sell-speed"].cost +
                                             o.upgrades["sell-speed"].cost * 2
-        Market.withdraw(o.player, current_cost)
+        M.withdraw(o.player, current_cost)
         return true
     end
 }
 
-Market.upgrades["ammo-damage"] = {
+M.upgrades["ammo-damage"] = {
     name = "Ammo Damage",
     lvl = 1,
     cost = 10000,
@@ -224,13 +228,13 @@ Market.upgrades["ammo-damage"] = {
                                                         .get_ammo_damage_modifier(
                                                         effect.ammo_category) +
                                                         effect.modifier)
-            Market.withdraw(o.player, current_cost)
+            M.withdraw(o.player, current_cost)
             return true
         end
     end
 }
 
-Market.upgrades["turret-attack"] = {
+M.upgrades["turret-attack"] = {
     name = "Turret Attack",
     lvl = 1,
     cost = 10000,
@@ -255,13 +259,13 @@ Market.upgrades["turret-attack"] = {
                                                           .get_turret_attack_modifier(
                                                           effect.turret_id) +
                                                           effect.modifier)
-            Market.withdraw(o.player, current_cost)
+            M.withdraw(o.player, current_cost)
             return true
         end
     end
 }
 
-Market.upgrades["gun-speed"] = {
+M.upgrades["gun-speed"] = {
     name = "Gun Speed",
     lvl = 1,
     cost = 10000,
@@ -282,13 +286,13 @@ Market.upgrades["gun-speed"] = {
                                                       .get_gun_speed_modifier(
                                                       effect.ammo_category) +
                                                       effect.modifier)
-            Market.withdraw(o.player, current_cost)
+            M.withdraw(o.player, current_cost)
             return true
         end
     end
 }
 
-Market.upgrades["mining-drill-productivity-bonus"] = {
+M.upgrades["mining-drill-productivity-bonus"] = {
     name = "Mining Drill Productivity",
     lvl = 1,
     cost = 10000,
@@ -305,13 +309,13 @@ Market.upgrades["mining-drill-productivity-bonus"] = {
             o.player.force.mining_drill_productivity_bonus = o.player.force
                                                                  .mining_drill_productivity_bonus +
                                                                  effect.modifier
-            Market.withdraw(o.player, current_cost)
+            M.withdraw(o.player, current_cost)
             return true
         end
     end
 }
 
-Market.upgrades["maximum-following-robots-count"] = {
+M.upgrades["maximum-following-robots-count"] = {
     name = "Follower Robot Count",
     lvl = 1,
     cost = 10000,
@@ -328,13 +332,13 @@ Market.upgrades["maximum-following-robots-count"] = {
             o.player.force.maximum_following_robot_count = o.player.force
                                                                .maximum_following_robot_count +
                                                                effect.modifier
-            Market.withdraw(o.player, current_cost)
+            M.withdraw(o.player, current_cost)
             return true
         end
     end
 }
 
-Market.upgrades["group-limit"] = {
+M.upgrades["group-limit"] = {
     name = "Pet Limit",
     lvl = 1,
     cost = 10000,
@@ -346,8 +350,9 @@ Market.upgrades["group-limit"] = {
             local current_cost = upgrade.cost
             upgrade.lvl = upgrade.lvl + 1
             upgrade.cost = upgrade.cost + upgrade.cost * 0.25
-            global.groups[o.player.name].limit = global.groups[o.player.name].limit + 1
-            Market.withdraw(o.player, current_cost)
+            global.groups[o.player.name].limit =
+                global.groups[o.player.name].limit + 1
+            M.withdraw(o.player, current_cost)
             return true
         else
             o.player.print("Max buddies allowed")
@@ -356,18 +361,18 @@ Market.upgrades["group-limit"] = {
     end
 }
 
-function Market.toggle_market_gui(player)
+function M.toggle_market_gui(player)
     local player = player
     local market = global.markets[player.name]
-    Market.update(player)
+    M.update(player)
     if market.main_frame.visible == true then
-        Market.close_gui(player)
+        M.close_gui(player)
     else
-        Market.open_gui(player)
+        M.open_gui(player)
     end
 end
 
-function Market.close_gui(player)
+function M.close_gui(player)
     local player = player
     local market = global.markets[player.name]
     if (market.main_frame == nil) then return end
@@ -375,14 +380,14 @@ function Market.close_gui(player)
     market.player.opened = nil
 end
 
-function Market.open_gui(player)
+function M.open_gui(player)
     local player = player
     local market = global.markets[player.name]
     market.main_frame.visible = true
     market.player.opened = market.main_frame
 end
 
-function Market.update(player)
+function M.update(player)
     local player = player
     local market = global.markets[player.name]
     local balance = math.floor(market.balance)
@@ -413,7 +418,7 @@ local function get_chest_inv(chest)
     end
 end
 
-function Market.get_nth_item_from_chest(player, n)
+function M.get_nth_item_from_chest(player, n)
     local player = player
     local market = global.markets[player.name]
     if (get_chest_inv(market.sell_chest) == nil) or
@@ -428,37 +433,37 @@ function Market.get_nth_item_from_chest(player, n)
     return t[n]
 end
 
-function Market.check_sell_chest(player)
+function M.check_sell_chest(player)
     local player = player
     local market = global.markets[player.name]
     get_chest_inv(market.sell_chest).sort_and_merge()
-    Market.check_sac(player)
-    Market.check_for_sale(player)
+    M.check_sac(player)
+    M.check_for_sale(player)
 end
 
-function Market.check_for_sale(player)
+function M.check_for_sale(player)
     local player = player
     local market = global.markets[player.name]
     if not market.ticks_to_sell then
-        if not Market.get_nth_item_from_chest(player) then return end
-        market.item_for_sale = Market.get_nth_item_from_chest(player)
+        if not M.get_nth_item_from_chest(player) then return end
+        market.item_for_sale = M.get_nth_item_from_chest(player)
         get_chest_inv(market.sell_chest).remove({
             name = market.item_for_sale,
             count = 1
         })
         market.ticks_to_sell = game.tick +
-                                 (60 *
-                                     market.upgrades["sell-speed"].t[market.upgrades["sell-speed"]
-                                         .lvl])
+                                   (60 *
+                                       market.upgrades["sell-speed"].t[market.upgrades["sell-speed"]
+                                           .lvl])
     end
     if game.tick >= market.ticks_to_sell then
-        Market.sell(player, market.item_for_sale)
+        M.sell(player, market.item_for_sale)
         market.ticks_to_sell = nil
         market.item_for_sale = nil
     end
 end
 
-function Market.check_sac(player)
+function M.check_sac(player)
     local player = player
     local market = global.markets[player.name]
     local cc = get_chest_inv(market.sell_chest).get_contents()
@@ -508,20 +513,26 @@ function Market.check_sac(player)
     end
 end
 
-function Market.on_tick()
+function M.on_tick()
     if (game.tick % 10 == 0) then
         for _, player in pairs(game.connected_players) do
             player = tools.get_player(player)
             if player.character and player.character.valid then
                 if global.markets then
-                    if not global.markets[player.name] then return end
-                    if not global.markets[player.name].sell_chest then return end
-                    if not global.markets[player.name].sell_chest.valid then return end
-                    Market.check_sell_chest(player)
+                    if not global.markets[player.name] then
+                        return
+                    end
+                    if not global.markets[player.name].sell_chest then
+                        return
+                    end
+                    if not global.markets[player.name].sell_chest.valid then
+                        return
+                    end
+                    M.check_sell_chest(player)
                 end
             end
         end
     end
 end
 
-return Market
+return M
