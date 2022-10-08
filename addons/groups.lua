@@ -31,10 +31,11 @@ end
 
 function Group.create(player)
     local player = player
-    global.groups[player.name].pet_group = player.surface.create_unit_group {
-        position = player.position,
-        force = player.force
-    }
+    global.groups[player.name].pet_group =
+        player.surface.create_unit_group {
+            position = player.position,
+            force = player.force
+        }
 end
 
 function Group.get_count(player)
@@ -52,7 +53,9 @@ end
 function Group.add(player, pet)
     local player = player
     local group = global.groups[player.name]
-    if not group.pet_group or not group.pet_group.valid then Group.create(player) end
+    if not group.pet_group or not group.pet_group.valid then
+        Group.create(player)
+    end
     if (group.limit > Group.get_count(player)) and
         (Group.get_count(player) < group.max) then
         if Group.pet_data[pet] then
@@ -96,9 +99,12 @@ end
 function Group.on_tick()
     if (game.tick % 60 == 0) and global.groups then
         for index, entry in pairs(global.groups) do
-            if not entry or not entry.pet_group or not entry.pet_group.valid or
-                not game.players[index].character or
-                not game.players[index].character.valid then return end
+            if not entry then return end
+            if not entry.pet_group then return end
+            if not entry.pet_group.valid then return end
+            if not game.players[index] then return end
+            if not game.players[index].character then return end
+            if not game.players[index].character.valid then return end
             if entry.pet_group.members then
                 entry.pet_group.set_command({
                     type = defines.command.go_to_location,
