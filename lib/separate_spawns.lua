@@ -732,8 +732,14 @@ function RemoveOrResetPlayer(player, remove_player, remove_force, remove_base,
     player.teleport({x = 0, y = 0}, GAME_SURFACE_NAME)
     local player_old_force = player.force
     player.force = global.ocfg.main_force
-    if global.markets[player.name] then global.markets[player.name] = market.new(player) end
-    if global.groups[player.name] then global.groups[player.name] = group.new(player) end
+    if global.markets[player.name] then
+        global.markets[player.name] = nil
+        global.markets[player.name] = market.new(player)
+    end
+    if global.groups[player.name] then
+        global.groups[player.name] = nil
+        global.groups[player.name] = group.new(player)
+    end
     -- Clear globals
     CleanupPlayerGlobals(player.name) -- Except global.ocore.uniqueSpawns
 
