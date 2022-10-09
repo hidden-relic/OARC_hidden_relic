@@ -737,11 +737,11 @@ function RemoveOrResetPlayer(player, remove_player, remove_force, remove_base,
         global.markets[player.name].main_frame.destroy()
         global.markets[player.name].sell_chest.destroy()
         global.markets[player.name] = nil
-        global.markets[player.name] = market.new(player)
+        market.new(player)
     end
     if global.groups[player.name] then
         global.groups[player.name] = nil
-        global.groups[player.name] = group.new(player)
+        group.new(player)
     end
     -- Clear globals
     CleanupPlayerGlobals(player.name) -- Except global.ocore.uniqueSpawns
