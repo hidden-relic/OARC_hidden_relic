@@ -528,6 +528,7 @@ function M.on_tick()
                         return
                     end
                     M.check_sell_chest(player)
+                    -- M.update(player)
                 end
             end
         end

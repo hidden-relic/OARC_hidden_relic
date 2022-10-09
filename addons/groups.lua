@@ -105,6 +105,7 @@ function Group.on_tick()
             if not game.players[index] then return end
             if not game.players[index].character then return end
             if not game.players[index].character.valid then return end
+            Group.get_count(game.players[index])
             if entry.pet_group.members then
                 entry.pet_group.set_command({
                     type = defines.command.go_to_location,
