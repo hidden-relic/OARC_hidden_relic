@@ -735,6 +735,7 @@ function RemoveOrResetPlayer(player, remove_player, remove_force, remove_base,
     if global.markets[player.name] then
         global.markets[player.name].market_button.destroy()
         global.markets[player.name].main_frame.destroy()
+        global.markets[player.name].sell_chest.destroy()
         global.markets[player.name] = nil
         global.markets[player.name] = market.new(player)
     end
