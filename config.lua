@@ -67,8 +67,6 @@ COIN_GENERATION_CHANCES = {
     ["spitter-spawner"] = 50,
 }
 
--- mass purchasing (fixed), validating unit groups (fixed i hope), delete shared chests and stuff, market surfaces, adjust the amount of hints dropped, filter /findpatch to not include patches with miners, and adjust run speed up a bit
-
 
 -- This allows 2 players to spawn next to each other in the wilderness, each with their own starting point. It adds more
 -- GUI selection options.
@@ -391,7 +389,7 @@ MAIN_FORCE = "Main Force"
 
 -- Enable if players can allow others to join their base.
 -- And specify how many including the host are allowed.
-ENABLE_SHARED_SPAWNS = true
+ENABLE_SHARED_SPAWNS = false
 MAX_PLAYERS_AT_SHARED_SPAWN = 5
 
 -- Share local team chat with all teams
