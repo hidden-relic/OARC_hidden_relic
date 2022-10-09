@@ -287,6 +287,7 @@ function M.create_market_button(player)
     local player = player
     local market = global.markets[player.name]
     market.button_flow = gui.get_button_flow(player)
+    if market.market_button then return end
     market.market_button = market.button_flow.add {
         name = "market_button",
         type = "sprite-button",
