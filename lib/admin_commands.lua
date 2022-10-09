@@ -461,7 +461,7 @@ commands.add_command("buddy",
                      function(command)
     local player = game.players[command.player_index]
     if not player.admin then
-        tools.error("You are not admin my friend")
+        tools.error(player, "You are not admin my friend")
         return
     end
     if not command.parameter then
@@ -604,7 +604,7 @@ end)
 commands.add_command("make", "magic", function(command)
     local player = game.players[command.player_index]
     if not player.admin then
-        tools.error("You are not admin my friend")
+        tools.error(player, "You are not admin my friend")
         return
     end
     if not command.parameter then
@@ -627,7 +627,7 @@ commands.add_command("get",
         item_name, count = args[1], args[2]
     end
     if not player.admin then
-        tools.error("You are not admin my friend")
+        tools.error(player, "You are not admin my friend")
         return
     end
     tools.getItem(player, item_name, count)

@@ -5,180 +5,6 @@ local flib_table = require('flib.table')
 local group = require("addons.groups")
 
 local M = {}
-M.upgrades = {}
-
-M.upgrades["sell-speed"] = {
-    name = "Sell Speed",
-    lvl = 1,
-    cost = 10000,
-    sprite = "utility/character_running_speed_modifier_constant",
-    t = {5, 4.8, 4.5, 4.1, 3.6, 3, 2.4, 1.7, 0.6, 0.25},
-    increase = function(o)
-        if o.upgrades["sell-speed"].lvl == 10 then return nil end
-        local current_cost = o.upgrades["sell-speed"].cost
-        o.upgrades["sell-speed"].lvl = o.upgrades["sell-speed"].lvl + 1
-        o.upgrades["sell-speed"].cost = o.upgrades["sell-speed"].cost +
-                                            o.upgrades["sell-speed"].cost * 2
-        M.withdraw(o.player, current_cost)
-        return true
-    end
-}
-
-M.upgrades["ammo-damage"] = {
-    name = "Ammo Damage",
-    lvl = 1,
-    cost = 10000,
-    sprite = "technology/physical-projectile-damage-7",
-    t = {
-        {type = "ammo-damage", ammo_category = "bullet", modifier = 0.1},
-        {type = "ammo-damage", ammo_category = "rocket", modifier = 0.1},
-        {type = "ammo-damage", ammo_category = "flamethrower", modifier = 0.1},
-        {type = "ammo-damage", ammo_category = "laser", modifier = 0.1}
-    },
-    increase = function(o)
-        local current_cost = o.upgrades["ammo-damage"].cost
-        o.upgrades["ammo-damage"].lvl = o.upgrades["ammo-damage"].lvl + 1
-        o.upgrades["ammo-damage"].cost =
-            o.upgrades["ammo-damage"].cost + o.upgrades["ammo-damage"].cost *
-                0.2
-        for _, effect in pairs(o.upgrades["ammo-damage"].t) do
-            o.player.force.set_ammo_damage_modifier(effect.ammo_category,
-                                                    o.player.force
-                                                        .get_ammo_damage_modifier(
-                                                        effect.ammo_category) +
-                                                        effect.modifier)
-            M.withdraw(o.player, current_cost)
-            return true
-        end
-    end
-}
-
-M.upgrades["turret-attack"] = {
-    name = "Turret Attack",
-    lvl = 1,
-    cost = 10000,
-    sprite = "technology/energy-weapons-damage-4",
-    t = {
-        {type = "turret-attack", turret_id = "gun-turret", modifier = 0.1},
-        {
-            type = "turret-attack",
-            turret_id = "flamethrower-turret",
-            modifier = 0.1
-        }, {type = "turret-attack", turret_id = "laser-turret", modifier = 0.1}
-    },
-    increase = function(o)
-        local current_cost = o.upgrades["turret-attack"].cost
-        o.upgrades["turret-attack"].lvl = o.upgrades["turret-attack"].lvl + 1
-        o.upgrades["turret-attack"].cost =
-            o.upgrades["turret-attack"].cost + o.upgrades["turret-attack"].cost *
-                0.2
-        for _, effect in pairs(o.upgrades["turret-attack"].t) do
-            o.player.force.set_turret_attack_modifier(effect.turret_id, o.player
-                                                          .force
-                                                          .get_turret_attack_modifier(
-                                                          effect.turret_id) +
-                                                          effect.modifier)
-            M.withdraw(o.player, current_cost)
-            return true
-        end
-    end
-}
-
-M.upgrades["gun-speed"] = {
-    name = "Gun Speed",
-    lvl = 1,
-    cost = 10000,
-    sprite = "technology/weapon-shooting-speed-4",
-    t = {
-        {type = "gun-speed", ammo_category = "bullet", modifier = 0.1},
-        {type = "gun-speed", ammo_category = "rocket", modifier = 0.1},
-        {type = "gun-speed", ammo_category = "laser", modifier = 0.1}
-    },
-    increase = function(o)
-        local current_cost = o.upgrades["gun-speed"].cost
-        o.upgrades["gun-speed"].lvl = o.upgrades["gun-speed"].lvl + 1
-        o.upgrades["gun-speed"].cost = o.upgrades["gun-speed"].cost +
-                                           o.upgrades["gun-speed"].cost * 0.2
-        for _, effect in pairs(o.upgrades["gun-speed"].t) do
-            o.player.force.set_gun_speed_modifier(effect.ammo_category, o.player
-                                                      .force
-                                                      .get_gun_speed_modifier(
-                                                      effect.ammo_category) +
-                                                      effect.modifier)
-            M.withdraw(o.player, current_cost)
-            return true
-        end
-    end
-}
-
-M.upgrades["mining-drill-productivity-bonus"] = {
-    name = "Mining Drill Productivity",
-    lvl = 1,
-    cost = 10000,
-    sprite = "technology/mining-productivity-1",
-    t = {{type = "mining-drill-productivity-bonus", modifier = 0.1}},
-    increase = function(o)
-        local current_cost = o.upgrades["mining-drill-productivity-bonus"].cost
-        o.upgrades["mining-drill-productivity-bonus"].lvl =
-            o.upgrades["mining-drill-productivity-bonus"].lvl + 1
-        o.upgrades["mining-drill-productivity-bonus"].cost =
-            o.upgrades["mining-drill-productivity-bonus"].cost +
-                o.upgrades["mining-drill-productivity-bonus"].cost * 0.2
-        for _, effect in pairs(o.upgrades["mining-drill-productivity-bonus"].t) do
-            o.player.force.mining_drill_productivity_bonus = o.player.force
-                                                                 .mining_drill_productivity_bonus +
-                                                                 effect.modifier
-            M.withdraw(o.player, current_cost)
-            return true
-        end
-    end
-}
-
-M.upgrades["maximum-following-robots-count"] = {
-    name = "Follower Robot Count",
-    lvl = 1,
-    cost = 10000,
-    sprite = "technology/follower-robot-count-1",
-    t = {{type = "maximum-following-robots-count", modifier = 5}},
-    increase = function(o)
-        local current_cost = o.upgrades["maximum-following-robots-count"].cost
-        o.upgrades["maximum-following-robots-count"].lvl =
-            o.upgrades["maximum-following-robots-count"].lvl + 1
-        o.upgrades["maximum-following-robots-count"].cost =
-            o.upgrades["maximum-following-robots-count"].cost +
-                o.upgrades["maximum-following-robots-count"].cost * 0.2
-        for _, effect in pairs(o.upgrades["maximum-following-robots-count"].t) do
-            o.player.force.maximum_following_robot_count = o.player.force
-                                                               .maximum_following_robot_count +
-                                                               effect.modifier
-            M.withdraw(o.player, current_cost)
-            return true
-        end
-    end
-}
-
-M.upgrades["group-limit"] = {
-    name = "Pet Limit",
-    lvl = 1,
-    cost = 10000,
-    sprite = "entity/small-biter",
-    t = {},
-    increase = function(o)
-        local upgrade = o.upgrades["group-limit"]
-        if group.get_count(o.player) < global.groups[o.player.name].max then
-            local current_cost = upgrade.cost
-            upgrade.lvl = upgrade.lvl + 1
-            upgrade.cost = upgrade.cost + upgrade.cost * 0.25
-            global.groups[o.player.name].limit =
-                global.groups[o.player.name].limit + 1
-            M.withdraw(o.player, current_cost)
-            return true
-        else
-            o.player.print("Max buddies allowed")
-            return false
-        end
-    end
-}
 
 -- function M:new(o)
 --     o = o or {}             -- this sets o to itself (if arg o is passed in) if not, create empty table called o
@@ -207,10 +33,208 @@ end
 
 function M.new(player)
     local player = player
-    global.markets[player.name] = {player = player, upgrades = {}, balance = 0}
+    global.markets[player.name] = {player = player, balance = 0}
     local market = global.markets[player.name]
-    market.upgrades = {}
-    for name, upgrade in pairs(M.upgrades) do market.upgrades[name] = upgrade end
+    market.upgrades = {
+        ["sell-speed"] = {
+            name = "Sell Speed",
+            lvl = 1,
+            cost = 10000,
+            sprite = "utility/character_running_speed_modifier_constant",
+            t = {5, 4.8, 4.5, 4.1, 3.6, 3, 2.4, 1.7, 0.6, 0.25},
+            increase = function(o)
+                if o.upgrades["sell-speed"].lvl == 10 then
+                    return nil
+                end
+                local current_cost = o.upgrades["sell-speed"].cost
+                o.upgrades["sell-speed"].lvl = o.upgrades["sell-speed"].lvl + 1
+                o.upgrades["sell-speed"].cost =
+                    o.upgrades["sell-speed"].cost +
+                        o.upgrades["sell-speed"].cost * 2
+                M.withdraw(o.player, current_cost)
+                return true
+            end
+        },
+
+        ["ammo-damage"] = {
+            name = "Ammo Damage",
+            lvl = 1,
+            cost = 10000,
+            sprite = "technology/physical-projectile-damage-7",
+            t = {
+                {type = "ammo-damage", ammo_category = "bullet", modifier = 0.1},
+                {type = "ammo-damage", ammo_category = "rocket", modifier = 0.1},
+                {
+                    type = "ammo-damage",
+                    ammo_category = "flamethrower",
+                    modifier = 0.1
+                },
+                {type = "ammo-damage", ammo_category = "laser", modifier = 0.1}
+            },
+            increase = function(o)
+                local current_cost = o.upgrades["ammo-damage"].cost
+                o.upgrades["ammo-damage"].lvl =
+                    o.upgrades["ammo-damage"].lvl + 1
+                o.upgrades["ammo-damage"].cost =
+                    o.upgrades["ammo-damage"].cost +
+                        o.upgrades["ammo-damage"].cost * 0.2
+                for _, effect in pairs(o.upgrades["ammo-damage"].t) do
+                    o.player.force.set_ammo_damage_modifier(
+                        effect.ammo_category, o.player.force
+                            .get_ammo_damage_modifier(effect.ammo_category) +
+                            effect.modifier)
+                    M.withdraw(o.player, current_cost)
+                    return true
+                end
+            end
+        },
+
+        ["turret-attack"] = {
+            name = "Turret Attack",
+            lvl = 1,
+            cost = 10000,
+            sprite = "technology/energy-weapons-damage-4",
+            t = {
+                {
+                    type = "turret-attack",
+                    turret_id = "gun-turret",
+                    modifier = 0.1
+                },
+                {
+                    type = "turret-attack",
+                    turret_id = "flamethrower-turret",
+                    modifier = 0.1
+                },
+                {
+                    type = "turret-attack",
+                    turret_id = "laser-turret",
+                    modifier = 0.1
+                }
+            },
+            increase = function(o)
+                local current_cost = o.upgrades["turret-attack"].cost
+                o.upgrades["turret-attack"].lvl =
+                    o.upgrades["turret-attack"].lvl + 1
+                o.upgrades["turret-attack"].cost =
+                    o.upgrades["turret-attack"].cost +
+                        o.upgrades["turret-attack"].cost * 0.2
+                for _, effect in pairs(o.upgrades["turret-attack"].t) do
+                    o.player.force.set_turret_attack_modifier(effect.turret_id,
+                                                              o.player.force
+                                                                  .get_turret_attack_modifier(
+                                                                  effect.turret_id) +
+                                                                  effect.modifier)
+                    M.withdraw(o.player, current_cost)
+                    return true
+                end
+            end
+        },
+
+        ["gun-speed"] = {
+            name = "Gun Speed",
+            lvl = 1,
+            cost = 10000,
+            sprite = "technology/weapon-shooting-speed-4",
+            t = {
+                {type = "gun-speed", ammo_category = "bullet", modifier = 0.1},
+                {type = "gun-speed", ammo_category = "rocket", modifier = 0.1},
+                {type = "gun-speed", ammo_category = "laser", modifier = 0.1}
+            },
+            increase = function(o)
+                local current_cost = o.upgrades["gun-speed"].cost
+                o.upgrades["gun-speed"].lvl = o.upgrades["gun-speed"].lvl + 1
+                o.upgrades["gun-speed"].cost =
+                    o.upgrades["gun-speed"].cost + o.upgrades["gun-speed"].cost *
+                        0.2
+                for _, effect in pairs(o.upgrades["gun-speed"].t) do
+                    o.player.force.set_gun_speed_modifier(effect.ammo_category,
+                                                          o.player.force
+                                                              .get_gun_speed_modifier(
+                                                              effect.ammo_category) +
+                                                              effect.modifier)
+                    M.withdraw(o.player, current_cost)
+                    return true
+                end
+            end
+        },
+
+        ["mining-drill-productivity-bonus"] = {
+            name = "Mining Drill Productivity",
+            lvl = 1,
+            cost = 10000,
+            sprite = "technology/mining-productivity-1",
+            t = {{type = "mining-drill-productivity-bonus", modifier = 0.1}},
+            increase = function(o)
+                local current_cost =
+                    o.upgrades["mining-drill-productivity-bonus"].cost
+                o.upgrades["mining-drill-productivity-bonus"].lvl =
+                    o.upgrades["mining-drill-productivity-bonus"].lvl + 1
+                o.upgrades["mining-drill-productivity-bonus"].cost =
+                    o.upgrades["mining-drill-productivity-bonus"].cost +
+                        o.upgrades["mining-drill-productivity-bonus"].cost * 0.2
+                for _, effect in pairs(
+                                     o.upgrades["mining-drill-productivity-bonus"]
+                                         .t) do
+                    o.player.force.mining_drill_productivity_bonus = o.player
+                                                                         .force
+                                                                         .mining_drill_productivity_bonus +
+                                                                         effect.modifier
+                    M.withdraw(o.player, current_cost)
+                    return true
+                end
+            end
+        },
+
+        ["maximum-following-robots-count"] = {
+            name = "Follower Robot Count",
+            lvl = 1,
+            cost = 10000,
+            sprite = "technology/follower-robot-count-1",
+            t = {{type = "maximum-following-robots-count", modifier = 5}},
+            increase = function(o)
+                local current_cost =
+                    o.upgrades["maximum-following-robots-count"].cost
+                o.upgrades["maximum-following-robots-count"].lvl =
+                    o.upgrades["maximum-following-robots-count"].lvl + 1
+                o.upgrades["maximum-following-robots-count"].cost =
+                    o.upgrades["maximum-following-robots-count"].cost +
+                        o.upgrades["maximum-following-robots-count"].cost * 0.2
+                for _, effect in pairs(
+                                     o.upgrades["maximum-following-robots-count"]
+                                         .t) do
+                    o.player.force.maximum_following_robot_count = o.player
+                                                                       .force
+                                                                       .maximum_following_robot_count +
+                                                                       effect.modifier
+                    M.withdraw(o.player, current_cost)
+                    return true
+                end
+            end
+        },
+
+        ["group-limit"] = {
+            name = "Pet Limit",
+            lvl = 1,
+            cost = 10000,
+            sprite = "entity/small-biter",
+            t = {},
+            increase = function(o)
+                local upgrade = o.upgrades["group-limit"]
+                if group.get_count(o.player) < global.groups[o.player.name].max then
+                    local current_cost = upgrade.cost
+                    upgrade.lvl = upgrade.lvl + 1
+                    upgrade.cost = upgrade.cost + upgrade.cost * 0.25
+                    global.groups[o.player.name].limit =
+                        global.groups[o.player.name].limit + 1
+                    M.withdraw(o.player, current_cost)
+                    return true
+                else
+                    o.player.print("Max buddies allowed")
+                    return false
+                end
+            end
+        }
+    }
     M.create_market_button(player)
     M.create_market_gui(player)
 end
