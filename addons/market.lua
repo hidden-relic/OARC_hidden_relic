@@ -123,7 +123,8 @@ function M.new(player)
             max_lvl = 10,
             cost = 10000,
             sprite = "utility/character_running_speed_modifier_constant",
-            t = {5, 4.8, 4.5, 4.1, 3.6, 3, 2.4, 1.7, 0.6, 0.25}
+            t = {5, 4.8, 4.5, 4.1, 3.6, 3, 2.4, 1.7, 0.6, 0.25},
+            tooltip = "Shorten the time it takes to sell an item"
         },
 
         ["ammo-damage"] = {
@@ -141,7 +142,8 @@ function M.new(player)
                     modifier = 0.1
                 },
                 {type = "ammo-damage", ammo_category = "laser", modifier = 0.1}
-            }
+            },
+            tooltip = "+10% Damage [img=item/firearm-magazine] [img=item/piercing-rounds-magazine] [img=item/uranium-rounds-magazine] [img=item/rocket] [img=item/explosive-rocket] [img=item/flamethrower-ammo] [img=item/flamethrower-turret] [img=item/laser-turret] [img=item/personal-laser-defense-equipment]"
         },
 
         ["turret-attack"] = {
@@ -166,7 +168,8 @@ function M.new(player)
                     turret_id = "laser-turret",
                     modifier = 0.1
                 }
-            }
+            },
+            tooltip = "+10% Turret Attack [img=item/gun-turret] [img=item/flamethrower-turret] [img=item/laser-turret]"
         },
 
         ["gun-speed"] = {
@@ -179,7 +182,8 @@ function M.new(player)
                 {type = "gun-speed", ammo_category = "bullet", modifier = 0.1},
                 {type = "gun-speed", ammo_category = "rocket", modifier = 0.1},
                 {type = "gun-speed", ammo_category = "laser", modifier = 0.1}
-            }
+            },
+            tooltip = "+10% Speed [img=item/firearm-magazine] [img=item/piercing-rounds-magazine] [img=item/uranium-rounds-magazine] [img=item/rocket] [img=item/explosive-rocket] [img=item/laser-turret] [img=item/personal-laser-defense-equipment]"
         },
 
         ["mining-drill-productivity-bonus"] = {
@@ -188,7 +192,8 @@ function M.new(player)
             max_lvl = 100,
             cost = 10000,
             sprite = "technology/mining-productivity-1",
-            t = {{type = "mining-drill-productivity-bonus", modifier = 0.1}}
+            t = {{type = "mining-drill-productivity-bonus", modifier = 0.1}},
+            tooltip = "+10% Productivity [img=technology/mining-productivity-1]"
         },
 
         ["maximum-following-robot-count"] = {
@@ -197,7 +202,8 @@ function M.new(player)
             max_lvl = 100,
             cost = 10000,
             sprite = "technology/follower-robot-count-1",
-            t = {{type = "maximum-following-robots-count", modifier = 5}}
+            t = {{type = "maximum-following-robots-count", modifier = 5}},
+            tooltip = "+5 Robots [img=entity/distractor] [img=entity/destroyer] [img=entity/defender]"
         },
 
         ["group-limit"] = {
@@ -206,7 +212,8 @@ function M.new(player)
             max_lvl = 50,
             cost = 10000,
             sprite = "entity/small-biter",
-            t = {}
+            t = {},
+            tooltip = "+1 Pet [img=entity/small-biter] [img=entity/medium-biter] [img=entity/big-biter] [img=entity/behemoth-biter]"
         }
     }
     M.create_market_button(player)
@@ -286,7 +293,7 @@ end
 function M.create_market_button(player)
     local player = player
     local market = global.markets[player.name]
-    market.button_flow = gui.get_button_flow(player) 
+    market.button_flow = gui.get_button_flow(player)
     market.market_button = market.button_flow.add {
         name = "market_button",
         type = "sprite-button",
@@ -323,17 +330,22 @@ function M.create_market_gui(player)
         column_count = 20
     }
     market.item_buttons = {}
-    for name, value in pairs(global.markets.item_values) do
-        market.item_buttons[name] = market.item_table.add {
-            name = name,
-            type = "sprite-button",
-            sprite = "item/" .. name,
-            number = math.floor(market.balance / value),
-            tooltip = {
-                "tooltips.market_items", name,
-                game.item_prototypes[name].localised_name, value
-            }
-        }
+    for _, item in pairs(game.item_prototypes) do
+        if global.markets.item_values[item.name] then
+            market.item_buttons[item.name] =
+                market.item_table.add {
+                    name = item.name,
+                    type = "sprite-button",
+                    sprite = "item/" .. item.name,
+                    number = math.floor(market.balance /
+                                            global.markets.item_values[item.name]),
+                    tooltip = {
+                        "tooltips.market_items", item.name,
+                        game.item_prototypes[item.name].localised_name,
+                        global.markets.item_values[item.name]
+                    }
+                }
+        end
     end
     market.upgrades_frame = market.main_flow.add {
         type = "frame",
@@ -355,7 +367,8 @@ function M.create_market_gui(player)
             type = "sprite-button",
             sprite = upgrade.sprite,
             number = upgrade.lvl,
-            tooltip = upgrade.name .. "\n[item=coin] " .. upgrade.cost
+            tooltip = upgrade.name .. "\n[item=coin] " .. upgrade.cost .. "\n" ..
+                upgrade.tooltip
         }
     end
 end
@@ -403,7 +416,8 @@ function M.update(player)
     for index, button in pairs(market.upgrade_buttons) do
         button.number = market.upgrades[index].lvl
         button.tooltip = market.upgrades[index].name .. "\n[item=coin] " ..
-                             math.ceil(market.upgrades[index].cost)
+                             math.ceil(market.upgrades[index].cost) .. "\n" ..
+                             market.upgrades[index].tooltip
     end
 end
 
