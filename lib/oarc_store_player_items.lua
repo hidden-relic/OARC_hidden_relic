@@ -247,6 +247,7 @@ function CreatePlayerStoreTab(tab_container, player)
                 btn.enabled = false
             end
             if (category == "Followers") then
+                group.get_count(player)
                 if global.groups[player.name] and global.groups[player.name].total < global.groups[player.name].limit then
                     btn.enabled = true
                 else

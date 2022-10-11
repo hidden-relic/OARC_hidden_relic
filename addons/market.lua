@@ -407,6 +407,11 @@ function M.update(player)
     market.market_button.tooltip = "[item=coin] " .. balance
     for index, button in pairs(market.item_buttons) do
         local value = global.markets.item_values[index]
+        if math.floor(balance / value) == 0 then
+            button.enabled = false
+        else
+            button.enabled = true
+        end
         button.number = math.floor(balance / value)
         button.tooltip = {
             "tooltips.market_items", button.name,
@@ -414,6 +419,11 @@ function M.update(player)
         }
     end
     for index, button in pairs(market.upgrade_buttons) do
+        if market.balance < market.upgrades[index].cost then
+            button.enabled = false
+        else
+            button.enabled = true
+        end
         button.number = market.upgrades[index].lvl
         button.tooltip = market.upgrades[index].name .. "\n[item=coin] " ..
                              math.ceil(market.upgrades[index].cost) .. "\n" ..
