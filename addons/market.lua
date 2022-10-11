@@ -244,12 +244,17 @@ function M.purchase(player, item, click, shift)
     local item = item
     local value = global.markets.item_values[item]
     local i = nil
-    if click == 2 then i = 1 end
+    if click == 2 then
+        if not shift then
+            i = 1
+        else
+            i = math.floor(market.balance / value)
+        end
     if click == 4 then
         if not shift then
             i = 5
         else
-            i = math.floor(market.balance / value)
+            i = math.floor(market.balance / value)/2
         end
     end
     if i then
