@@ -250,11 +250,12 @@ function M.purchase(player, item, click, shift)
         else
             i = math.floor(market.balance / value)
         end
+    end
     if click == 4 then
         if not shift then
             i = 5
         else
-            i = math.floor(math.floor(market.balance / value)/2)
+            i = math.floor(math.floor(market.balance / value) / 2)
         end
     end
     if i then
