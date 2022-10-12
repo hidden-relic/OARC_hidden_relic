@@ -25,7 +25,7 @@ function InitSpawnGlobalsAndForces()
 
     -- Core global to help me organize shit.
     if (global.ocore == nil) then global.ocore = {} end
-    
+
     -- if (global.ocore.spy == nil) then
     --     global.ocore.spy = {}
     --     global.ocore.spy.stalking = {}
@@ -733,9 +733,15 @@ function RemoveOrResetPlayer(player, remove_player, remove_force, remove_base,
     local player_old_force = player.force
     player.force = global.ocfg.main_force
     if global.markets[player.name] then
-        global.markets[player.name].market_button.destroy()
-        global.markets[player.name].main_frame.destroy()
-        global.markets[player.name].sell_chest.destroy()
+        if global.markets[player.name].market_button then
+            global.markets[player.name].market_button.destroy()
+        end
+        if global.markets[player.name].main_frame then
+            global.markets[player.name].main_frame.destroy()
+        end
+        if global.markets[player.name].sell_chest then
+            global.markets[player.name].sell_chest.destroy()
+        end
         global.markets[player.name] = nil
         market.new(player)
     end
