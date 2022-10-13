@@ -4,6 +4,15 @@ local Color = require('util/Colors')
 local tools = {}
 tools.MAX_INT32 = 2147483647
 
+function tools.add_commas(amount)
+    local formatted = amount
+    while true do
+        formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", '%1,%2')
+        if (k == 0) then break end
+    end
+    return formatted
+end
+
 function tools.sortByValue(t)
     local keys = {}
 
@@ -66,15 +75,15 @@ function tools.formatTimeHoursMins(ticks)
     return string.format("%dh:%02dm", hours, minutes)
 end
 
-function tools.get_player(o)                                 -- pass in table, string, or int
-    local o_type, p = type(o)                                -- get it's type
-    if o_type == 'table' then                                -- if its already a table (object)
-        p = o                                                -- just keep it
-    elseif o_type == 'string' or o_type == 'number' then     -- if its a string or int
-        p = game.players[o]                                  -- get the player by game.players[string or int]
+function tools.get_player(o) -- pass in table, string, or int
+    local o_type, p = type(o) -- get it's type
+    if o_type == 'table' then -- if its already a table (object)
+        p = o -- just keep it
+    elseif o_type == 'string' or o_type == 'number' then -- if its a string or int
+        p = game.players[o] -- get the player by game.players[string or int]
     end
 
-    if p and p.valid and p.is_player() then return p end     -- do all validity checks and return valid player object
+    if p and p.valid and p.is_player() then return p end -- do all validity checks and return valid player object
 end
 
 function matChest()

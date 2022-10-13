@@ -23,7 +23,7 @@ function M.init()
         ["discharge-defense-remote"] = true
     }
     markets.item_values = {}
-    for name, value in pairs(tools.sortByValue(pre_item_values)) do
+    for name, value in pairs(pre_item_values) do
         if not nil_items[name] and game.item_prototypes[name] then
             markets.item_values[name] = tools.round(value)
         end
@@ -238,24 +238,32 @@ function M.withdraw(player, v)
     end
 end
 
-function M.purchase(player, item, click, shift)
+function M.purchase(player, item, click, shift, ctrl)
     local player = player
     local market = global.markets[player.name]
     local item = item
     local value = global.markets.item_values[item]
     local i = nil
     if click == 2 then
-        if not shift then
+        if not shift and not ctrl then
             i = 1
-        else
-            i = math.floor(market.balance / value)
+        elseif shift and ctrl then
+            i = 1
+        elseif shift and not ctrl then
+            i = 100
+        elseif not shift and ctrl then
+            i = 1000
         end
     end
     if click == 4 then
-        if not shift then
-            i = 5
-        else
-            i = math.floor(math.floor(market.balance / value) / 2)
+        if not shift and not ctrl then
+            i = 10
+        elseif shift and ctrl then
+            i = 10
+        elseif shift and not ctrl then
+            i = 50
+        elseif not shift and ctrl then
+            i = 500
         end
     end
     if i then
@@ -305,7 +313,7 @@ function M.create_market_button(player)
         type = "sprite-button",
         sprite = "item/coin",
         number = market.balance,
-        tooltip = "[item=coin] " .. market.balance
+        tooltip = "[item=coin] " .. tools.add_commas(market.balance)
     }
 end
 
@@ -348,7 +356,7 @@ function M.create_market_gui(player)
                     tooltip = {
                         "tooltips.market_items", item.name,
                         game.item_prototypes[item.name].localised_name,
-                        global.markets.item_values[item.name]
+                        tools.add_commas(global.markets.item_values[item.name])
                     }
                 }
         end
@@ -373,8 +381,8 @@ function M.create_market_gui(player)
             type = "sprite-button",
             sprite = upgrade.sprite,
             number = upgrade.lvl,
-            tooltip = upgrade.name .. "\n[item=coin] " .. upgrade.cost .. "\n" ..
-                upgrade.tooltip
+            tooltip = upgrade.name .. "\n[item=coin] " ..
+                tools.add_commas(upgrade.cost) .. "\n" .. upgrade.tooltip
         }
     end
 end
@@ -410,7 +418,7 @@ function M.update(player)
     local market = global.markets[player.name]
     local balance = math.floor(market.balance)
     market.market_button.number = balance
-    market.market_button.tooltip = "[item=coin] " .. balance
+    market.market_button.tooltip = "[item=coin] " .. tools.add_commas(balance)
     for index, button in pairs(market.item_buttons) do
         local value = global.markets.item_values[index]
         if math.floor(balance / value) == 0 then
@@ -421,7 +429,8 @@ function M.update(player)
         button.number = math.floor(balance / value)
         button.tooltip = {
             "tooltips.market_items", button.name,
-            game.item_prototypes[button.name].localised_name, value
+            game.item_prototypes[button.name].localised_name,
+            tools.add_commas(value)
         }
     end
     for index, button in pairs(market.upgrade_buttons) do
@@ -432,7 +441,8 @@ function M.update(player)
         end
         button.number = market.upgrades[index].lvl
         button.tooltip = market.upgrades[index].name .. "\n[item=coin] " ..
-                             math.ceil(market.upgrades[index].cost) .. "\n" ..
+                             tools.add_commas(
+                                 math.ceil(market.upgrades[index].cost)) .. "\n" ..
                              market.upgrades[index].tooltip
     end
 end

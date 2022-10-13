@@ -108,9 +108,17 @@ function Group.on_tick()
             Group.get_count(game.players[index])
             if entry.pet_group.members then
                 entry.pet_group.set_command({
+                    type = defines.command.compound,
+                    structure_type = "logical_or",
+                    commands = {
+                        type = defines.command.go_to_location,
+                        destination_entity = game.players[index].character
+                    },
+                    {
                     type = defines.command.attack_area,
                     destination = game.players[index].position,
                     radius = 16
+                    }
                 })
             end
         end
