@@ -251,7 +251,7 @@ function M.purchase(player, item, click, shift, ctrl)
             i = 1
         elseif shift and not ctrl then
             i = 100
-        elseif not shift and ctrl then
+        elseif ctrl and not shift then
             i = 1000
         end
     end
@@ -262,7 +262,7 @@ function M.purchase(player, item, click, shift, ctrl)
             i = 10
         elseif shift and not ctrl then
             i = 50
-        elseif not shift and ctrl then
+        elseif ctrl and not shift then
             i = 500
         end
     end

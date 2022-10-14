@@ -196,7 +196,7 @@ script.on_event(defines.events.on_gui_click, function(event)
             local button = global.markets[player.name].item_buttons[event.element.name]
             local click = event.button
             local shift = event.shift
-            local ctrl = event.ctrl
+            local ctrl = event.control
             market.purchase(player, button.name, click, shift, ctrl)
         end
         if global.markets[player.name].upgrade_buttons and global.markets[player.name].upgrade_buttons[event.element.name] then
