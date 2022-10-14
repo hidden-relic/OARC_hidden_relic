@@ -1189,11 +1189,12 @@ function CoinsFromEnemiesOnPostEntityDied(event)
         end
 
         if (coin_chance) then
-            game.print("Enemy died. Cause: "..event.cause.type)
+            game.print("Enemy died. Cause: " .. event.cause.type)
             if event.cause.type == "character" then
                 DropCoins(coin_chance, event.cause.player)
-            elseif event.cause.type == "car" or event.cause.type == "spider-vehicle" then
-                DropCoins(coin_chance, event.cause.get_driver())
+            elseif event.cause.type == "car" or event.cause.type ==
+                "spider-vehicle" then
+                DropCoins(coin_chance, event.cause.get_driver().player)
             end
         end
     end
