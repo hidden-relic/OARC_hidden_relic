@@ -1179,6 +1179,7 @@ function CoinsFromEnemiesOnPostEntityDied(event)
     if (not event.entity or not game.entity_prototypes[event.entity.name]) then
         return
     end
+    if event.cause.type  ~= "character" then return end
 
     local coin_chance = nil
     if (COIN_GENERATION_CHANCES[event.entity.name]) then
