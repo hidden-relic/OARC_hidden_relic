@@ -1181,9 +1181,9 @@ function CoinsFromEnemiesOnPostEntityDied(event)
     end
 
     local coin_chance = nil
-    if (COIN_GENERATION_CHANCES[event.entity_prototypes[event.entity.name]]) then
+    if (COIN_GENERATION_CHANCES[game.entity_prototypes[event.entity.name]]) then
         coin_chance =
-            COIN_GENERATION_CHANCES[event.entity_prototypes[event.entity.name]]
+            COIN_GENERATION_CHANCES[game.entity_prototypes[event.entity.name]]
     end
 
     if (coin_chance) then
