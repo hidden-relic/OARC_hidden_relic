@@ -556,9 +556,6 @@ script.on_event(defines.events.on_entity_damaged, function(event)
 end)
 
 script.on_event(defines.events.on_entity_died, function(event)
-    if (game.surfaces[event.surface_index].name ~= GAME_SURFACE_NAME) then
-        return
-    end
     if global.ocfg.enable_coin_shop then
         CoinsFromEnemiesOnPostEntityDied(event)
     end
