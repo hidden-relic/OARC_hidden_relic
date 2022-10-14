@@ -1189,8 +1189,8 @@ function CoinsFromEnemiesOnPostEntityDied(event)
 
     if (coin_chance) then
     game.print("Enemy died. Associated Player: " ..
-                       event.cause.associated_player.name)
-        DropCoins(coin_chance, event.cause.associated_player)
+                       event.cause)
+        DropCoins(coin_chance, event.cause)
     end
 end
 
