@@ -1179,20 +1179,22 @@ function CoinsFromEnemiesOnPostEntityDied(event)
     if (not event.entity or not game.entity_prototypes[event.entity.name]) then
         return
     end
-    if event.cause.type ~= "character" or event.cause.type ~= "car" or
-        event.cause.type ~= "spider-vehicle" then return end
+    if event.cause then
+        -- if event.cause.type ~= "character" or event.cause.type ~= "car" or
+        --     event.cause.type ~= "spider-vehicle" then return end
 
-    local coin_chance = nil
-    if (COIN_GENERATION_CHANCES[event.entity.name]) then
-        coin_chance = COIN_GENERATION_CHANCES[event.entity.name]
-    end
+        local coin_chance = nil
+        if (COIN_GENERATION_CHANCES[event.entity.name]) then
+            coin_chance = COIN_GENERATION_CHANCES[event.entity.name]
+        end
 
-    if (coin_chance) then
-        -- game.print("Enemy died. Associated Player: "..event.cause.player.name)
-        if event.cause.type == "character" then
-            DropCoins(coin_chance, event.cause.player)
-        elseif event.cause.type == "car" or event.cause.type == "spider-vehicle" then
-            DropCoins(coin_chance, event.cause.get_driver())
+        if (coin_chance) then
+            game.print("Enemy died. Cause: "..event.cause.type)
+            if event.cause.type == "character" then
+                DropCoins(coin_chance, event.cause.player)
+            elseif event.cause.type == "car" or event.cause.type == "spider-vehicle" then
+                DropCoins(coin_chance, event.cause.get_driver())
+            end
         end
     end
 end
