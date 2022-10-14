@@ -5,6 +5,7 @@
 require("lib/shared_chests")
 require("lib/map_features")
 local mod_gui = require("mod-gui")
+local market = require("addons/market")
 
 OARC_STORE_MAP_TEXT = 
 {
@@ -127,10 +128,7 @@ OARC_STORE_MAP_FEATURES =
 
 function CreateMapFeatureStoreTab(tab_container, player)
 
-    local player_inv = player.get_main_inventory()
-    if (player_inv == nil) then return end
-
-    local wallet = player_inv.get_item_count("coin")
+    local wallet = global.markets[player.name].balance
     AddLabel(tab_container,
         "map_feature_store_wallet_lbl",
         "Coins Available: " .. wallet .. "  [item=coin]",
@@ -267,9 +265,7 @@ function OarcMapFeatureStoreButton(event)
     local button = event.element
     local player = game.players[event.player_index]
 
-    local player_inv = player.get_inventory(defines.inventory.character_main)
-    if (player_inv == nil) then return end
-    local wallet = player_inv.get_item_count("coin")
+    local wallet = global.markets[player.name].balance
 
     local map_feature = OARC_STORE_MAP_FEATURES[button.parent.name][button.name]
 
@@ -329,7 +325,7 @@ function OarcMapFeatureStoreButton(event)
 
     -- On success, we deduct money
     if (result) then
-        player_inv.remove({name = "coin", count = cost})
+        market.withdraw(player, cost)
     end
 
     -- Refresh GUI:

@@ -3,11 +3,11 @@
 --
 -- Code that handles everything regarding giving each player a separate spawn
 -- Includes the GUI stuff
-local market = require("addons/market")
 require("lib/oarc_utils")
 require("config")
 local crash_site = require("crash-site")
-
+local market = require("addons.market")
+local group = require("addons.groups")
 --[[
   ___  _  _  ___  _____ 
  |_ _|| \| ||_ _||_   _|
@@ -25,20 +25,7 @@ function InitSpawnGlobalsAndForces()
 
     -- Core global to help me organize shit.
     if (global.ocore == nil) then global.ocore = {} end
-    if (global.ocore.done_with_speed == nil) then
-        global.ocore.done_with_speed = {}
-    end
-    if (global.ocore.groups == nil) then
-        global.ocore.groups = {
-            config = {
-                ["small-biter"] = {max_count = 7, price = 1000},
-                ["medium-biter"] = {max_count = 5, price = 5000},
-                ["big-biter"] = {max_count = 3, price = 25000},
-                ["behemoth-biter"] = {max_count = 1, price = 100000}
-            },
-            player_groups = {}
-        }
-    end
+
     -- if (global.ocore.spy == nil) then
     --     global.ocore.spy = {}
     --     global.ocore.spy.stalking = {}
@@ -85,8 +72,6 @@ function InitSpawnGlobalsAndForces()
     if (global.ocore.buddySpawnOpts == nil) then
         global.ocore.buddySpawnOpts = {}
     end
-
-    if (global.ocore.markets == nil) then global.ocore.markets = {} end
 
     -- Silo info
     if (global.siloPosition == nil) then global.siloPosition = {} end
@@ -329,19 +314,10 @@ function SendPlayerToNewSpawnAndCreateIt(delayedSpawn)
         }, -- Ctrl  
         {x = delayedSpawn.pos.x + x_dist, y = delayedSpawn.pos.y}) -- Status
 
-        if not global.ocore then global.ocore = {} end
-        if not global.ocore.markets then global.ocore.markets = {} end
-        if not global.ocore.markets.player_markets then
-            global.ocore.markets.player_markets = {}
-        end
-        if not global.ocore.markets.player_markets[player.name] or
-            (global.ocore.markets.player_markets[player.name] == nil) then
-            global.ocore.markets.player_markets[player.name] = {}
-        end
-        market.create(player, {
+        market.create_sell_chest(player, {
             x = delayedSpawn.pos.x + x_dist - 3,
             y = delayedSpawn.pos.y - 1
-        }) -- market
+        })
 
         SharedChestsSpawnOutput(player, {
             x = delayedSpawn.pos.x + x_dist,
@@ -756,21 +732,22 @@ function RemoveOrResetPlayer(player, remove_player, remove_force, remove_base,
     player.teleport({x = 0, y = 0}, GAME_SURFACE_NAME)
     local player_old_force = player.force
     player.force = global.ocfg.main_force
-    if global.ocore.markets.player_markets then
-        if global.ocore.markets.player_markets[player.name] then
-            if global.ocore.markets.player_markets[player.name].market and
-                global.ocore.markets.player_markets[player.name].market.valid then
-                global.ocore.markets.player_markets[player.name].market
-                    .destroy()
-            end
-            if global.ocore.markets.player_markets[player.name].market and
-                global.ocore.markets.player_markets[player.name].market.valid then
-                global.ocore.markets.player_markets[player.name].chest.destroy()
-            end
-            if global.ocore.markets.player_markets[player.name] then
-                global.ocore.markets.player_markets[player.name] = nil
-            end
+    if global.markets[player.name] then
+        if global.markets[player.name].market_button then
+            global.markets[player.name].market_button.destroy()
         end
+        if global.markets[player.name].main_frame then
+            global.markets[player.name].main_frame.destroy()
+        end
+        if global.markets[player.name].sell_chest then
+            global.markets[player.name].sell_chest.destroy()
+        end
+        global.markets[player.name] = nil
+        market.new(player)
+    end
+    if global.groups[player.name] then
+        global.groups[player.name] = nil
+        group.new(player)
     end
     -- Clear globals
     CleanupPlayerGlobals(player.name) -- Except global.ocore.uniqueSpawns
