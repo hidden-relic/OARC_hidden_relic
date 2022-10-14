@@ -67,12 +67,10 @@ COIN_GENERATION_CHANCES = {
     ["spitter-spawner"] = 50,
 }
 
--- mass purchasing (fixed), validating unit groups (fixed i hope), delete shared chests and stuff, market surfaces, adjust the amount of hints dropped, filter /findpatch to not include patches with miners, and adjust run speed up a bit
-
 
 -- This allows 2 players to spawn next to each other in the wilderness, each with their own starting point. It adds more
 -- GUI selection options.
-ENABLE_BUDDY_SPAWN = false
+ENABLE_BUDDY_SPAWN = true
 
 -- Frontier style rocket silo mode. This means you can't build silos, but some spawn out in the wild for you to use.
 -- if ENABLE_MAGIC_FACTORIES=false, you will find a few special areas to launch rockets from.
