@@ -4,6 +4,15 @@ local Color = require('util/Colors')
 local tools = {}
 tools.MAX_INT32 = 2147483647
 
+function tools.add_commas(amount)
+    local formatted = amount
+    while true do
+        formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", '%1,%2')
+        if (k == 0) then break end
+    end
+    return formatted
+end
+
 function tools.sortByValue(t)
     local keys = {}
 
@@ -66,56 +75,15 @@ function tools.formatTimeHoursMins(ticks)
     return string.format("%dh:%02dm", hours, minutes)
 end
 
-function tools.get_player(o)
-    local o_type, p = type(o)
-    if o_type == 'table' then
-        p = o
-    elseif o_type == 'string' or o_type == 'number' then
-        p = game.players[o]
+function tools.get_player(o) -- pass in table, string, or int
+    local o_type, p = type(o) -- get it's type
+    if o_type == 'table' then -- if its already a table (object)
+        p = o -- just keep it
+    elseif o_type == 'string' or o_type == 'number' then -- if its a string or int
+        p = game.players[o] -- get the player by game.players[string or int]
     end
 
-    if p and p.valid and p.is_player() then return p end
-end
-
-function tools.getMarketBonuses(player)
-    local player = tools.get_player(player)
-    if player and global.ocore.markets.player_markets[player.name].stats then
-        return global.ocore.markets.player_markets[player.name].stats
-    end
-end
-
-function tools.formatMarketBonuses(player)
-    local player = tools.get_player(player)
-    if player then
-        if global.ocore.markets and global.ocore.markets.player_markets and
-            global.ocore.markets.player_markets[player.name] and
-            global.ocore.markets.player_markets[player.name].stats then
-            local stats = global.ocore.markets.player_markets[player.name].stats
-            local str = "[color=blue]Bonuses for [/color][color=orange]" ..
-                            player.name .. "[/color][color=blue]:[/color]\n"
-            for type, item in pairs(stats) do
-                str = str .. "[color=purple][" .. type .. "][/color]\n"
-                for name, data in pairs(item) do
-                    if type == "sell-speed" then
-                        str = str .. "[color=cyan]-- [" .. name ..
-                                  "]:[/color] \t[color=orange]LVL: [/color][color=green]" ..
-                                  data.lvl ..
-                                  "[/color] \t[color=orange]SECONDS: [/color][color=green]" ..
-                                  data.formatted .. "%[/color]\n"
-                    else
-                        str = str .. "[color=cyan]-- [" .. name ..
-                                  "]:[/color] \t[color=orange]LVL: [/color][color=green]" ..
-                                  data.lvl ..
-                                  "[/color] \t[color=orange]BONUS: [/color][color=green]" ..
-                                  data.formatted .. "%[/color]\n"
-                    end
-                end
-            end
-            return str
-        else
-            return
-        end
-    end
+    if p and p.valid and p.is_player() then return p end -- do all validity checks and return valid player object
 end
 
 function matChest()
@@ -129,7 +97,7 @@ function matChest()
 end
 
 function tools.stockUp()
-    if (game.tick % 60 == 0) then
+    if (game.tick % 1800 == 0) then
         if material_chest and material_chest.valid then
             local chest_inv = material_chest.get_inventory(defines.inventory
                                                                .chest)

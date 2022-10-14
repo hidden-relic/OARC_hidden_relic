@@ -1,178 +1,120 @@
 local tools = require('addons/tools')
 local flying_tag = require("flying_tags")
 
-local groups = {}
+local Group = {}
 
-function groups.init()
-    global.ocore.groups = {
-        config = {
-            ["small-biter"] = {max_count = 7, price = 1000, color = {r=121, g=180, b=222}},
-            ["medium-biter"] = {max_count = 5, price = 5000, color = {r=138, g=106, b=107}},
-            ["big-biter"] = {max_count = 3, price = 25000, color = {r=98, g=92, b=129}},
-            ["behemoth-biter"] = {max_count = 1, price = 100000, color = {r=94, g=192, b=136}}
-        }
+-- function Group:new(o)
+--     o = o or {}
+--     setmetatable(o, self)
+--     self.__index = self
+--     return o
+-- end
+
+Group.pet_data = {
+    ["small-biter"] = {cost = 1000, color = {121, 180, 222}},
+    ["medium-biter"] = {cost = 5000, color = {138, 106, 107}},
+    ["big-biter"] = {cost = 25000, color = {98, 92, 129}},
+    ["behemoth-biter"] = {cost = 100000, color = {94, 192, 136}}
+}
+
+function Group.new(player)
+    local player = player
+    global.groups[player.name] = {
+        pets = {},
+        tags = {},
+        max = 50,
+        limit = 1,
+        total = 0,
+        pet_group = {}
     }
 end
 
-function groups.createGroup(player)
-    local player = tools.get_player(player)
-    if player then
-        if not global.ocore.groups.player_groups then
-            global.ocore.groups.player_groups = {}
+function Group.create(player)
+    local player = player
+    global.groups[player.name].pet_group =
+        player.surface.create_unit_group {
+            position = player.position,
+            force = player.force
+        }
+end
+
+function Group.get_count(player)
+    local player = player
+    local group = global.groups[player.name]
+    group.total = 0
+    for name, pets in pairs(group.pets) do
+        for index, entry in pairs(pets) do
+            if entry.valid then group.total = group.total + 1 end
         end
-        if not global.ocore.groups.player_groups[player.name] then
-            global.ocore.groups.player_groups[player.name] = {}
-        end
-        if not global.ocore.groups.player_groups[player.name].group then
-            global.ocore.groups.player_groups[player.name].group =
-                player.surface.create_unit_group {
-                    position = player.position,
-                    force = player.force
-                }
-        end
-        if not global.ocore.groups.player_groups[player.name].count then
-            global.ocore.groups.player_groups[player.name].count = {
-                small = 0,
-                medium = 0,
-                big = 0,
-                behemoth = 0
+    end
+    return group.total
+end
+
+function Group.add(player, pet)
+    local player = player
+    local group = global.groups[player.name]
+    if not group.pet_group or not group.pet_group.valid then
+        Group.create(player)
+    end
+    if (group.limit > Group.get_count(player)) and
+        (Group.get_count(player) < group.max) then
+        if Group.pet_data[pet] then
+            if not group.pets[pet] then group.pets[pet] = {} end
+
+            local new_pet = player.surface.create_entity {
+                name = pet,
+                force = player.force,
+                position = player.surface.find_non_colliding_position(pet,
+                                                                      player.position,
+                                                                      8, 1)
             }
+
+            local new_tag = {
+                entity = new_pet,
+                offset = {x = 0, y = 1},
+                text = {"", player.name, "'s ", new_pet.localised_name},
+                color = Group.pet_data[pet].color
+            }
+
+            if Group.get_count(player) < group.max then
+                table.insert(group.pets[pet], new_pet)
+                table.insert(group.tags, new_tag)
+
+                group.pet_group.add_member(new_pet)
+                flying_tag.create(new_tag)
+                player.print({
+                    "groups.pet_added",
+                    Group.pet_data[pet].color[1] .. ", " ..
+                        Group.pet_data[pet].color[2] .. ", " ..
+                        Group.pet_data[pet].color[3], new_pet.localised_name,
+                    Group.get_count(player)
+                })
+            end
         end
+    else
+        player.print("Max buddies allowed")
     end
 end
 
-function groups.giveUnit(player, unit_name, count)
-    local player = tools.get_player(player)
-    if player then
-        local unit_name = unit_name
-        groups.createGroup(player)
-        if global.ocore.groups.config[unit_name] then
-            local bug = {}
-            if global.ocore.groups.player_groups[player.name].group then
-                if global.ocore.groups.player_groups[player.name].group.members[1] then
-                    local count = global.ocore.groups.player_groups[player.name]
-                                      .count
-                    if unit_name == "small-biter" and count.small <
-                        global.ocore.groups.config["small-biter"].max_count then
-                        count.small = count.small + 1
-                        bug = player.surface.create_entity {
-                            name = "small-biter",
-                            force = player.force,
-                            position = player.surface
-                                .find_non_colliding_position("small-biter",
-                                                             player.position, 8,
-                                                             1)
-                        }
-                        player.print("+1 small biter. You own " .. count.small)
-
-                    elseif unit_name == "medium-biter" and count.medium <
-                        global.ocore.groups.config["medium-biter"].max_count then
-                        count.medium = count.medium + 1
-                        bug = player.surface.create_entity {
-                            name = "medium-biter",
-                            force = player.force,
-                            position = player.surface
-                                .find_non_colliding_position("medium-biter",
-                                                             player.position, 8,
-                                                             1)
-                        }
-                        player.print("+1 medium biter. You own " .. count.medium)
-
-                    elseif unit_name == "big-biter" and count.big <
-                        global.ocore.groups.config["big-biter"].max_count then
-                        count.big = count.big + 1
-                        bug = player.surface.create_entity {
-                            name = "big-biter",
-                            force = player.force,
-                            position = player.surface
-                                .find_non_colliding_position("big-biter",
-                                                             player.position, 8,
-                                                             1)
-                        }
-                        player.print("+1 big biter. You own " .. count.big)
-
-                    elseif unit_name == "behemoth-biter" and count.behemoth <
-                        global.ocore.groups.config["behemoth-biter"].max_count then
-                        count.behemoth = count.behemoth + 1
-                        bug = player.surface.create_entity {
-                            name = "behemoth-biter",
-                            force = player.force,
-                            position = player.surface
-                                .find_non_colliding_position("behemoth-biter",
-                                                             player.position, 8,
-                                                             1)
-                        }
-                        player.print("+1 behemoth biter. You own " ..
-                                         count.behemoth)
-                    else
-                        return
-                    end
-                else
-                    local t = {
-                        ["small-biter"] = "small",
-                        ["medium-biter"] = "medium",
-                        ["big-biter"] = "big",
-                        ["behemoth-biter"] = "behemoth"
-                    }
-                    bug = player.surface.create_entity {
-                        name = unit_name,
-                        force = player.force,
-                        position = player.surface.find_non_colliding_position(
-                            unit_name, player.position, 8, 1)
-                    }
-                    local count = global.ocore.groups.player_groups[player.name]
-                                      .count[t[unit_name]]
-                    count = count + 1
-                    player.print("+1 " .. t[unit_name] .. " biter. You own " ..
-                                     count)
-                end
-                local l_name = {}
-                for _, locale in pairs(bug.localised_name) do
-                    l_name = {locale}
-                end
-                local tag = {
-                    entity = bug,
-                    offset = {
-                      x = 0,
-                      y = 1
-                    },
-                    text = {"", player.name, "'s ", bug.localised_name},
-                    color = global.ocore.groups.config[bug.name].color
-                  }
-                global.ocore.groups.player_groups[player.name].group.add_member(
-                    bug)
-                flying_tag.create(tag)
+function Group.on_tick()
+    if (game.tick % 60 == 0) and global.groups then
+        for index, entry in pairs(global.groups) do
+            if not entry then return end
+            if not entry.pet_group then return end
+            if not entry.pet_group.valid then return end
+            if not game.players[index] then return end
+            if not game.players[index].character then return end
+            if not game.players[index].character.valid then return end
+            Group.get_count(game.players[index])
+            if entry.pet_group.members then
+                entry.pet_group.set_command({
+                    type = defines.command.attack_area,
+                    destination = game.players[index].position,
+                    radius = 16
+                })
             end
         end
     end
 end
 
-function groups.on_tick()
-    if (game.tick % 60 == 0) then
-        for _, player in pairs(game.connected_players) do
-            if not player.character or not player.character.valid then
-                return
-            end
-
-            if global.ocore.groups.player_groups and
-                global.ocore.groups.player_groups[player.name] then
-                if global.ocore.groups.player_groups[player.name].group then
-                    local group = global.ocore.groups.player_groups[player.name]
-                                      .group
-                    if group.valid then
-                        if group.members then
-                            group.set_command({
-                                type = defines.command.go_to_location,
-                                destination_entity = player.character
-                            })
-                        end
-                    end
-                end
-            else
-                return
-            end
-        end
-    end
-end
-
-return groups
+return Group
