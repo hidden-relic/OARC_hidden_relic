@@ -267,13 +267,12 @@ function M.purchase(player, item, click, shift, ctrl)
         end
     end
     if i then
-        for x = 1, i do
-            if math.floor(market.balance / value) >= 1 and
-                player.can_insert {name = item} then
-                M.withdraw(player, value)
-                player.insert {name = item}
-            end
+        if math.floor(market.balance / value) < i then
+            player.print("You don't have the coin to buy "..i)
+            return
         end
+        M.withdraw(player, value*i)
+        player.insert {name = item, count=i}
     end
 end
 
@@ -338,7 +337,10 @@ function M.create_market_gui(player)
         type = "scroll-pane",
         direction = "vertical"
     }
-
+    market.item_label = market.items_flow.add {
+        type = "label",
+        caption = "Left click buys 1, Shift+Left click buys 100, Ctrl+Left click buys 1000\nRight click buys 10, Shift+Right click buys 50, Ctrl+Right click buys 500\nUsing Ctrl+Shift is not supported and will act as a normal Left or Right click"
+    }
     market.item_table = market.items_flow.add {
         type = "table",
         column_count = 20
