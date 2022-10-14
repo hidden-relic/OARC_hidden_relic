@@ -1179,18 +1179,16 @@ function CoinsFromEnemiesOnPostEntityDied(event)
     if (not event.entity or not game.entity_prototypes[event.entity.name]) then
         return
     end
-    if event.cause.type  ~= "character" then return end
+    if event.cause.type ~= "character" then return end
 
     local coin_chance = nil
     if (COIN_GENERATION_CHANCES[event.entity.name]) then
-        coin_chance =
-            COIN_GENERATION_CHANCES[event.entity.name]
+        coin_chance = COIN_GENERATION_CHANCES[event.entity.name]
     end
 
     if (coin_chance) then
-    game.print("Enemy died. Associated Player: " ..
-                       serpent.line(event.cause))
-        -- DropCoins(coin_chance, event.cause)
+        -- game.print("Enemy died. Associated Player: "..event.cause.player.name)
+        DropCoins(coin_chance, event.cause.player)
     end
 end
 
@@ -1208,7 +1206,7 @@ function DropCoins(count, player)
         drop_amount = math.random(count, count * COIN_MULTIPLIER)
     end
 
-    game.print("Coin earned: " .. drop_amount)
+    -- game.print("Coin earned: " .. drop_amount)
     if drop_amount == 0 then return end
     market.deposit(player, drop_amount)
 end
