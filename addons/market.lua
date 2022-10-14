@@ -268,15 +268,20 @@ function M.purchase(player, item, click, shift, ctrl)
     end
     if i then
         if math.floor(market.balance / value) < i then
-            player.print("You don't have the coin to buy "..i)
+            player.print("You don't have the coin to buy " .. i)
             return
         end
-        local insertable = player.get_main_inventory().get_insertable_count(item)
+        local insertable = player.get_main_inventory()
+                               .get_insertable_count(item)
+        if insertable == 0 then
+            player.print("You don't have the inventory space")
+            return
+        end
         if i <= insertable then
-            M.withdraw(player, value*i)
-            player.insert {name = item, count=i}
+            M.withdraw(player, value * i)
+            player.insert {name = item, count = i}
         else
-            M.withdraw(player, value*insertable)
+            M.withdraw(player, value * insertable)
             player.insert {name = item, count = insertable}
         end
     end
