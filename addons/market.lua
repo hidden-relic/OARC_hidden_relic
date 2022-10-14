@@ -271,8 +271,9 @@ function M.purchase(player, item, click, shift, ctrl)
             player.print("You don't have the coin to buy "..i)
             return
         end
-        M.withdraw(player, value*i)
-        player.insert {name = item, count=i}
+        local insertable = player.get_main_inventory().get_insertable_count(item)
+        M.withdraw(player, value*insertable)
+        player.insert {name = item, count=insertable}
     end
 end
 
@@ -337,9 +338,17 @@ function M.create_market_gui(player)
         type = "scroll-pane",
         direction = "vertical"
     }
-    market.item_label = market.items_flow.add {
+    market.item_label_left = market.items_flow.add {
         type = "label",
-        caption = "Left click buys 1, Shift+Left click buys 100, Ctrl+Left click buys 1000\nRight click buys 10, Shift+Right click buys 50, Ctrl+Right click buys 500\nUsing Ctrl+Shift is not supported and will act as a normal Left or Right click"
+        caption = "Left click buys 1, Shift+Left click buys 100, Ctrl+Left click buys 1000"
+    }
+    market.item_label_right = market.items_flow.add {
+        type = "label",
+        caption = "Right click buys 10, Shift+Right click buys 50, Ctrl+Right click buys 500"
+    }
+    market.item_label_both = market.items_flow.add {
+        type = "label",
+        caption = "Using Ctrl+Shift is not supported and will act as a normal Left or Right click"
     }
     market.item_table = market.items_flow.add {
         type = "table",
