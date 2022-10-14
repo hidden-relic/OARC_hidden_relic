@@ -272,8 +272,13 @@ function M.purchase(player, item, click, shift, ctrl)
             return
         end
         local insertable = player.get_main_inventory().get_insertable_count(item)
-        M.withdraw(player, value*insertable)
-        player.insert {name = item, count=insertable}
+        if i <= insertable then
+            M.withdraw(player, value*i)
+            player.insert {name = item, count=i}
+        else
+            M.withdraw(player, value*insertable)
+            player.insert {name = item, count = insertable}
+        end
     end
 end
 
