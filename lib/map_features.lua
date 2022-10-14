@@ -1156,23 +1156,23 @@ end
 COIN_MULTIPLIER = 2
 
 COIN_GENERATION_CHANCES = {
-    ["small-biter"] = 0.01,
-    ["medium-biter"] = 0.02,
-    ["big-biter"] = 0.05,
-    ["behemoth-biter"] = 1,
+    ["small-biter"] = 20,
+    ["medium-biter"] = 50,
+    ["big-biter"] = 100,
+    ["behemoth-biter"] = 200,
 
-    ["small-spitter"] = 0.01,
-    ["medium-spitter"] = 0.02,
-    ["big-spitter"] = 0.05,
-    ["behemoth-spitter"] = 1,
+    ["small-spitter"] = 20,
+    ["medium-spitter"] = 50,
+    ["big-spitter"] = 100,
+    ["behemoth-spitter"] = 200,
 
-    ["small-worm-turret"] = 5,
-    ["medium-worm-turret"] = 10,
-    ["big-worm-turret"] = 15,
-    ["behemoth-worm-turret"] = 25,
+    ["small-worm-turret"] = 50,
+    ["medium-worm-turret"] = 100,
+    ["big-worm-turret"] = 250,
+    ["behemoth-worm-turret"] = 500,
 
-    ["biter-spawner"] = 50,
-    ["spitter-spawner"] = 50
+    ["biter-spawner"] = 1000,
+    ["spitter-spawner"] = 1000
 }
 
 function CoinsFromEnemiesOnPostEntityDied(event)
