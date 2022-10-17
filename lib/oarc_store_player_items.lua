@@ -7,7 +7,6 @@ local tools = require("addons/tools")
 local group = require("addons/groups")
 
 OARC_STORE_PLAYER_ITEMS = {
-
     ["Followers"] = {
         ["small-biter"] = {cost = 1000, count = 1},
         ["medium-biter"] = {cost = 5000, count = 1},

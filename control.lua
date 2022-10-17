@@ -130,6 +130,8 @@ script.on_init(function(event)
     RenderPermanentGroundText(game.surfaces[GAME_SURFACE_NAME],
                               {x = -32, y = -30}, 37, "Spawn",
                               {0.9, 0.3, 0.3, 0.8})
+    
+    -- ###### FAGC ######
 
     -- ###### FAGC ######
 
@@ -149,7 +151,6 @@ script.on_event(defines.events.on_player_unbanned, function (e)
 end)
 
     -- ###### END FAGC ######
-
 
 script.on_load(function() Compat.handle_factoriomaps() end)
 

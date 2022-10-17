@@ -1156,23 +1156,23 @@ end
 COIN_MULTIPLIER = 2
 
 COIN_GENERATION_CHANCES = {
-    ["small-biter"] = 20,
-    ["medium-biter"] = 50,
+    ["small-biter"] = 10,
+    ["medium-biter"] = 40,
     ["big-biter"] = 100,
-    ["behemoth-biter"] = 200,
+    ["behemoth-biter"] = 250,
 
-    ["small-spitter"] = 20,
-    ["medium-spitter"] = 50,
+    ["small-spitter"] = 10,
+    ["medium-spitter"] = 40,
     ["big-spitter"] = 100,
-    ["behemoth-spitter"] = 200,
+    ["behemoth-spitter"] = 250,
 
     ["small-worm-turret"] = 50,
     ["medium-worm-turret"] = 100,
     ["big-worm-turret"] = 250,
     ["behemoth-worm-turret"] = 500,
 
-    ["biter-spawner"] = 1000,
-    ["spitter-spawner"] = 1000
+    ["biter-spawner"] = 500,
+    ["spitter-spawner"] = 500
 }
 
 function CoinsFromEnemiesOnPostEntityDied(event)
@@ -1198,6 +1198,9 @@ function CoinsFromEnemiesOnPostEntityDied(event)
                     return
                 end
                 DropCoins(coin_chance, event.cause.get_driver().player)
+            end
+            if event.cause.combat_robot_owner and event.cause.combat_robot_owner.player then
+                DropCoins(coin_chance, event.cause.combat_robot_owner.player)
             end
         end
     end
