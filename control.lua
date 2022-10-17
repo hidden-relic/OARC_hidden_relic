@@ -98,7 +98,7 @@ script.on_init(function(event)
     InitSpawnGlobalsAndForces()
 
     global.markets = market.init()
-    global.groups={}
+    global.groups = {}
     -- Frontier Silo Area Generation
     if (global.ocfg.frontier_rocket_silo and
         not global.ocfg.enable_magic_factories) then
@@ -130,7 +130,7 @@ script.on_init(function(event)
     RenderPermanentGroundText(game.surfaces[GAME_SURFACE_NAME],
                               {x = -32, y = -30}, 37, "Spawn",
                               {0.9, 0.3, 0.3, 0.8})
-    
+
     -- ###### FAGC ######
 
     -- ###### FAGC ######
@@ -140,17 +140,20 @@ script.on_init(function(event)
 
 end)
 
-script.on_event(defines.events.on_player_banned, function (e)
-    local text = "ban;" .. e.player_name .. ";" .. (e.by_player or "") .. ";" .. (e.reason or "") .. "\n"
+script.on_event(defines.events.on_player_banned, function(e)
+    local text = "ban;" .. e.player_name .. ";" .. (e.by_player or "") .. ";" ..
+                     (e.reason or "") .. "\n"
     game.write_file("fagc-actions.txt", text, true, 0)
 end)
 
-script.on_event(defines.events.on_player_unbanned, function (e)
-    local text = "unban;" .. e.player_name .. ";" .. (e.by_player or "") .. ";" .. (e.reason or "") .. "\n"
+script.on_event(defines.events.on_player_unbanned, function(e)
+    local text =
+        "unban;" .. e.player_name .. ";" .. (e.by_player or "") .. ";" ..
+            (e.reason or "") .. "\n"
     game.write_file("fagc-actions.txt", text, true, 0)
 end)
 
-    -- ###### END FAGC ######
+-- ###### END FAGC ######
 
 script.on_load(function() Compat.handle_factoriomaps() end)
 
@@ -190,22 +193,28 @@ script.on_event(defines.events.on_gui_click, function(event)
     local player = game.players[event.player_index]
 
     if global.markets and global.markets[player.name] then
-        if global.markets[player.name].market_button and event.element == global.markets[player.name].market_button then
+        if global.markets[player.name].market_button and event.element ==
+            global.markets[player.name].market_button then
             market.toggle_market_gui(player)
         end
-        if global.markets[player.name].item_buttons and global.markets[player.name].item_buttons[event.element.name] then
-            local button = global.markets[player.name].item_buttons[event.element.name]
+        if global.markets[player.name].item_buttons and
+            global.markets[player.name].item_buttons[event.element.name] then
+            local button =
+                global.markets[player.name].item_buttons[event.element.name]
+            if event.element ~= button then return end
             local click = event.button
             local shift = event.shift
             local ctrl = event.control
             market.purchase(player, button.name, click, shift, ctrl)
         end
-        if global.markets[player.name].upgrade_buttons and global.markets[player.name].upgrade_buttons[event.element.name] then
-            local button = global.markets[player.name].upgrade_buttons[event.element.name]
+        if global.markets[player.name].upgrade_buttons and
+            global.markets[player.name].upgrade_buttons[event.element.name] then
+            local button =
+                global.markets[player.name].upgrade_buttons[event.element.name]
             market.upgrade(player, button.name)
         end
     end
-    
+
     if global.ocfg.enable_tags then TagGuiClick(event) end
 
     WelcomeTextGuiClick(event)
@@ -265,7 +274,7 @@ script.on_event(defines.events.on_player_created, function(event)
 
     if not global.markets then global.markets = {} end
     market.new(player)
-    
+
     if not global.groups then global.groups = {} end
     group.new(player)
 

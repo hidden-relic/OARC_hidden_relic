@@ -114,7 +114,21 @@ end
 
 function M.new(player)
     local player = player
-    global.markets[player.name] = {player = player, balance = 0}
+    global.markets[player.name] = {
+        player = player,
+        balance = 0,
+        stats = {
+            total_coin_earned = 0,
+            total_coin_spent = 0,
+            items_purchased = {},
+            item_most_purchased_total = "",
+            item_most_purchased_coin = "",
+            items_sold = {},
+            item_most_sold_total = "",
+            item_most_sold_coin = "",
+            history = {}
+        }
+    }
     local market = global.markets[player.name]
     market.upgrades = {
         ["sell-speed"] = {
@@ -224,6 +238,7 @@ function M.deposit(player, v)
     local player = player
     local market = global.markets[player.name]
     market.balance = market.balance + v
+    market.stats.total_coin_earned = market.stats.total_coin_earned + v
     M.update(player)
 end
 
@@ -234,6 +249,7 @@ function M.withdraw(player, v)
         player.print("Insufficient Funds")
     else
         market.balance = market.balance - v
+        market.stats.total_coin_spent = market.stats.total_coin_spent + v
         M.update(player)
     end
 end
@@ -280,12 +296,73 @@ function M.purchase(player, item, click, shift, ctrl)
         if i <= insertable then
             M.withdraw(player, value * i)
             player.insert {name = item, count = i}
+            if not market.stats.items_purchased[item] then
+                market.stats.items_purchased[item] = {
+                    count = i,
+                    value = value * i
+                }
+            else
+                market.stats.items_purchased[item].count = market.stats
+                                                               .items_purchased[item]
+                                                               .count + i
+                market.stats.items_purchased[item].value = market.stats
+                                                               .items_purchased[item]
+                                                               .value + value *
+                                                               i
+            end
+            table.insert(market.stats.history, {
+                item = "[img=item/" .. item .. "] [color=green]+" .. i ..
+                    "[/color]",
+                coin = "[img=item/coin][color=red]-" .. value * i .. "[/color]"
+            })
+            if #market.stats.history > 40 then
+                table.remove(market.stats.history, 1)
+            end
         else
             M.withdraw(player, value * insertable)
             player.insert {name = item, count = insertable}
+            if not market.stats.items_purchased[item] then
+                market.stats.items_purchased[item] = {
+                    count = insertable,
+                    value = value * insertable
+                }
+            else
+                market.stats.items_purchased[item].count = market.stats
+                                                               .items_purchased[item]
+                                                               .count +
+                                                               insertable
+                market.stats.items_purchased[item].value = market.stats
+                                                               .items_purchased[item]
+                                                               .value + value *
+                                                               insertable
+            end
+            table.insert(market.stats.history, {
+                item = item,
+                prefix = "[img=item/" .. item .. "] [color=green]+" ..
+                    insertable .. "[/color]",
+                suffix = "[img=item/coin][color=red]-" .. value * insertable ..
+                    "[/color]",
+                sold = nil
+            })
+            if #market.stats.history > 40 then
+                table.remove(market.stats.history, 1)
+            end
         end
+        M.update(player)
     end
 end
+
+-- local function buy_text(item, count)
+--     local prefix = "[img=item/"..item.."] [color=green]+"..count.."[/color]"
+--     local suffix = "[img=item/coin][color=red]-"..global.markets.item_values[item]*count.."[/color]"
+--     return {prefix, suffix}
+-- end
+
+-- local function sell_text(item, count)
+--     local prefix = "[img=item/"..item.."] [color=red]-"..count.."[/color]"
+--     local suffix = "[img=item/coin][color=green]+"..global.markets.item_values[item]*count.."[/color]"
+--     return {prefix, suffix}
+-- end
 
 function M.sell(player, item)
     local player = player
@@ -293,6 +370,43 @@ function M.sell(player, item)
     local item = item
     local value = global.markets.item_values[item] * 0.75
     M.deposit(player, value)
+    if not market.stats.items_sold[item] then
+        market.stats.items_sold[item] = {count = 1, value = value}
+    else
+        market.stats.items_sold[item].count =
+            market.stats.items_sold[item].count + 1
+        market.stats.items_sold[item].value =
+            market.stats.items_sold[item].value + value
+    end
+    local history = market.stats.history
+    if history[#history].item ~= item then
+        history[#history].sold = nil
+        table.insert(history, {
+            item = item,
+            prefix = "[img=item/" .. item .. "] [color=red]-1[/color]",
+            suffix = "[img=item/coin][color=green]+" .. value .. "[/color]",
+            sold = 1
+        })
+        if #market.stats.history > 40 then
+            table.remove(market.stats.history, 1)
+        end
+        return
+    end
+    if history[#history].item == item and history[#history].sold then
+        history[#history].sold = history[#history].sold + 1
+        history[#history].prefix = "[img=item/" .. item .. "] [color=red]-" ..
+                                       history[#history].sold .. "[/color]"
+        history[#history].suffix = "[img=item/coin][color=green]+" .. value *
+                                       history[#history].sold .. "[/color]"
+        if #market.stats.history > 40 then
+            table.remove(market.stats.history, 1)
+        end
+        return
+    end
+end
+
+function get_market_stats(playername)
+    game.print(serpent.block(global.markets[playername].stats))
 end
 
 function M.upgrade(player, bonus)
@@ -575,7 +689,7 @@ end
 
 function M.on_tick()
     if (game.tick % 10 == 0) then
-        for _, player in pairs(game.connected_players) do
+        for _, player in pairs(game.players) do
             player = tools.get_player(player)
             if player.character and player.character.valid then
                 if global.markets then
