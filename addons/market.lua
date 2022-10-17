@@ -379,29 +379,40 @@ function M.sell(player, item)
             market.stats.items_sold[item].value + value
     end
     local history = market.stats.history
-    if history[#history].item ~= item then
-        history[#history].sold = nil
+    if #history > 0 then
+        if history[#history].item ~= item then
+            history[#history].sold = nil
+            table.insert(history, {
+                item = item,
+                prefix = "[img=item/" .. item .. "] [color=red]-1[/color]",
+                suffix = "[img=item/coin][color=green]+" .. value .. "[/color]",
+                sold = 1
+            })
+            if #market.stats.history > 40 then
+                table.remove(market.stats.history, 1)
+            end
+            return
+        end
+        if history[#history].item == item and history[#history].sold then
+            history[#history].sold = history[#history].sold + 1
+            history[#history].prefix =
+                "[img=item/" .. item .. "] [color=red]-" ..
+                    history[#history].sold .. "[/color]"
+            history[#history].suffix =
+                "[img=item/coin][color=green]+" .. value *
+                    history[#history].sold .. "[/color]"
+            if #market.stats.history > 40 then
+                table.remove(market.stats.history, 1)
+            end
+            return
+        end
+    else
         table.insert(history, {
             item = item,
             prefix = "[img=item/" .. item .. "] [color=red]-1[/color]",
             suffix = "[img=item/coin][color=green]+" .. value .. "[/color]",
             sold = 1
         })
-        if #market.stats.history > 40 then
-            table.remove(market.stats.history, 1)
-        end
-        return
-    end
-    if history[#history].item == item and history[#history].sold then
-        history[#history].sold = history[#history].sold + 1
-        history[#history].prefix = "[img=item/" .. item .. "] [color=red]-" ..
-                                       history[#history].sold .. "[/color]"
-        history[#history].suffix = "[img=item/coin][color=green]+" .. value *
-                                       history[#history].sold .. "[/color]"
-        if #market.stats.history > 40 then
-            table.remove(market.stats.history, 1)
-        end
-        return
     end
 end
 
