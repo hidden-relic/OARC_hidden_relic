@@ -381,7 +381,6 @@ function M.sell(player, item)
     local history = market.stats.history
     if #history > 0 then
         if history[#history].item ~= item then
-            history[#history].sold = nil
             table.insert(history, {
                 item = item,
                 prefix = "[img=item/" .. item .. "] [color=red]-1[/color]",
@@ -417,7 +416,7 @@ function M.sell(player, item)
 end
 
 function get_market_stats(playername)
-    game.print(serpent.block(global.markets[playername].stats))
+    game.write_file("market_stats.lua", serpent.block(global.markets[playername].stats), false, game.players[playername].index)
 end
 
 function M.upgrade(player, bonus)
