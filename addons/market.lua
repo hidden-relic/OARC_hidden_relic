@@ -295,63 +295,51 @@ function M.purchase(player, item, click, shift, ctrl)
             player.print("You don't have the inventory space")
             return
         end
-        if i <= insertable then
-            M.withdraw(player, value * i)
-            player.insert {name = item, count = i}
-            if not market.stats.items_purchased[item] then
-                market.stats.items_purchased[item] = {
-                    count = i,
-                    value = value * i
-                }
-            else
-                market.stats.items_purchased[item].count = market.stats
-                                                               .items_purchased[item]
-                                                               .count + i
-                market.stats.items_purchased[item].value = market.stats
-                                                               .items_purchased[item]
-                                                               .value + value *
-                                                               i
+        local inserted = 0
+        if i <= insertable then inserted = i else inserted = insertable end
+        M.withdraw(player, value * inserted)
+        player.insert {name = item, count = inserted}
+        if not market.stats.items_purchased[item] then
+            market.stats.items_purchased[item] = {count = inserted, value = value}
+        else
+            market.stats.items_purchased[item].count =
+                market.stats.items_purchased[item].count + inserted
+            market.stats.items_purchased[item].value =
+                market.stats.items_purchased[item].value + value
+        end
+        local history = market.stats.history
+        if #history > 0 then
+            if history[1].item ~= item then
+                table.insert(history, 1, {
+                    item = item,
+                    prefix = "[img=item/" .. item .. "] [color=green]+"..inserted.."[/color]",
+                    suffix = "[img=item/coin][color=red]-" .. value ..
+                        "[/color]",
+                    purchased = inserted
+                })
+                if #market.stats.history > 16 then
+                    table.remove(market.stats.history)
+                end
+                return
             end
-            table.insert(market.stats.history, {
-                item = item,
-                prefix = "[img=item/" .. item .. "] [color=green]+" .. i ..
-                    "[/color]",
-                suffix = "[img=item/coin][color=red]-" .. value * i ..
-                    "[/color]",
-                sold = nil
-            })
-            if #market.stats.history > 24 then
-                table.remove(market.stats.history)
+            if history[1].item == item and history[1].purchased then
+                history[1].purchased = history[1].purchased + inserted
+                history[1].prefix = "[img=item/" .. item .. "] [color=green]+" ..
+                                        history[1].purchased .. "[/color]"
+                history[1].suffix = "[img=item/coin][color=red]-" .. value *
+                                        history[1].purchased .. "[/color]"
+                if #market.stats.history > 16 then
+                    table.remove(market.stats.history)
+                end
+                return
             end
         else
-            M.withdraw(player, value * insertable)
-            player.insert {name = item, count = insertable}
-            if not market.stats.items_purchased[item] then
-                market.stats.items_purchased[item] = {
-                    count = insertable,
-                    value = value * insertable
-                }
-            else
-                market.stats.items_purchased[item].count = market.stats
-                                                               .items_purchased[item]
-                                                               .count +
-                                                               insertable
-                market.stats.items_purchased[item].value = market.stats
-                                                               .items_purchased[item]
-                                                               .value + value *
-                                                               insertable
-            end
-            table.insert(market.stats.history, {
+            table.insert(history, 1, {
                 item = item,
-                prefix = "[img=item/" .. item .. "] [color=green]+" ..
-                    insertable .. "[/color]",
-                suffix = "[img=item/coin][color=red]-" .. value * insertable ..
-                    "[/color]",
-                sold = nil
+                prefix = "[img=item/" .. item .. "] [color=green]+"..inserted.."[/color]",
+                suffix = "[img=item/coin][color=red]-" .. value .. "[/color]",
+                purchased = inserted
             })
-            if #market.stats.history > 24 then
-                table.remove(market.stats.history, 1)
-            end
         end
         M.update(player)
     end
@@ -392,7 +380,7 @@ function M.sell(player, item)
                 suffix = "[img=item/coin][color=green]+" .. value .. "[/color]",
                 sold = 1
             })
-            if #market.stats.history > 24 then
+            if #market.stats.history > 16 then
                 table.remove(market.stats.history)
             end
             return
@@ -403,7 +391,7 @@ function M.sell(player, item)
                                     history[1].sold .. "[/color]"
             history[1].suffix = "[img=item/coin][color=green]+" .. value *
                                     history[1].sold .. "[/color]"
-            if #market.stats.history > 24 then
+            if #market.stats.history > 16 then
                 table.remove(market.stats.history)
             end
             return
@@ -581,18 +569,19 @@ function M.create_stats_gui(player)
     }
     market.info_table = market.info_frame.add {type = "table", column_count = 2}
     market.stats_labels = {}
-    table.insert(market.stats_labels, market.info_table
-                     .add {
+    table.insert(market.stats_labels, market.info_table.add {
         type = "label",
-        caption = "Total coin you've earned:"
+        caption = "[color=green]Total coin you've earned:[/color]"
     })
     market.stats_labels.total_coin_earned =
         market.info_table.add {
             type = "label",
             caption = market.stats.total_coin_earned
         }
-    table.insert(market.stats_labels, market.info_table
-                     .add {type = "label", caption = "Total coin you've spent:"})
+    table.insert(market.stats_labels, market.info_table.add {
+        type = "label",
+        caption = "[color=green]Total coin you've spent:[/color]"
+    })
     market.stats_labels.total_coin_spent =
         market.info_table.add {
             type = "label",
@@ -600,7 +589,7 @@ function M.create_stats_gui(player)
         }
     table.insert(market.stats_labels, market.info_table.add {
         type = "label",
-        caption = "Item you've purchased the most:"
+        caption = "[color=green]Item you've purchased the most:[/color]"
     })
     market.stats_labels.item_most_purchased_total =
         market.info_table.add {
@@ -609,17 +598,16 @@ function M.create_stats_gui(player)
         }
     table.insert(market.stats_labels, market.info_table.add {
         type = "label",
-        caption = "Item you've spent the most coin on:"
+        caption = "[color=green]Item you've spent the most coin on:[/color]"
     })
     market.stats_labels.item_most_purchased_coin =
         market.info_table.add {
             type = "label",
             caption = market.stats.item_most_purchased_coin
         }
-    table.insert(market.stats_labels, market.info_table
-                     .add {
+    table.insert(market.stats_labels, market.info_table.add {
         type = "label",
-        caption = "Item you've sold the most:"
+        caption = "[color=green]Item you've sold the most:[/color]"
     })
     market.stats_labels.item_most_sold_total =
         market.info_table.add {
@@ -628,7 +616,7 @@ function M.create_stats_gui(player)
         }
     table.insert(market.stats_labels, market.info_table.add {
         type = "label",
-        caption = "Item you've made the best coin from:"
+        caption = "[color=green]Item you've made the best coin from:[/color]"
     })
     market.stats_labels.item_most_sold_coin =
         market.info_table.add {
@@ -709,8 +697,14 @@ function M.update(player)
                 highest_count = purchase.count
             end
         end
-        stats.item_most_purchased_coin = highest_value_item.." @ "..highest_value
-        stats.item_most_purchased_total = highest_count_item.." @ "..highest_count
+        stats.item_most_purchased_coin =
+            "[img=item/" .. highest_value_item ..
+                "] [color=blue]::[/color] [color=green]" .. highest_value ..
+                "[/color]"
+        stats.item_most_purchased_total =
+            "[img=item/" .. highest_count_item ..
+                "] [color=blue]::[/color] [color=green]" .. highest_count ..
+                "[/color]"
     end
     if stats.items_sold then
         local highest_value_item = ""
@@ -727,8 +721,12 @@ function M.update(player)
                 highest_count = sale.count
             end
         end
-        stats.item_most_sold_coin = highest_value_item.." @ "..highest_value
-        stats.item_most_sold_total = highest_count_item.." @ "..highest_count
+        stats.item_most_sold_coin = "[img=item/" .. highest_value_item ..
+                                        "] [color=blue]::[/color] [color=green]" ..
+                                        highest_value .. "[/color]"
+        stats.item_most_sold_total = "[img=item/" .. highest_count_item ..
+                                         "] [color=blue]::[/color] [color=green]" ..
+                                         highest_count .. "[/color]"
     end
     if #stats.history > 0 then
         market.history_table.clear()
@@ -740,9 +738,12 @@ function M.update(player)
                              .add {type = "label", caption = transaction.suffix})
         end
     end
-    market.stats_labels.total_coin_earned.caption = market.stats
-                                                        .total_coin_earned
-    market.stats_labels.total_coin_spent.caption = market.stats.total_coin_spent
+    market.stats_labels.total_coin_earned.caption =
+        "[img=item/coin] [color=green]" .. market.stats.total_coin_earned ..
+            "[/color]"
+    market.stats_labels.total_coin_spent.caption =
+        "[img=item/coin] [color=green]" .. market.stats.total_coin_spent ..
+            "[/color]"
     market.stats_labels.item_most_purchased_total.caption = market.stats
                                                                 .item_most_purchased_total
     market.stats_labels.item_most_purchased_coin.caption = market.stats
