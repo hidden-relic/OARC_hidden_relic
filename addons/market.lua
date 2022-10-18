@@ -555,7 +555,7 @@ function M.create_stats_gui(player)
 
     market.stats_frame = market.frame_flow.add {
         type = "frame",
-        direction = "vertical",
+        direction = "horizontal",
         visible = false
     }
     market.history_frame = market.stats_frame.add {
@@ -694,7 +694,7 @@ function M.update(player)
     local market = global.markets[player.name]
     local balance = math.floor(market.balance)
     local stats = market.stats
-    if #stats.items_purchased > 0 then
+    if stats.items_purchased then
         local highest_value_item = ""
         local highest_value = 0
         local highest_count_item = ""
@@ -709,10 +709,10 @@ function M.update(player)
                 highest_count = purchase.count
             end
         end
-        stats.item_most_purchased_coin = highest_value_item
-        stats.item_most_purchased_total = highest_count_item
+        stats.item_most_purchased_coin = highest_value_item.." @ "..highest_value
+        stats.item_most_purchased_total = highest_count_item.." @ "..highest_count
     end
-    if #stats.items_sold > 0 then
+    if stats.items_sold then
         local highest_value_item = ""
         local highest_value = 0
         local highest_count_item = ""
@@ -727,8 +727,8 @@ function M.update(player)
                 highest_count = sale.count
             end
         end
-        stats.item_most_sold_coin = highest_value_item
-        stats.item_most_sold_total = highest_count_item
+        stats.item_most_sold_coin = highest_value_item.." @ "..highest_value
+        stats.item_most_sold_total = highest_count_item.." @ "..highest_count
     end
     if #stats.history > 0 then
         market.history_table.clear()
