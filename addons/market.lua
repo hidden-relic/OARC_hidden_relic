@@ -231,7 +231,9 @@ function M.new(player)
         }
     }
     M.create_market_button(player)
+    M.create_stats_button(player)
     M.create_market_gui(player)
+    M.create_stats_gui(player)
 end
 
 function M.deposit(player, v)
@@ -311,12 +313,15 @@ function M.purchase(player, item, click, shift, ctrl)
                                                                i
             end
             table.insert(market.stats.history, {
-                item = "[img=item/" .. item .. "] [color=green]+" .. i ..
+                item = item,
+                prefix = "[img=item/" .. item .. "] [color=green]+" .. i ..
                     "[/color]",
-                coin = "[img=item/coin][color=red]-" .. value * i .. "[/color]"
+                suffix = "[img=item/coin][color=red]-" .. value * i ..
+                    "[/color]",
+                sold = nil
             })
-            if #market.stats.history > 40 then
-                table.remove(market.stats.history, 1)
+            if #market.stats.history > 24 then
+                table.remove(market.stats.history)
             end
         else
             M.withdraw(player, value * insertable)
@@ -344,7 +349,7 @@ function M.purchase(player, item, click, shift, ctrl)
                     "[/color]",
                 sold = nil
             })
-            if #market.stats.history > 40 then
+            if #market.stats.history > 24 then
                 table.remove(market.stats.history, 1)
             end
         end
@@ -380,33 +385,31 @@ function M.sell(player, item)
     end
     local history = market.stats.history
     if #history > 0 then
-        if history[#history].item ~= item then
-            table.insert(history, {
+        if history[1].item ~= item then
+            table.insert(history, 1, {
                 item = item,
                 prefix = "[img=item/" .. item .. "] [color=red]-1[/color]",
                 suffix = "[img=item/coin][color=green]+" .. value .. "[/color]",
                 sold = 1
             })
-            if #market.stats.history > 40 then
-                table.remove(market.stats.history, 1)
+            if #market.stats.history > 24 then
+                table.remove(market.stats.history)
             end
             return
         end
-        if history[#history].item == item and history[#history].sold then
-            history[#history].sold = history[#history].sold + 1
-            history[#history].prefix =
-                "[img=item/" .. item .. "] [color=red]-" ..
-                    history[#history].sold .. "[/color]"
-            history[#history].suffix =
-                "[img=item/coin][color=green]+" .. value *
-                    history[#history].sold .. "[/color]"
-            if #market.stats.history > 40 then
-                table.remove(market.stats.history, 1)
+        if history[1].item == item and history[1].sold then
+            history[1].sold = history[1].sold + 1
+            history[1].prefix = "[img=item/" .. item .. "] [color=red]-" ..
+                                    history[1].sold .. "[/color]"
+            history[1].suffix = "[img=item/coin][color=green]+" .. value *
+                                    history[1].sold .. "[/color]"
+            if #market.stats.history > 24 then
+                table.remove(market.stats.history)
             end
             return
         end
     else
-        table.insert(history, {
+        table.insert(history, 1, {
             item = item,
             prefix = "[img=item/" .. item .. "] [color=red]-1[/color]",
             suffix = "[img=item/coin][color=green]+" .. value .. "[/color]",
@@ -452,26 +455,33 @@ function M.create_market_button(player)
         tooltip = "[item=coin] " .. tools.add_commas(market.balance)
     }
 end
+function M.create_stats_button(player)
+    local player = player
+    local market = global.markets[player.name]
+    market.stats_button = market.button_flow.add {
+        name = "stats_button",
+        type = "button",
+        caption = "stats",
+        tooltip = "View some stats!"
+    }
+end
 
 function M.create_market_gui(player)
     local player = player
     local market = global.markets[player.name]
+
     market.frame_flow = gui.get_frame_flow(player)
-    market.main_frame = market.frame_flow.add {
+
+    market.market_frame = market.frame_flow.add {
         type = "frame",
         direction = "vertical",
         visible = false
     }
-    market.tabs = market.main_frame.add {type = "tabbed-pane"}
-    market.market_tab = market.tabs.add {type = "tab", caption = "Market"}
-    market.stats_tab = market.tabs.add {type = "tab", caption = "Stats"}
-
-    market.market_flow = market.main_frame.add {
+    market.market_flow = market.market_frame.add {
         type = "flow",
         direction = "vertical"
     }
-    market.tabs.add_tab(market.market_tab, market.market_flow)
-    market.items_frame = market.main_flow.add {
+    market.items_frame = market.market_flow.add {
         type = "frame",
         direction = "vertical"
     }
@@ -513,7 +523,7 @@ function M.create_market_gui(player)
                 }
         end
     end
-    market.upgrades_frame = market.main_flow.add {
+    market.upgrades_frame = market.market_flow.add {
         type = "frame",
         direction = "vertical"
     }
@@ -537,15 +547,16 @@ function M.create_market_gui(player)
                 tools.add_commas(upgrade.cost) .. "\n" .. upgrade.tooltip
         }
     end
+end
 
-    market.stats_flow = market.main_frame.add {
-        type = "flow",
-        direction = "vertical"
-    }
-    market.tabs.add_tab(market.stats_tab, market.stats_flow)
-    market.stats_frame = market.stats_flow.add {
+function M.create_stats_gui(player)
+    local player = player
+    local market = global.markets[player.name]
+
+    market.stats_frame = market.frame_flow.add {
         type = "frame",
-        direction = "horizontal"
+        direction = "vertical",
+        visible = false
     }
     market.history_frame = market.stats_frame.add {
         type = "frame",
@@ -556,11 +567,13 @@ function M.create_market_gui(player)
         column_count = 2
     }
     market.history_labels = {}
-    for _, transaction in pairs(market.stats.history) do
-        table.insert(market.history_labels, market.history_table
-                         .add {type = "label", caption = transaction.prefix})
-        table.insert(market.history_labels, market.history_table
-                         .add {type = "label", caption = transaction.suffix})
+    if #market.stats.history > 0 then
+        for _, transaction in pairs(market.stats.history) do
+            table.insert(market.history_labels, market.history_table
+                             .add {type = "label", caption = transaction.prefix})
+            table.insert(market.history_labels, market.history_table
+                             .add {type = "label", caption = transaction.suffix})
+        end
     end
     market.info_frame = market.stats_frame.add {
         type = "frame",
@@ -628,26 +641,52 @@ function M.toggle_market_gui(player)
     local player = player
     local market = global.markets[player.name]
     M.update(player)
-    if market.main_frame.visible == true then
-        M.close_gui(player)
+    if market.market_frame.visible == true then
+        M.close_market_gui(player)
     else
-        M.open_gui(player)
+        M.open_market_gui(player)
     end
 end
 
-function M.close_gui(player)
+function M.close_market_gui(player)
     local player = player
     local market = global.markets[player.name]
-    if (market.main_frame == nil) then return end
-    market.main_frame.visible = false
+    if (market.market_frame == nil) then return end
+    market.market_frame.visible = false
     market.player.opened = nil
 end
 
-function M.open_gui(player)
+function M.open_market_gui(player)
     local player = player
     local market = global.markets[player.name]
-    market.main_frame.visible = true
-    market.player.opened = market.main_frame
+    market.market_frame.visible = true
+    market.player.opened = market.market_frame
+end
+
+function M.toggle_stats_gui(player)
+    local player = player
+    local market = global.markets[player.name]
+    M.update(player)
+    if market.stats_frame.visible == true then
+        M.close_stats_gui(player)
+    else
+        M.open_stats_gui(player)
+    end
+end
+
+function M.close_stats_gui(player)
+    local player = player
+    local market = global.markets[player.name]
+    if (market.stats_frame == nil) then return end
+    market.stats_frame.visible = false
+    market.player.opened = nil
+end
+
+function M.open_stats_gui(player)
+    local player = player
+    local market = global.markets[player.name]
+    market.stats_frame.visible = true
+    market.player.opened = market.stats_frame
 end
 
 function M.update(player)

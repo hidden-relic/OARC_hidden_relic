@@ -192,29 +192,14 @@ script.on_event(defines.events.on_gui_click, function(event)
     if not (event and event.element and event.element.valid) then return end
     local player = game.players[event.player_index]
 
-    
-    if global.ocfg.enable_tags then TagGuiClick(event) end
-    
-    WelcomeTextGuiClick(event)
-    SpawnOptsGuiClick(event)
-    SpawnCtrlGuiClick(event)
-    SharedSpwnOptsGuiClick(event)
-    BuddySpawnOptsGuiClick(event)
-    BuddySpawnWaitMenuClick(event)
-    BuddySpawnRequestMenuClick(event)
-    SharedSpawnJoinWaitMenuClick(event)
-    
-    ClickOarcGuiButton(event)
-    
-    if global.ocfg.enable_coin_shop then ClickOarcStoreButton(event) end
-    
-    GameOptionsGuiClick(event)
-
-    
     if global.markets and global.markets[player.name] then
         if global.markets[player.name].market_button and event.element ==
             global.markets[player.name].market_button then
             market.toggle_market_gui(player)
+        end
+        if global.markets[player.name].stats_button and event.element ==
+            global.markets[player.name].stats_button then
+            market.toggle_stats_gui(player)
         end
         if global.markets[player.name].item_buttons and
             global.markets[player.name].item_buttons[event.element.name] then
@@ -232,6 +217,24 @@ script.on_event(defines.events.on_gui_click, function(event)
                 global.markets[player.name].upgrade_buttons[event.element.name]
             market.upgrade(player, button.name)
         end
+
+        if global.ocfg.enable_tags then TagGuiClick(event) end
+
+        WelcomeTextGuiClick(event)
+        SpawnOptsGuiClick(event)
+        SpawnCtrlGuiClick(event)
+        SharedSpwnOptsGuiClick(event)
+        BuddySpawnOptsGuiClick(event)
+        BuddySpawnWaitMenuClick(event)
+        BuddySpawnRequestMenuClick(event)
+        SharedSpawnJoinWaitMenuClick(event)
+
+        ClickOarcGuiButton(event)
+
+        if global.ocfg.enable_coin_shop then ClickOarcStoreButton(event) end
+
+        GameOptionsGuiClick(event)
+
     end
 end)
 
