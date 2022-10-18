@@ -448,8 +448,8 @@ function M.create_stats_button(player)
     local market = global.markets[player.name]
     market.stats_button = market.button_flow.add {
         name = "stats_button",
-        type = "button",
-        caption = "stats",
+        type = "sprite-button",
+        sprite = "virtual-signal/signal-info",
         tooltip = "View some stats!"
     }
 end
