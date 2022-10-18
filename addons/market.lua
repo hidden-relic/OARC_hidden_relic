@@ -682,7 +682,7 @@ function M.update(player)
     local market = global.markets[player.name]
     local balance = math.floor(market.balance)
     local stats = market.stats
-    if stats.items_purchased then
+    if stats.items_purchased and stats.items_purchased[1] then
         local highest_value_item = ""
         local highest_value = 0
         local highest_count_item = ""
@@ -699,14 +699,14 @@ function M.update(player)
         end
         stats.item_most_purchased_coin =
             "[img=item/" .. highest_value_item ..
-                "] [color=blue]::[/color] [color=green]" .. highest_value ..
+                "] [color=green]" .. highest_value ..
                 "[/color]"
         stats.item_most_purchased_total =
             "[img=item/" .. highest_count_item ..
-                "] [color=blue]::[/color] [color=green]" .. highest_count ..
+                "] [color=green]" .. highest_count ..
                 "[/color]"
     end
-    if stats.items_sold then
+    if stats.items_sold and stats.items_sold[1] then
         local highest_value_item = ""
         local highest_value = 0
         local highest_count_item = ""
@@ -722,10 +722,10 @@ function M.update(player)
             end
         end
         stats.item_most_sold_coin = "[img=item/" .. highest_value_item ..
-                                        "] [color=blue]::[/color] [color=green]" ..
+                                        "] [color=green]" ..
                                         highest_value .. "[/color]"
         stats.item_most_sold_total = "[img=item/" .. highest_count_item ..
-                                         "] [color=blue]::[/color] [color=green]" ..
+                                         "] [color=green]" ..
                                          highest_count .. "[/color]"
     end
     if #stats.history > 0 then
