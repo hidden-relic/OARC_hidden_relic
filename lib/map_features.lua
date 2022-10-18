@@ -1199,8 +1199,10 @@ function CoinsFromEnemiesOnPostEntityDied(event)
                 end
                 DropCoins(coin_chance, event.cause.get_driver().player)
             end
-            if event.cause.combat_robot_owner and event.cause.combat_robot_owner.player then
+            elseif event.cause.type == "combat-robot" then
+                if event.cause.combat_robot_owner and event.cause.combat_robot_owner.player then
                 DropCoins(coin_chance, event.cause.combat_robot_owner.player)
+                end
             end
         end
     end
