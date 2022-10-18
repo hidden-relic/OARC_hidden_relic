@@ -678,11 +678,13 @@ function M.open_stats_gui(player)
 end
 
 function M.update(player)
+    local next = next
     local player = player
     local market = global.markets[player.name]
     local balance = math.floor(market.balance)
     local stats = market.stats
-    if stats.items_purchased and stats.items_purchased[1] then
+    if not stats.items_purchased then stats.items_purchased = {} end
+    if stats.items_purchased and next(stats.items_purchased) ~= nil then
         local highest_value_item = ""
         local highest_value = 0
         local highest_count_item = ""
@@ -706,7 +708,8 @@ function M.update(player)
                 "] [color=green]" .. highest_count ..
                 "[/color]"
     end
-    if stats.items_sold and stats.items_sold[1] then
+    if not stats.items_sold then stats.items_sold = {} end
+    if stats.items_sold and next(stats.items_sold) ~= nil then
         local highest_value_item = ""
         local highest_value = 0
         local highest_count_item = ""
@@ -739,19 +742,15 @@ function M.update(player)
         end
     end
     market.stats_labels.total_coin_earned.caption =
-        "[img=item/coin] [color=green]" .. market.stats.total_coin_earned ..
+        "[img=item/coin] [color=green]" .. stats.total_coin_earned ..
             "[/color]"
     market.stats_labels.total_coin_spent.caption =
-        "[img=item/coin] [color=green]" .. market.stats.total_coin_spent ..
+        "[img=item/coin] [color=green]" .. stats.total_coin_spent ..
             "[/color]"
-    market.stats_labels.item_most_purchased_total.caption = market.stats
-                                                                .item_most_purchased_total
-    market.stats_labels.item_most_purchased_coin.caption = market.stats
-                                                               .item_most_purchased_coin
-    market.stats_labels.item_most_sold_total.caption = market.stats
-                                                           .item_most_sold_total
-    market.stats_labels.item_most_sold_coin.caption = market.stats
-                                                          .item_most_sold_coin
+    market.stats_labels.item_most_purchased_total.caption = stats.item_most_purchased_total
+    market.stats_labels.item_most_purchased_coin.caption = stats.item_most_purchased_coin
+    market.stats_labels.item_most_sold_total.caption = stats.item_most_sold_total
+    market.stats_labels.item_most_sold_coin.caption = stats.item_most_sold_coin
     market.market_button.number = balance
     market.market_button.tooltip = "[item=coin] " .. tools.add_commas(balance)
     for index, button in pairs(market.item_buttons) do
