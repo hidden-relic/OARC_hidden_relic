@@ -416,7 +416,9 @@ function M.sell(player, item)
 end
 
 function get_market_stats(playername)
-    game.write_file("market_stats.lua", serpent.block(global.markets[playername].stats), false, game.players[playername].index)
+    game.write_file("market_stats.lua",
+                    serpent.block(global.markets[playername].stats), false,
+                    game.players[playername].index)
 end
 
 function M.upgrade(player, bonus)
@@ -460,10 +462,15 @@ function M.create_market_gui(player)
         direction = "vertical",
         visible = false
     }
-    market.main_flow = market.main_frame.add {
+    market.tabs = market.main_frame.add {type = "tabbed-pane"}
+    market.market_tab = market.tabs.add {type = "tab", caption = "Market"}
+    market.stats_tab = market.tabs.add {type = "tab", caption = "Stats"}
+
+    market.market_flow = market.main_frame.add {
         type = "flow",
         direction = "vertical"
     }
+    market.tabs.add_tab(market.market_tab, market.market_flow)
     market.items_frame = market.main_flow.add {
         type = "frame",
         direction = "vertical"
@@ -530,6 +537,91 @@ function M.create_market_gui(player)
                 tools.add_commas(upgrade.cost) .. "\n" .. upgrade.tooltip
         }
     end
+
+    market.stats_flow = market.main_frame.add {
+        type = "flow",
+        direction = "vertical"
+    }
+    market.tabs.add_tab(market.stats_tab, market.stats_flow)
+    market.stats_frame = market.stats_flow.add {
+        type = "frame",
+        direction = "horizontal"
+    }
+    market.history_frame = market.stats_frame.add {
+        type = "frame",
+        direction = "vertical"
+    }
+    market.history_table = market.history_frame.add {
+        type = "table",
+        column_count = 2
+    }
+    market.history_labels = {}
+    for _, transaction in pairs(market.stats.history) do
+        table.insert(market.history_labels, market.history_table
+                         .add {type = "label", caption = transaction.prefix})
+        table.insert(market.history_labels, market.history_table
+                         .add {type = "label", caption = transaction.suffix})
+    end
+    market.info_frame = market.stats_frame.add {
+        type = "frame",
+        direction = "vertical"
+    }
+    market.info_table = market.info_frame.add {type = "table", column_count = 2}
+    market.stats_labels = {}
+    table.insert(market.stats_labels, market.info_table
+                     .add {
+        type = "label",
+        caption = "Total coin you've earned:"
+    })
+    market.stats_labels.total_coin_earned =
+        market.info_table.add {
+            type = "label",
+            caption = market.stats.total_coin_earned
+        }
+    table.insert(market.stats_labels, market.info_table
+                     .add {type = "label", caption = "Total coin you've spent:"})
+    market.stats_labels.total_coin_spent =
+        market.info_table.add {
+            type = "label",
+            caption = market.stats.total_coin_spent
+        }
+    table.insert(market.stats_labels, market.info_table.add {
+        type = "label",
+        caption = "Item you've purchased the most:"
+    })
+    market.stats_labels.item_most_purchased_total =
+        market.info_table.add {
+            type = "label",
+            caption = market.stats.item_most_purchased_total
+        }
+    table.insert(market.stats_labels, market.info_table.add {
+        type = "label",
+        caption = "Item you've spent the most coin on:"
+    })
+    market.stats_labels.item_most_purchased_coin =
+        market.info_table.add {
+            type = "label",
+            caption = market.stats.item_most_purchased_coin
+        }
+    table.insert(market.stats_labels, market.info_table
+                     .add {
+        type = "label",
+        caption = "Item you've sold the most:"
+    })
+    market.stats_labels.item_most_sold_total =
+        market.info_table.add {
+            type = "label",
+            caption = market.stats.item_most_sold_total
+        }
+    table.insert(market.stats_labels, market.info_table.add {
+        type = "label",
+        caption = "Item you've made the best coin from:"
+    })
+    market.stats_labels.item_most_sold_coin =
+        market.info_table.add {
+            type = "label",
+            caption = market.stats.item_most_sold_coin
+        }
 end
 
 function M.toggle_market_gui(player)
@@ -562,6 +654,64 @@ function M.update(player)
     local player = player
     local market = global.markets[player.name]
     local balance = math.floor(market.balance)
+    local stats = market.stats
+    if #stats.items_purchased > 0 then
+        local highest_value_item = ""
+        local highest_value = 0
+        local highest_count_item = ""
+        local highest_count = 0
+        for name, purchase in pairs(stats.items_purchased) do
+            if purchase.value > highest_value then
+                highest_value_item = name
+                highest_value = purchase.value
+            end
+            if purchase.count > highest_count then
+                highest_count_item = name
+                highest_count = purchase.count
+            end
+        end
+        stats.item_most_purchased_coin = highest_value_item
+        stats.item_most_purchased_total = highest_count_item
+    end
+    if #stats.items_sold > 0 then
+        local highest_value_item = ""
+        local highest_value = 0
+        local highest_count_item = ""
+        local highest_count = 0
+        for name, sale in pairs(stats.items_sold) do
+            if sale.value > highest_value then
+                highest_value_item = name
+                highest_value = sale.value
+            end
+            if sale.count > highest_count then
+                highest_count_item = name
+                highest_count = sale.count
+            end
+        end
+        stats.item_most_sold_coin = highest_value_item
+        stats.item_most_sold_total = highest_count_item
+    end
+    if #stats.history > 0 then
+        market.history_table.clear()
+        market.history_labels = {}
+        for _, transaction in pairs(market.stats.history) do
+            table.insert(market.history_labels, market.history_table
+                             .add {type = "label", caption = transaction.prefix})
+            table.insert(market.history_labels, market.history_table
+                             .add {type = "label", caption = transaction.suffix})
+        end
+    end
+    market.stats_labels.total_coin_earned.caption = market.stats
+                                                        .total_coin_earned
+    market.stats_labels.total_coin_spent.caption = market.stats.total_coin_spent
+    market.stats_labels.item_most_purchased_total.caption = market.stats
+                                                                .item_most_purchased_total
+    market.stats_labels.item_most_purchased_coin.caption = market.stats
+                                                               .item_most_purchased_coin
+    market.stats_labels.item_most_sold_total.caption = market.stats
+                                                           .item_most_sold_total
+    market.stats_labels.item_most_sold_coin.caption = market.stats
+                                                          .item_most_sold_coin
     market.market_button.number = balance
     market.market_button.tooltip = "[item=coin] " .. tools.add_commas(balance)
     for index, button in pairs(market.item_buttons) do

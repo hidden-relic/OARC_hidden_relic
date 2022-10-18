@@ -192,6 +192,25 @@ script.on_event(defines.events.on_gui_click, function(event)
     if not (event and event.element and event.element.valid) then return end
     local player = game.players[event.player_index]
 
+    
+    if global.ocfg.enable_tags then TagGuiClick(event) end
+    
+    WelcomeTextGuiClick(event)
+    SpawnOptsGuiClick(event)
+    SpawnCtrlGuiClick(event)
+    SharedSpwnOptsGuiClick(event)
+    BuddySpawnOptsGuiClick(event)
+    BuddySpawnWaitMenuClick(event)
+    BuddySpawnRequestMenuClick(event)
+    SharedSpawnJoinWaitMenuClick(event)
+    
+    ClickOarcGuiButton(event)
+    
+    if global.ocfg.enable_coin_shop then ClickOarcStoreButton(event) end
+    
+    GameOptionsGuiClick(event)
+
+    
     if global.markets and global.markets[player.name] then
         if global.markets[player.name].market_button and event.element ==
             global.markets[player.name].market_button then
@@ -214,23 +233,6 @@ script.on_event(defines.events.on_gui_click, function(event)
             market.upgrade(player, button.name)
         end
     end
-
-    if global.ocfg.enable_tags then TagGuiClick(event) end
-
-    WelcomeTextGuiClick(event)
-    SpawnOptsGuiClick(event)
-    SpawnCtrlGuiClick(event)
-    SharedSpwnOptsGuiClick(event)
-    BuddySpawnOptsGuiClick(event)
-    BuddySpawnWaitMenuClick(event)
-    BuddySpawnRequestMenuClick(event)
-    SharedSpawnJoinWaitMenuClick(event)
-
-    ClickOarcGuiButton(event)
-
-    if global.ocfg.enable_coin_shop then ClickOarcStoreButton(event) end
-
-    GameOptionsGuiClick(event)
 end)
 
 script.on_event(defines.events.on_gui_checked_state_changed, function(event)
