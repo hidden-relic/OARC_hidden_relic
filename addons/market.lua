@@ -296,23 +296,33 @@ function M.purchase(player, item, click, shift, ctrl)
             return
         end
         local inserted = 0
-        if i <= insertable then inserted = i else inserted = insertable end
+        if i <= insertable then
+            inserted = i
+        else
+            inserted = insertable
+        end
         M.withdraw(player, value * inserted)
         player.insert {name = item, count = inserted}
         if not market.stats.items_purchased[item] then
-            market.stats.items_purchased[item] = {count = inserted, value = value}
+            market.stats.items_purchased[item] = {
+                count = inserted,
+                value = value
+            }
         else
-            market.stats.items_purchased[item].count =
-                market.stats.items_purchased[item].count + inserted
-            market.stats.items_purchased[item].value =
-                market.stats.items_purchased[item].value + value
+            market.stats.items_purchased[item].count = market.stats
+                                                           .items_purchased[item]
+                                                           .count + inserted
+            market.stats.items_purchased[item].value = market.stats
+                                                           .items_purchased[item]
+                                                           .value + value
         end
         local history = market.stats.history
         if #history > 0 then
             if history[1].item ~= item then
                 table.insert(history, 1, {
                     item = item,
-                    prefix = "[img=item/" .. item .. "] [color=green]+"..inserted.."[/color]",
+                    prefix = "[img=item/" .. item .. "] [color=green]+" ..
+                        inserted .. "[/color]",
                     suffix = "[img=item/coin][color=red]-" .. value ..
                         "[/color]",
                     purchased = inserted
@@ -324,8 +334,9 @@ function M.purchase(player, item, click, shift, ctrl)
             end
             if history[1].item == item and history[1].purchased then
                 history[1].purchased = history[1].purchased + inserted
-                history[1].prefix = "[img=item/" .. item .. "] [color=green]+" ..
-                                        history[1].purchased .. "[/color]"
+                history[1].prefix =
+                    "[img=item/" .. item .. "] [color=green]+" ..
+                        history[1].purchased .. "[/color]"
                 history[1].suffix = "[img=item/coin][color=red]-" .. value *
                                         history[1].purchased .. "[/color]"
                 if #market.stats.history > 16 then
@@ -336,7 +347,8 @@ function M.purchase(player, item, click, shift, ctrl)
         else
             table.insert(history, 1, {
                 item = item,
-                prefix = "[img=item/" .. item .. "] [color=green]+"..inserted.."[/color]",
+                prefix = "[img=item/" .. item .. "] [color=green]+" .. inserted ..
+                    "[/color]",
                 suffix = "[img=item/coin][color=red]-" .. value .. "[/color]",
                 purchased = inserted
             })
@@ -555,6 +567,7 @@ function M.create_stats_gui(player)
         column_count = 2
     }
     market.history_labels = {}
+    for i = 1, 32 do market.history_labels[i] = "" end
     if #market.stats.history > 0 then
         for _, transaction in pairs(market.stats.history) do
             table.insert(market.history_labels, market.history_table
@@ -623,7 +636,80 @@ function M.create_stats_gui(player)
             type = "label",
             caption = market.stats.item_most_sold_coin
         }
+
+    local upgrades = global.markets[player.name].upgrades
+
+    table.insert(market.stats_labels, market.info_table.add {
+        type = "label",
+        caption = "[color=green]Sell Speed:[/color]"
+    })
+    market.stats_labels["sell-speed"] =
+        market.info_table.add {
+            type = "label",
+            caption = tools.round(upgrades["sell-speed"].t[upgrades["sell-speed"].lvl], 2).." seconds"
+        }
+
+    table.insert(market.stats_labels, market.info_table.add {
+        type = "label",
+        caption = "[color=green]Ammo Damage:[/color]"
+    })
+    market.stats_labels["ammo-damage"] = 
+        market.info_table.add {
+            type = "label",
+            caption = player.force.get_ammo_damage_modifier(upgrades["ammo-damage"].t[1].ammo_category)
+        }
+
+    table.insert(market.stats_labels, market.info_table.add {
+        type = "label",
+        caption = "[color=green]Turret Attack:[/color]"
+    })
+    market.stats_labels["turret-attack"] = 
+        market.info_table.add {
+            type = "label",
+            caption = player.force.get_turret_attack_modifier(upgrades["turret-attack"].t[1].turret_id)
+}
+
+    table.insert(market.stats_labels, market.info_table.add {
+        type = "label",
+        caption = "[color=green]Gun Speed:[/color]"
+    })
+    market.stats_labels["gun-speed"] = 
+        market.info_table.add {
+            type = "label",
+            caption = player.force.get_gun_speed_modifier(upgrades["gun-speed"].t[1].ammo_category)
+}
+
+    table.insert(market.stats_labels, market.info_table.add {
+        type = "label",
+        caption = "[color=green]Mining Productivity:[/color]"
+    })
+    market.stats_labels["mining-drill-productivity-bonus"] = 
+        market.info_table.add {
+            type = "label",
+            caption = player.force.mining_drill_productivity_bonus
+}
+
+    table.insert(market.stats_labels, market.info_table.add {
+        type = "label",
+        caption = "[color=green]Combat Robot Count:[/color]"
+    })
+    market.stats_labels["maximum-following-robot-count"] = 
+        market.info_table.add {
+            type = "label",
+            caption = player.force.maximum_following_robot_count
+}
+
+    table.insert(market.stats_labels, market.info_table.add {
+        type = "label",
+        caption = "[color=green]Pet Limit:[/color]"
+    })
+    market.stats_labels["group-limit"] = 
+        market.info_table.add {
+            type = "label",
+            caption = market.upgrades["group-limit"].lvl
+        }
 end
+
 
 function M.toggle_market_gui(player)
     local player = player
@@ -642,6 +728,9 @@ function M.close_market_gui(player)
     if (market.market_frame == nil) then return end
     market.market_frame.visible = false
     market.player.opened = nil
+    if market.stats_frame.visible == true then
+        market.player.opened = market.stats_frame
+    end
 end
 
 function M.open_market_gui(player)
@@ -668,6 +757,9 @@ function M.close_stats_gui(player)
     if (market.stats_frame == nil) then return end
     market.stats_frame.visible = false
     market.player.opened = nil
+    if market.market_frame.visible == true then
+        market.player.opened = market.market_frame
+    end
 end
 
 function M.open_stats_gui(player)
@@ -700,13 +792,11 @@ function M.update(player)
             end
         end
         stats.item_most_purchased_coin =
-            "[img=item/" .. highest_value_item ..
-                "] [color=green]" .. highest_value ..
-                "[/color]"
+            "[img=item/" .. highest_value_item .. "] [color=green]" ..
+                highest_value .. "[/color]"
         stats.item_most_purchased_total =
-            "[img=item/" .. highest_count_item ..
-                "] [color=green]" .. highest_count ..
-                "[/color]"
+            "[img=item/" .. highest_count_item .. "] [color=green]" ..
+                highest_count .. "[/color]"
     end
     if not stats.items_sold then stats.items_sold = {} end
     if stats.items_sold and next(stats.items_sold) ~= nil then
@@ -725,11 +815,11 @@ function M.update(player)
             end
         end
         stats.item_most_sold_coin = "[img=item/" .. highest_value_item ..
-                                        "] [color=green]" ..
-                                        highest_value .. "[/color]"
+                                        "] [color=green]" .. highest_value ..
+                                        "[/color]"
         stats.item_most_sold_total = "[img=item/" .. highest_count_item ..
-                                         "] [color=green]" ..
-                                         highest_count .. "[/color]"
+                                         "] [color=green]" .. highest_count ..
+                                         "[/color]"
     end
     if #stats.history > 0 then
         market.history_table.clear()
@@ -742,15 +832,25 @@ function M.update(player)
         end
     end
     market.stats_labels.total_coin_earned.caption =
-        "[img=item/coin] [color=green]" .. stats.total_coin_earned ..
-            "[/color]"
+        "[img=item/coin] [color=green]" .. stats.total_coin_earned .. "[/color]"
     market.stats_labels.total_coin_spent.caption =
-        "[img=item/coin] [color=green]" .. stats.total_coin_spent ..
-            "[/color]"
-    market.stats_labels.item_most_purchased_total.caption = stats.item_most_purchased_total
-    market.stats_labels.item_most_purchased_coin.caption = stats.item_most_purchased_coin
-    market.stats_labels.item_most_sold_total.caption = stats.item_most_sold_total
+        "[img=item/coin] [color=green]" .. stats.total_coin_spent .. "[/color]"
+    market.stats_labels.item_most_purchased_total.caption =
+        stats.item_most_purchased_total
+    market.stats_labels.item_most_purchased_coin.caption =
+        stats.item_most_purchased_coin
+    market.stats_labels.item_most_sold_total.caption =
+        stats.item_most_sold_total
     market.stats_labels.item_most_sold_coin.caption = stats.item_most_sold_coin
+
+    market.stats_labels["sell-speed"].caption = tools.round(market.upgrades["sell-speed"].t[market.upgrades["sell-speed"].lvl], 2).." seconds"
+    market.stats_labels["ammo-damage"].caption = player.force.get_ammo_damage_modifier(market.upgrades["ammo-damage"].t[1].ammo_category)
+    market.stats_labels["turret-attack"].caption = player.force.get_turret_attack_modifier(market.upgrades["turret-attack"].t[1].turret_id)
+    market.stats_labels["gun-speed"].caption = player.force.get_gun_speed_modifier(market.upgrades["gun-speed"].t[1].ammo_category)
+    market.stats_labels["mining-drill-productivity-bonus"].caption = player.force.mining_drill_productivity_bonus
+    market.stats_labels["maximum-following-robot-count"].caption = player.force.maximum_following_robot_count
+    market.stats_labels["group-limit"].caption = market.upgrades["group-limit"].lvl
+
     market.market_button.number = balance
     market.market_button.tooltip = "[item=coin] " .. tools.add_commas(balance)
     for index, button in pairs(market.item_buttons) do
