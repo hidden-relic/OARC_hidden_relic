@@ -17,7 +17,7 @@ OARC_STORE_MAP_TEXT = {
 -- Cost = initial + (additional * ( N^multiplier ))
 OARC_STORE_MAP_FEATURES = {
     special_chests = {
-        ["special-logistic-chest-storage"] = {
+        ["special_logistic-chest-storage"] = {
             initial_cost = 200,
             additional_cost = 20,
             multiplier_cost = 2,
@@ -25,7 +25,7 @@ OARC_STORE_MAP_FEATURES = {
             -- limit = 100,
             text = "Input chest for storing shared items."
         },
-        ["special-logistic-chest-requester"] = {
+        ["special_logistic-chest-requester"] = {
             initial_cost = 200,
             additional_cost = 50,
             multiplier_cost = 2,
@@ -33,11 +33,11 @@ OARC_STORE_MAP_FEATURES = {
             -- limit = 100,
             text = "Output chest for requesting shared items."
         },
-        ["special-constant-combinator"] = {
+        ["special_constant-combinator"] = {
             initial_cost = 50,
             text = "Combinator setup to monitor shared items."
         },
-        ["special-accumulator"] = {
+        ["special_accumulator"] = {
             initial_cost = 200,
             additional_cost = 50,
             multiplier_cost = 2,
@@ -45,7 +45,7 @@ OARC_STORE_MAP_FEATURES = {
             -- limit = 100,
             text = "INPUT for shared energy system. [color=red]Only starts to share once it is charged to 50%.[/color]"
         },
-        ["special-electric-energy-interface"] = {
+        ["special_electric-energy-interface"] = {
             initial_cost = 200,
             additional_cost = 100,
             multiplier_cost = 2,
@@ -53,35 +53,35 @@ OARC_STORE_MAP_FEATURES = {
             -- limit = 100,
             text = "OUTPUT for shared energy system. [color=red]Will NOT power other special eletric interfaces! You especially can't power special chunks with this![/color]"
         },
-        ["special-deconstruction-planner"] = {
+        ["special_deconstruction-planner"] = {
             initial_cost = 0,
             text = "Removes the closest special building within range. NO REFUNDS!"
         }
     },
 
     special_chunks = {
-        ["special-electric-furnace"] = {
+        ["special_electric-furnace"] = {
             initial_cost = 1000,
             additional_cost = 1000,
             multiplier_cost = 2,
             -- limit = 3,
             text = "Build a special furnace chunk here. Contains 4 furnaces that run at very high speeds. [color=red]Requires energy from the shared storage. Modules have no effect![/color]"
         },
-        ["special-oil-refinery"] = {
+        ["special_oil-refinery"] = {
             initial_cost = 1000,
             additional_cost = 1000,
             multiplier_cost = 2,
             -- limit = 3,
             text = "Build a special oil refinery chunk here. Contains 2 refineries and some chemical plants that run at very high speeds. [color=red]Requires energy from the shared storage. Modules have no effect![/color]"
         },
-        ["special-assembling-machine-3"] = {
+        ["special_assembling-machine-3"] = {
             initial_cost = 1000,
             additional_cost = 1000,
             multiplier_cost = 2,
             -- limit = 3,
             text = "Build a special assembly machine chunk here. Contains 6 assembling machines that run at very high speeds. [color=red]Requires energy from the shared storage. Modules have no effect![/color]"
         },
-        ["special-centrifuge"] = {
+        ["special_centrifuge"] = {
             initial_cost = 1000,
             additional_cost = 1000,
             multiplier_cost = 2,
@@ -98,25 +98,25 @@ OARC_STORE_MAP_FEATURES = {
         -- }
     },
     special_buttons = {
-        ["special-assembling-machine-1"] = {initial_cost = 10, text = "Teleport home."},
-        ["special-offshore-pump"] = {
+        ["special_assembling-machine-1"] = {initial_cost = 10, text = "Teleport home."},
+        ["special_offshore-pump"] = {
             initial_cost = 500,
             text = "Converts the closest empty wooden chest into a water tile!"
         }
     },
 
     reset_buttons = {
-        ["special-electronic-circuit"] = {
+        ["special_electronic-circuit"] = {
             initial_cost = 5000,
             solo_force = true,
             text = "[color=red]DESTROY[/color] your base and restart. This allows you to [color=green]choose a new spawn[/color] and will completely [color=red]destroy all your buildings and your force. All technology progress will be reset.[/color] [color=green]You get to keep your current items and armor![/color] [color=red]THERE IS NO CONFIRMATION PROMPT! THIS CAN NOT BE UNDONE![/color]"
         },
-        ["special-advanced-circuit"] = {
+        ["special_advanced-circuit"] = {
             initial_cost = 5000,
             solo_force = true,
             text = "[color=orange]ABANDON[/color] your base and restart. This allows you to [color=green]choose a new spawn[/color] and will [color=blue]move all your buildings to a neutral force. They will still be on the map and can be interacted with, but will not be owned by any player or player force.[/color] [color=orange]All radars will be destroyed[/color] to help trim map size. [color=green]You get to keep your current items and armor![/color] [color=red]THERE IS NO CONFIRMATION PROMPT! THIS CAN NOT BE UNDONE![/color]"
         },
-        ["special-processing-unit"] = {
+        ["special_processing-unit"] = {
             initial_cost = 5000,
             text = "[color=red]Restart your game. This will reset your player, your force and your base. THERE IS NO CONFIRMATION PROMPT! THIS CAN NOT BE UNDONE![/color]"
         }
@@ -172,7 +172,7 @@ function CreateMapFeatureStoreTab(tab_container, player)
                 name = item_name,
                 type = "sprite-button",
                 -- number=item.count,
-                sprite = "item/" .. string.gsub(item_name, "special-", ""),
+                sprite = "item/" .. string.gsub(item_name, "special_", ""),
                 -- tooltip=item.text.." Cost: "..color..cost.."[/color] [item=coin]",
                 style = mod_gui.button_style
             }
@@ -302,44 +302,44 @@ function OarcMapFeatureStoreButton(event)
 
     -- Each button has a special function
     local result = false
-    if (button.name == "special-logistic-chest-storage") then
+    if (button.name == "special_logistic-chest-storage") then
         result = ConvertWoodenChestToSharedChestInput(player)
-    elseif (button.name == "special-logistic-chest-requester") then
+    elseif (button.name == "special_logistic-chest-requester") then
         result = ConvertWoodenChestToSharedChestOutput(player)
-    elseif (button.name == "special-constant-combinator") then
+    elseif (button.name == "special_constant-combinator") then
         result = ConvertWoodenChestToSharedChestCombinators(player)
-    elseif (button.name == "special-accumulator") then
+    elseif (button.name == "special_accumulator") then
         result = ConvertWoodenChestToShareEnergyInput(player)
-    elseif (button.name == "special-electric-energy-interface") then
+    elseif (button.name == "special_electric-energy-interface") then
         result = ConvertWoodenChestToShareEnergyOutput(player)
-    elseif (button.name == "special-deconstruction-planner") then
+    elseif (button.name == "special_deconstruction-planner") then
         result = DestroyClosestSharedChestEntity(player)
-    elseif (button.name == "special-electric-furnace") then
+    elseif (button.name == "special_electric-furnace") then
         result =
             RequestSpawnSpecialChunk(player, SpawnFurnaceChunk, button.name)
-    elseif (button.name == "special-oil-refinery") then
+    elseif (button.name == "special_oil-refinery") then
         result = RequestSpawnSpecialChunk(player, SpawnOilRefineryChunk,
                                           button.name)
-    elseif (button.name == "special-assembling-machine-3") then
+    elseif (button.name == "special_assembling-machine-3") then
         result = RequestSpawnSpecialChunk(player, SpawnAssemblyChunk,
                                           button.name)
-    elseif (button.name == "special-centrifuge") then
+    elseif (button.name == "special_centrifuge") then
         result = RequestSpawnSpecialChunk(player, SpawnCentrifugeChunk,
                                           button.name)
-    elseif (button.name == "special-rocket-silo") then
+    elseif (button.name == "special_rocket-silo") then
         result = RequestSpawnSpecialChunk(player, SpawnSiloChunk, button.name)
-    elseif (button.name == "special-assembling-machine-1") then
+    elseif (button.name == "special_assembling-machine-1") then
         SendPlayerToSpawn(player)
         result = true
-    elseif (button.name == "special-offshore-pump") then
+    elseif (button.name == "special_offshore-pump") then
         result = ConvertWoodenChestToWaterFill(player)
-    elseif (button.name == "special-electronic-circuit") then
+    elseif (button.name == "special_electronic-circuit") then
         ResetPlayerAndDestroyForce(player)
         result = true
-    elseif (button.name == "special-advanced-circuit") then
+    elseif (button.name == "special_advanced-circuit") then
         ResetPlayerAndAbandonForce(player)
         result = true
-    elseif (button.name == "special-processing-unit") then
+    elseif (button.name == "special_processing-unit") then
         ResetPlayerAndMergeForceToNeutral(player)
         result = true
     end
