@@ -529,8 +529,12 @@ script.on_event(defines.events.on_gui_text_changed,
 ----------------------------------------
 script.on_event(defines.events.on_gui_closed, function(event)
     local player = game.players[event.player_index]
-    if event.element and event.element == global.markets[player.name].main_frame then
-        market.close_gui(player)
+    if event.element then
+        if event.element == global.markets[player.name].market_frame then
+            market.close_market_gui(player)
+        elseif event.element == global.markets[player.name].stats_frame then
+            market.close_stats_gui(player)
+        end
     end
     OarcGuiOnGuiClosedEvent(event)
     if global.ocfg.enable_coin_shop then OarcStoreOnGuiClosedEvent(event) end

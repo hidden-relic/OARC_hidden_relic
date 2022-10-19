@@ -114,7 +114,7 @@ OARC_STORE_MAP_FEATURES = {
         ["advanced-circuit"] = {
             initial_cost = 5000,
             solo_force = true,
-            text = "[color=orange]ABANDON[/color] your base and restart. This allows you to [color=green]choose a new spawn[/color] and will [color=blue]move all your buildings to a neutral force. They will still be on the map and can be interacted with, but will not be owned by any player or player force.[/color] [color=orange=All radars will be destroyed[/color] to help trim map size. [color=green]You get to keep your current items and armor![/color] [color=red]THERE IS NO CONFIRMATION PROMPT! THIS CAN NOT BE UNDONE![/color]"
+            text = "[color=orange]ABANDON[/color] your base and restart. This allows you to [color=green]choose a new spawn[/color] and will [color=blue]move all your buildings to a neutral force. They will still be on the map and can be interacted with, but will not be owned by any player or player force.[/color] [color=orange]All radars will be destroyed[/color] to help trim map size. [color=green]You get to keep your current items and armor![/color] [color=red]THERE IS NO CONFIRMATION PROMPT! THIS CAN NOT BE UNDONE![/color]"
         },
         ["processing-unit"] = {
             initial_cost = 5000,
