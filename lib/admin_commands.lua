@@ -11,6 +11,7 @@ local tools = require("addons.tools")
 -- tick :: uint: Tick the command was used.
 -- player_index :: uint (optional): The player who used the command. It will be missing if run from the server console.
 -- parameter :: string (optional): The parameter passed after the command, separated from the command by 1 space.
+local str = ""
 
 local function getIndent(n)
     local n = n or 1
@@ -28,7 +29,7 @@ local function buildTree(recipe, count, indent)
     local recipe = recipe
     local products = recipe.products
     local count = count or 1
-    count = count * products[1].amount
+    count = count / products[1].amount
     local indent = indent or 1
     local recipes = game.recipe_prototypes
     local ingredients = recipe.ingredients
@@ -47,11 +48,11 @@ local function buildTree(recipe, count, indent)
                 if ingredient.type == "item" and recipes[ingredient.name] then
                     str = str ..
                               buildTree(recipes[ingredient.name],
-                                        ingredient.amount, indent)
+                                        ingredient.amount*count, indent)
                 elseif fluid_table[ingredient.name] then
                     str = str ..
                               buildTree(recipes["advanced-oil-processing"],
-                                        ingredient.amount, indent)
+                                        ingredient.amount*count, indent)
                 elseif ingredient.type == "item" and not recipes[ingredient.name] then
                     string = " x" .. count .. " " .. ingredient.name ..
         "\n"
@@ -66,20 +67,20 @@ local function buildTree(recipe, count, indent)
 end
 
 commands.add_command("tree",
-                     "prints recipe tree\nrecipe tree will be logged to %AppData%/roaming/factorio/script-output/lab\nleave the parameter blank to get all trees written to file\nexample:\n/tree electronic-circuit",
+                     "prints recipe tree\nleave the parameter blank to get all trees written to %AppData%/roaming/factorio/script-output/tree_all.txt\nexample:\n/tree electronic-circuit",
                      function(command)
     local player = game.players[command.player_index]
     if command.parameter then
         if game.recipe_prototypes[command.parameter] then
             player.print("[font=debug-mono]"..buildTree(game.recipe_prototypes[command.parameter]).."[/font]")
-            game.write_file("lab/"..command.parameter.."_tree.txt", buildTree(game.recipe_prototypes[command.parameter]))
+            -- game.write_file("tree/"..command.parameter.."_tree.txt", buildTree(game.recipe_prototypes[command.parameter]))
         elseif type(command.parameter) == "LuaRecipePrototype" then
             player.print("[font=debug-mono]"..buildTree(command.parameter).."[/font]")
-            game.write_file("lab/"..command.parameter..".txt", buildTree(game.recipe_prototypes[command.parameter]))
+            -- game.write_file("tree/"..command.parameter..".txt", buildTree(game.recipe_prototypes[command.parameter]))
         end
     else
         for _, item in pairs(game.recipe_prototypes) do
-            game.write_file("lab/tree_all.txt", buildTree(item), true, player.index)
+            game.write_file("tree_all.txt", buildTree(item), true, player.index)
         end
     end
 end)

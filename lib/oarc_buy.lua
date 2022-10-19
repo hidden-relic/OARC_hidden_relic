@@ -9,7 +9,7 @@ local mod_gui = require("mod-gui")
 -- NAME of the top level element (outer frame)
 OARC_STORE_GUI = "oarc_store_gui"
 
-OARC_PLAYER_STORE_GUI_TAB_NAME = "Item Store"
+OARC_PLAYER_STORE_GUI_TAB_NAME = "Follower Store"
 OARC_MAP_FEATURE_GUI_TAB_NAME = "Special Store"
 
 local OARC_STORE_TAB_CONTENT_FUNCTIONS = {}
