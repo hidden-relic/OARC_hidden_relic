@@ -23,7 +23,7 @@ my_other_label_style = {
     -- minimal_width = 450,
     -- maximal_width = 50,
     single_line = false,
-    font_color = {r=1,g=0,b=1},
+    font_color = {r=1,g=0.5,b=0},
     top_padding = 0,
     bottom_padding = 0
 }
