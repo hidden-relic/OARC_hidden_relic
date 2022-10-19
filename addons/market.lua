@@ -835,9 +835,6 @@ function M.update(player)
         "[img=item/coin] [color=green]" .. tools.add_commas(stats.total_coin_earned) .. "[/color]"
     market.stats_labels.total_coin_spent.caption =
         "[img=item/coin] [color=green]" .. tools.add_commas(stats.total_coin_spent) .. "[/color]"
-        "[img=item/coin] [color=green]" .. stats.total_coin_earned .. "[/color]"
-    market.stats_labels.total_coin_spent.caption =
-        "[img=item/coin] [color=green]" .. stats.total_coin_spent .. "[/color]"
     market.stats_labels.item_most_purchased_total.caption =
         stats.item_most_purchased_total
     market.stats_labels.item_most_purchased_coin.caption =
