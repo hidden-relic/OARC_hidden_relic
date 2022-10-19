@@ -101,6 +101,7 @@ OARC_STORE_MAP_FEATURES = {
         ["special_assembling-machine-1"] = {initial_cost = 10, text = "Teleport home."},
         ["special_offshore-pump"] = {
             initial_cost = 500,
+            multiplier_cost = 1.01,
             text = "Converts the closest empty wooden chest into a water tile!"
         }
     },
@@ -267,9 +268,9 @@ function OarcMapFeatureCostScaling(player, category_name, feature_name)
                               (map_feature.additional_cost *
                                   (count ^ map_feature.multiplier_cost)))
         if (map_feature.max_cost) then
-            return math.min(map_feature.max_cost, calc_cost)
+            return math.floor(math.min(map_feature.max_cost, calc_cost))
         else
-            return calc_cost
+            return math.floor(calc_cost)
         end
     else
         return map_feature.initial_cost
