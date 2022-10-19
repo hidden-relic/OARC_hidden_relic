@@ -96,6 +96,8 @@ function Group.add(player, pet)
     end
 end
 
+group_logging = false
+
 function Group.on_tick()
     if (game.tick % 30 == 0) and global.groups then
         for index, entry in pairs(global.groups) do
