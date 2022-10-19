@@ -322,8 +322,13 @@ function M.purchase(player, item, click, shift, ctrl)
                 table.insert(history, 1, {
                     item = item,
                     prefix = "[img=item/" .. item .. "] [color=green]+" ..
+<<<<<<< HEAD
                         tools.add_commas(inserted) .. "[/color]",
                     suffix = "[img=item/coin][color=red]-" .. tools.add_commas(value) ..
+=======
+                        inserted .. "[/color]",
+                    suffix = "[img=item/coin][color=red]-" .. value ..
+>>>>>>> 6c621b15de97dd16f88b49e8bc98449dc291d946
                         "[/color]",
                     purchased = inserted
                 })
@@ -336,8 +341,14 @@ function M.purchase(player, item, click, shift, ctrl)
                 history[1].purchased = history[1].purchased + inserted
                 history[1].prefix =
                     "[img=item/" .. item .. "] [color=green]+" ..
+<<<<<<< HEAD
                         tools.add_commas(history[1].purchased) .. "[/color]"
                 history[1].suffix = "[img=item/coin][color=red]-" .. tools.add_commas(value * history[1].purchased) .. "[/color]"
+=======
+                        history[1].purchased .. "[/color]"
+                history[1].suffix = "[img=item/coin][color=red]-" .. value *
+                                        history[1].purchased .. "[/color]"
+>>>>>>> 6c621b15de97dd16f88b49e8bc98449dc291d946
                 if #market.stats.history > 16 then
                     table.remove(market.stats.history)
                 end
@@ -346,9 +357,15 @@ function M.purchase(player, item, click, shift, ctrl)
         else
             table.insert(history, 1, {
                 item = item,
+<<<<<<< HEAD
                 prefix = "[img=item/" .. item .. "] [color=green]+" .. tools.add_commas(inserted) ..
                     "[/color]",
                 suffix = "[img=item/coin][color=red]-" .. tools.add_commas(value) .. "[/color]",
+=======
+                prefix = "[img=item/" .. item .. "] [color=green]+" .. inserted ..
+                    "[/color]",
+                suffix = "[img=item/coin][color=red]-" .. value .. "[/color]",
+>>>>>>> 6c621b15de97dd16f88b49e8bc98449dc291d946
                 purchased = inserted
             })
         end
@@ -830,9 +847,15 @@ function M.update(player)
         end
     end
     market.stats_labels.total_coin_earned.caption =
+<<<<<<< HEAD
         "[img=item/coin] [color=green]" .. tools.add_commas(stats.total_coin_earned) .. "[/color]"
     market.stats_labels.total_coin_spent.caption =
         "[img=item/coin] [color=green]" .. tools.add_commas(stats.total_coin_spent) .. "[/color]"
+=======
+        "[img=item/coin] [color=green]" .. stats.total_coin_earned .. "[/color]"
+    market.stats_labels.total_coin_spent.caption =
+        "[img=item/coin] [color=green]" .. stats.total_coin_spent .. "[/color]"
+>>>>>>> 6c621b15de97dd16f88b49e8bc98449dc291d946
     market.stats_labels.item_most_purchased_total.caption =
         stats.item_most_purchased_total
     market.stats_labels.item_most_purchased_coin.caption =
