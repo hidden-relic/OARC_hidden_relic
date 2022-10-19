@@ -340,9 +340,6 @@ function M.purchase(player, item, click, shift, ctrl)
                     "[img=item/" .. item .. "] [color=green]+" ..
                         tools.add_commas(history[1].purchased) .. "[/color]"
                 history[1].suffix = "[img=item/coin][color=red]-" .. tools.add_commas(value * history[1].purchased) .. "[/color]"
-                        history[1].purchased .. "[/color]"
-                history[1].suffix = "[img=item/coin][color=red]-" .. value *
-                                        history[1].purchased .. "[/color]"
                 if #market.stats.history > 16 then
                     table.remove(market.stats.history)
                 end
@@ -354,9 +351,6 @@ function M.purchase(player, item, click, shift, ctrl)
                 prefix = "[img=item/" .. item .. "] [color=green]+" .. tools.add_commas(inserted) ..
                     "[/color]",
                 suffix = "[img=item/coin][color=red]-" .. tools.add_commas(value) .. "[/color]",
-                prefix = "[img=item/" .. item .. "] [color=green]+" .. inserted ..
-                    "[/color]",
-                suffix = "[img=item/coin][color=red]-" .. value .. "[/color]",
                 purchased = inserted
             })
         end
