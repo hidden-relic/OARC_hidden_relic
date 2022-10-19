@@ -97,31 +97,39 @@ function Group.add(player, pet)
 end
 
 function Group.on_tick()
-    if (game.tick % 60 == 0) and global.groups then
+    if (game.tick % 30 == 0) and global.groups then
         for index, entry in pairs(global.groups) do
-            game.print("index: "..index)
+            if group_logging == true then game.print("index: "..index) end
             if not entry then return end
-            game.print("entry found")
+            if group_logging == true then game.print("entry found") end
             if not entry.pet_group then return end
-            game.print("pet group found")
+            if group_logging == true then game.print("pet group found") end
             if not entry.pet_group.valid then return end
-            game.print("pet group valid")
+            if group_logging == true then game.print("pet group valid") end
             if not game.players[index] then return end
-            game.print("player: "..game.players[index].name)
-            game.print("player position: "..serpent.line(game.players[index].position))
+            if group_logging == true then game.print("player: "..game.players[index].name) end
+            if group_logging == true then game.print("player position: "..serpent.line(game.players[index].position)) end
             if not game.players[index].character then return end
-            game.print("character found")
+            if group_logging == true then game.print("character found") end
             if not game.players[index].character.valid then return end
-            game.print("character valid")
-            game.print("group count: "..Group.get_count(game.players[index]))
+            if group_logging == true then game.print("character valid") end
+            if group_logging == true then game.print("group count: "..Group.get_count(game.players[index])) end
             if entry.pet_group.members then
-                game.print("group has members")
-                entry.pet_group.set_command({
-                    type = defines.command.attack_area,
-                    destination = game.players[index].position,
-                    radius = 16
-                })
-                game.print("command sent: attack_area 16 radius @ "..serpent.line(game.players[index].position))
+                if group_logging == true then game.print("group has members") end
+                if game.tick % 60 == 0 then
+                    entry.pet_group.set_command({
+                        type = defines.command.attack_area,
+                        destination = game.players[index].position,
+                        radius = 16
+                    })
+                    if group_logging == true then game.print("command sent: attack_area 16 radius @ "..serpent.line(game.players[index].position)) end
+                elseif game.tick % 60 == 30 then
+                    entry.pet_group.set_command({
+                        type = defines.command.go_to_location,
+                        destination_entity = game.players[index].character
+                    })
+                    if group_logging == true then game.print("command sent: go_to_location @ "..game.players[index].name.."'s character: "..serpent.line(game.players[index].position)) end
+                end
             end
         end
     end
