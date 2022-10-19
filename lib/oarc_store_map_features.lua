@@ -172,7 +172,7 @@ function CreateMapFeatureStoreTab(tab_container, player)
                 name = item_name,
                 type = "sprite-button",
                 -- number=item.count,
-                sprite = "item/" .. string.gsub(item_name, "special-")
+                sprite = "item/" .. string.gsub(item_name, "special-", ""),
                 -- tooltip=item.text.." Cost: "..color..cost.."[/color] [item=coin]",
                 style = mod_gui.button_style
             }
