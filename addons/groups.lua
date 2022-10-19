@@ -99,19 +99,29 @@ end
 function Group.on_tick()
     if (game.tick % 60 == 0) and global.groups then
         for index, entry in pairs(global.groups) do
+            game.print("index: "..index)
             if not entry then return end
+            game.print("entry found")
             if not entry.pet_group then return end
+            game.print("pet group found")
             if not entry.pet_group.valid then return end
+            game.print("pet group valid")
             if not game.players[index] then return end
+            game.print("player: "..game.players[index].name)
+            game.print("player position: "..serpent.line(game.players[index].position))
             if not game.players[index].character then return end
+            game.print("character found")
             if not game.players[index].character.valid then return end
-            Group.get_count(game.players[index])
+            game.print("character valid")
+            game.print("group count: "..Group.get_count(game.players[index]))
             if entry.pet_group.members then
+                game.print("group has members")
                 entry.pet_group.set_command({
                     type = defines.command.attack_area,
                     destination = game.players[index].position,
                     radius = 16
                 })
+                game.print("command sent: attack_area 16 radius @ "..serpent.line(game.players[index].position))
             end
         end
     end
