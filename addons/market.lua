@@ -137,7 +137,7 @@ function M.new(player)
             max_lvl = 10,
             cost = 10000,
             sprite = "utility/character_running_speed_modifier_constant",
-            t = {5, 4.8, 4.5, 4.1, 3.6, 3, 2.4, 1.7, 0.6, 0.25},
+            t = {10, 8, 6, 5, 4, 3, 2, 1, 0.5, 0.25},
             tooltip = "Shorten the time it takes to sell an item"
         },
 
