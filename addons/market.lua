@@ -322,8 +322,8 @@ function M.purchase(player, item, click, shift, ctrl)
                 table.insert(history, 1, {
                     item = item,
                     prefix = "[img=item/" .. item .. "] [color=green]+" ..
-                        inserted .. "[/color]",
-                    suffix = "[img=item/coin][color=red]-" .. value ..
+                        tools.add_commas(inserted) .. "[/color]",
+                    suffix = "[img=item/coin][color=red]-" .. tools.add_commas(value) ..
                         "[/color]",
                     purchased = inserted
                 })
@@ -336,9 +336,8 @@ function M.purchase(player, item, click, shift, ctrl)
                 history[1].purchased = history[1].purchased + inserted
                 history[1].prefix =
                     "[img=item/" .. item .. "] [color=green]+" ..
-                        history[1].purchased .. "[/color]"
-                history[1].suffix = "[img=item/coin][color=red]-" .. value *
-                                        history[1].purchased .. "[/color]"
+                        tools.add_commas(history[1].purchased) .. "[/color]"
+                history[1].suffix = "[img=item/coin][color=red]-" .. tools.add_commas(value * history[1].purchased) .. "[/color]"
                 if #market.stats.history > 16 then
                     table.remove(market.stats.history)
                 end
@@ -347,9 +346,9 @@ function M.purchase(player, item, click, shift, ctrl)
         else
             table.insert(history, 1, {
                 item = item,
-                prefix = "[img=item/" .. item .. "] [color=green]+" .. inserted ..
+                prefix = "[img=item/" .. item .. "] [color=green]+" .. tools.add_commas(inserted) ..
                     "[/color]",
-                suffix = "[img=item/coin][color=red]-" .. value .. "[/color]",
+                suffix = "[img=item/coin][color=red]-" .. tools.add_commas(value) .. "[/color]",
                 purchased = inserted
             })
         end
@@ -389,7 +388,7 @@ function M.sell(player, item)
             table.insert(history, 1, {
                 item = item,
                 prefix = "[img=item/" .. item .. "] [color=red]-1[/color]",
-                suffix = "[img=item/coin][color=green]+" .. value .. "[/color]",
+                suffix = "[img=item/coin][color=green]+" .. tools.add_commas(value) .. "[/color]",
                 sold = 1
             })
             if #market.stats.history > 16 then
@@ -400,9 +399,8 @@ function M.sell(player, item)
         if history[1].item == item and history[1].sold then
             history[1].sold = history[1].sold + 1
             history[1].prefix = "[img=item/" .. item .. "] [color=red]-" ..
-                                    history[1].sold .. "[/color]"
-            history[1].suffix = "[img=item/coin][color=green]+" .. value *
-                                    history[1].sold .. "[/color]"
+                                    tools.add_commas(history[1].sold) .. "[/color]"
+            history[1].suffix = "[img=item/coin][color=green]+" .. tools.add_commas(value * history[1].sold) .. "[/color]"
             if #market.stats.history > 16 then
                 table.remove(market.stats.history)
             end
@@ -412,7 +410,7 @@ function M.sell(player, item)
         table.insert(history, 1, {
             item = item,
             prefix = "[img=item/" .. item .. "] [color=red]-1[/color]",
-            suffix = "[img=item/coin][color=green]+" .. value .. "[/color]",
+            suffix = "[img=item/coin][color=green]+" .. tools.add_commas(value) .. "[/color]",
             sold = 1
         })
     end
@@ -784,11 +782,11 @@ function M.update(player)
         for name, purchase in pairs(stats.items_purchased) do
             if purchase.value > highest_value then
                 highest_value_item = name
-                highest_value = purchase.value
+                highest_value = tools.add_commas(purchase.value)
             end
             if purchase.count > highest_count then
                 highest_count_item = name
-                highest_count = purchase.count
+                highest_count = tools.add_commas(purchase.count)
             end
         end
         stats.item_most_purchased_coin =
@@ -807,11 +805,11 @@ function M.update(player)
         for name, sale in pairs(stats.items_sold) do
             if sale.value > highest_value then
                 highest_value_item = name
-                highest_value = sale.value
+                highest_value = tools.add_commas(sale.value)
             end
             if sale.count > highest_count then
                 highest_count_item = name
-                highest_count = sale.count
+                highest_count = tools.add_commas(sale.count)
             end
         end
         stats.item_most_sold_coin = "[img=item/" .. highest_value_item ..
@@ -832,9 +830,9 @@ function M.update(player)
         end
     end
     market.stats_labels.total_coin_earned.caption =
-        "[img=item/coin] [color=green]" .. stats.total_coin_earned .. "[/color]"
+        "[img=item/coin] [color=green]" .. tools.add_commas(stats.total_coin_earned) .. "[/color]"
     market.stats_labels.total_coin_spent.caption =
-        "[img=item/coin] [color=green]" .. stats.total_coin_spent .. "[/color]"
+        "[img=item/coin] [color=green]" .. tools.add_commas(stats.total_coin_spent) .. "[/color]"
     market.stats_labels.item_most_purchased_total.caption =
         stats.item_most_purchased_total
     market.stats_labels.item_most_purchased_coin.caption =
