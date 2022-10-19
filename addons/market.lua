@@ -994,7 +994,6 @@ function M.on_tick()
     if (game.tick % 10 == 0) then
         for _, player in pairs(game.players) do
             player = tools.get_player(player)
-            if player.character and player.character.valid then
                 if global.markets then
                     if not global.markets[player.name] then
                         return
@@ -1007,7 +1006,6 @@ function M.on_tick()
                     end
                     M.check_sell_chest(player)
                     -- M.update(player)
-                end
             end
         end
     end
