@@ -100,7 +100,8 @@ OARC_STORE_MAP_FEATURES = {
     special_buttons = {
         ["special_assembling-machine-1"] = {initial_cost = 10, text = "Teleport home."},
         ["special_offshore-pump"] = {
-            initial_cost = 500,
+            initial_cost = 1000,
+            additional_cost = 0,
             multiplier_cost = 1.01,
             text = "Converts the closest empty wooden chest into a water tile!"
         }
