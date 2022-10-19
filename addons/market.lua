@@ -782,11 +782,13 @@ function M.update(player)
         local highest_count_item = ""
         local highest_count = 0
         for name, purchase in pairs(stats.items_purchased) do
-            if purchase.value > tonumber(string.gsub(highest_value, ",", "")) then
+            high_value = string.gsub(highest_value, ",", "")
+            high_count = string.gsub(highest_count, ",", "")
+            if purchase.value > tonumber(high_value) then
                 highest_value_item = name
                 highest_value = tools.add_commas(purchase.value)
             end
-            if purchase.count > tonumber(string.gsub(highest_count, ",", "")) then
+            if purchase.count > tonumber(high_count) then
                 highest_count_item = name
                 highest_count = tools.add_commas(purchase.count)
             end
@@ -805,11 +807,13 @@ function M.update(player)
         local highest_count_item = ""
         local highest_count = 0
         for name, sale in pairs(stats.items_sold) do
-            if sale.value > tonumber(string.gsub(highest_value, ",", "")) then
+            high_value = string.gsub(highest_value, ",", "")
+            high_count = string.gsub(highest_count, ",", "")
+            if sale.value > tonumber(high_value) then
                 highest_value_item = name
                 highest_value = tools.add_commas(sale.value)
             end
-            if sale.count > tonumber(string.gsub(highest_count, ",", "")) then
+            if sale.count > tonumber(high_count) then
                 highest_count_item = name
                 highest_count = tools.add_commas(sale.count)
             end
