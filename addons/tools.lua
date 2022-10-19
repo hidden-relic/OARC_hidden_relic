@@ -13,6 +13,10 @@ function tools.add_commas(amount)
     return formatted
 end
 
+function tools.remove_commas(amount)
+    return string.gsub(amount, ",", "")
+end
+
 function tools.sortByValue(t)
     local keys = {}
 

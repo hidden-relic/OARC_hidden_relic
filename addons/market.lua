@@ -322,8 +322,8 @@ function M.purchase(player, item, click, shift, ctrl)
                 table.insert(history, 1, {
                     item = item,
                     prefix = "[img=item/" .. item .. "] [color=green]+" ..
-                        tools.add_commas(inserted) .. "[/color]",
-                    suffix = "[img=item/coin][color=red]-" .. tools.add_commas(value) ..
+                        tools.add_commas(tools.remove_commas(inserted)) .. "[/color]",
+                    suffix = "[img=item/coin][color=red]-" .. tools.add_commas(tools.remove_commas(value)) ..
                         inserted .. "[/color]",
                     suffix = "[img=item/coin][color=red]-" .. value ..
                         "[/color]",
@@ -338,8 +338,8 @@ function M.purchase(player, item, click, shift, ctrl)
                 history[1].purchased = history[1].purchased + inserted
                 history[1].prefix =
                     "[img=item/" .. item .. "] [color=green]+" ..
-                        tools.add_commas(history[1].purchased) .. "[/color]"
-                history[1].suffix = "[img=item/coin][color=red]-" .. tools.add_commas(value * history[1].purchased) .. "[/color]"
+                        tools.add_commas(tools.remove_commas(history[1].purchased)) .. "[/color]"
+                history[1].suffix = "[img=item/coin][color=red]-" .. tools.add_commas(tools.remove_commas(value * history[1].purchased)) .. "[/color]"
                 if #market.stats.history > 16 then
                     table.remove(market.stats.history)
                 end
@@ -348,9 +348,9 @@ function M.purchase(player, item, click, shift, ctrl)
         else
             table.insert(history, 1, {
                 item = item,
-                prefix = "[img=item/" .. item .. "] [color=green]+" .. tools.add_commas(inserted) ..
+                prefix = "[img=item/" .. item .. "] [color=green]+" .. tools.add_commas(tools.remove_commas(inserted)) ..
                     "[/color]",
-                suffix = "[img=item/coin][color=red]-" .. tools.add_commas(value) .. "[/color]",
+                suffix = "[img=item/coin][color=red]-" .. tools.add_commas(tools.remove_commas(value)) .. "[/color]",
                 purchased = inserted
             })
         end
@@ -390,7 +390,7 @@ function M.sell(player, item)
             table.insert(history, 1, {
                 item = item,
                 prefix = "[img=item/" .. item .. "] [color=red]-1[/color]",
-                suffix = "[img=item/coin][color=green]+" .. tools.add_commas(value) .. "[/color]",
+                suffix = "[img=item/coin][color=green]+" .. tools.add_commas(tools.remove_commas(value)) .. "[/color]",
                 sold = 1
             })
             if #market.stats.history > 16 then
@@ -401,8 +401,8 @@ function M.sell(player, item)
         if history[1].item == item and history[1].sold then
             history[1].sold = history[1].sold + 1
             history[1].prefix = "[img=item/" .. item .. "] [color=red]-" ..
-                                    tools.add_commas(history[1].sold) .. "[/color]"
-            history[1].suffix = "[img=item/coin][color=green]+" .. tools.add_commas(value * history[1].sold) .. "[/color]"
+                                    tools.add_commas(tools.remove_commas(history[1].sold)) .. "[/color]"
+            history[1].suffix = "[img=item/coin][color=green]+" .. tools.add_commas(tools.remove_commas(value * history[1].sold)) .. "[/color]"
             if #market.stats.history > 16 then
                 table.remove(market.stats.history)
             end
@@ -412,7 +412,7 @@ function M.sell(player, item)
         table.insert(history, 1, {
             item = item,
             prefix = "[img=item/" .. item .. "] [color=red]-1[/color]",
-            suffix = "[img=item/coin][color=green]+" .. tools.add_commas(value) .. "[/color]",
+            suffix = "[img=item/coin][color=green]+" .. tools.add_commas(tools.remove_commas(value)) .. "[/color]",
             sold = 1
         })
     end
@@ -782,11 +782,11 @@ function M.update(player)
         local highest_count_item = ""
         local highest_count = 0
         for name, purchase in pairs(stats.items_purchased) do
-            if purchase.value > highest_value then
+            if purchase.value > tools.remove_commas(highest_value) then
                 highest_value_item = name
                 highest_value = tools.add_commas(purchase.value)
             end
-            if purchase.count > highest_count then
+            if purchase.count > tools.remove_commas(highest_count) then
                 highest_count_item = name
                 highest_count = tools.add_commas(purchase.count)
             end
@@ -805,11 +805,11 @@ function M.update(player)
         local highest_count_item = ""
         local highest_count = 0
         for name, sale in pairs(stats.items_sold) do
-            if sale.value > highest_value then
+            if sale.value > tools.remove_commas(highest_value) then
                 highest_value_item = name
                 highest_value = tools.add_commas(sale.value)
             end
-            if sale.count > highest_count then
+            if sale.count > tools.remove_commas(highest_count) then
                 highest_count_item = name
                 highest_count = tools.add_commas(sale.count)
             end

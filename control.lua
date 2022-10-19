@@ -205,7 +205,6 @@ script.on_event(defines.events.on_gui_click, function(event)
             global.markets[player.name].item_buttons[event.element.name] then
             local button =
                 global.markets[player.name].item_buttons[event.element.name]
-            if event.element ~= button then return end
             local click = event.button
             local shift = event.shift
             local ctrl = event.control
