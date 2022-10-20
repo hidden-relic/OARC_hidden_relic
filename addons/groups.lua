@@ -130,13 +130,15 @@ function Group.on_tick()
                     entry.pet_group.set_command({
                         type = defines.command.attack_area,
                         destination = game.players[index].position,
-                        radius = 16
+                        radius = 16,
+                        use_group_distraction=false
                     })
                     if group_logging == true then game.print("command sent: attack_area 16 radius @ "..serpent.line(game.players[index].position)) end
                 elseif game.tick % 60 == 30 then
                     entry.pet_group.set_command({
                         type = defines.command.go_to_location,
-                        destination_entity = game.players[index].character
+                        destination_entity = game.players[index].character,
+                        use_group_distraction = false
                     })
                     if group_logging == true then game.print("command sent: go_to_location @ "..game.players[index].name.."'s character: "..serpent.line(game.players[index].position)) end
                 end
