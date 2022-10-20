@@ -33,7 +33,7 @@ end
 
 M.upgrade_cost_table = {
     ["sell-speed"] = 2,
-    ["character-health"] = 0.2,
+    ["character-health"] = 0.5,
     ["ammo-damage"] = 0.2,
     ["turret-attack"] = 0.2,
     ["gun-speed"] = 0.2,
@@ -150,7 +150,7 @@ function M.new(player)
             name = "Character Health",
             lvl = 1,
             max_lvl = 100,
-            cost = 10000,
+            cost = 1000,
             sprite = "utility/rail_planner_indication_arrow",
             t = {},
             tooltip = "+25 to character health"
@@ -873,6 +873,7 @@ function M.update(player)
     market.stats_labels.item_most_sold_coin.caption = stats.item_most_sold_coin
 
     market.stats_labels["sell-speed"].caption = tools.round(market.upgrades["sell-speed"].t[market.upgrades["sell-speed"].lvl], 2).." seconds"
+    market.stats_labels["character-health"].caption = player.character_health_bonus
     market.stats_labels["ammo-damage"].caption = player.force.get_ammo_damage_modifier(market.upgrades["ammo-damage"].t[1].ammo_category)
     market.stats_labels["turret-attack"].caption = player.force.get_turret_attack_modifier(market.upgrades["turret-attack"].t[1].turret_id)
     market.stats_labels["gun-speed"].caption = player.force.get_gun_speed_modifier(market.upgrades["gun-speed"].t[1].ammo_category)
