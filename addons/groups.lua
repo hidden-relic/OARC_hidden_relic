@@ -107,7 +107,7 @@ end
 group_logging = false
 
 function Group.on_tick()
-    if (game.tick % 30 == 0) and global.groups then
+    if (game.tick % 60 == 0) and global.groups then
         for index, entry in pairs(global.groups) do
             if group_logging == true then game.print("index: "..index) end
             if not entry then return end
@@ -126,22 +126,13 @@ function Group.on_tick()
             if group_logging == true then game.print("group count: "..Group.get_count(game.players[index])) end
             if entry.pet_group.members then
                 if group_logging == true then game.print("group has members") end
-                if game.tick % 60 == 0 then
-                    entry.pet_group.set_command({
-                        type = defines.command.attack_area,
-                        destination = game.players[index].position,
-                        radius = 16,
-                        use_group_distraction=false
-                    })
-                    if group_logging == true then game.print("command sent: attack_area 16 radius @ "..serpent.line(game.players[index].position)) end
-                elseif game.tick % 60 == 30 then
-                    entry.pet_group.set_command({
-                        type = defines.command.go_to_location,
-                        destination_entity = game.players[index].character,
-                        use_group_distraction = false
-                    })
-                    if group_logging == true then game.print("command sent: go_to_location @ "..game.players[index].name.."'s character: "..serpent.line(game.players[index].position)) end
-                end
+                entry.pet_group.set_command({
+                    type = defines.command.attack_area,
+                    destination = game.players[index].position,
+                    radius = 16,
+                    use_group_distraction=false
+                })
+                if group_logging == true then game.print("command sent: attack_area 16 radius @ "..serpent.line(game.players[index].position)) end
             end
         end
     end
