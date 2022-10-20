@@ -12,9 +12,9 @@ local Group = {}
 
 Group.pet_data = {
     ["small-biter"] = {cost = 1000, color = {121, 180, 222}},
-    ["medium-biter"] = {cost = 5000, color = {138, 106, 107}},
-    ["big-biter"] = {cost = 25000, color = {98, 92, 129}},
-    ["behemoth-biter"] = {cost = 100000, color = {94, 192, 136}}
+    ["medium-biter"] = {cost = 2500, color = {138, 106, 107}},
+    ["big-biter"] = {cost = 5000, color = {98, 92, 129}},
+    ["behemoth-biter"] = {cost = 10000, color = {94, 192, 136}}
 }
 
 function Group.new(player)
@@ -37,6 +37,14 @@ function Group.create(player)
             force = player.force
         }
 end
+
+-- function Group.check(player)
+--     local player = player
+--     if global.groups[player.name] then
+--         local group = global.groups[player.name]
+--         if group.pet_group then
+--             if not group.pet_group.valid then pcall(group.pet_group.destroy()) return end
+            
 
 function Group.get_count(player)
     local player = player

@@ -33,6 +33,7 @@ end
 
 M.upgrade_cost_table = {
     ["sell-speed"] = 2,
+    ["character-health"] = 0.2,
     ["ammo-damage"] = 0.2,
     ["turret-attack"] = 0.2,
     ["gun-speed"] = 0.2,
@@ -43,6 +44,9 @@ M.upgrade_cost_table = {
 
 M.upgrade_func_table = {
     ["sell-speed"] = function(player) return end,
+    ["character-health"] = function(player)
+        local upgrades = global.markets[player.name].upgrades
+        player.character_health_bonus = player.character_health_bonus + 25
     ["ammo-damage"] = function(player)
         local upgrades = global.markets[player.name].upgrades
         for _, effect in pairs(upgrades["ammo-damage"].t) do
@@ -140,6 +144,16 @@ function M.new(player)
             t = {10, 8, 6, 5, 4, 3, 2, 1, 0.5, 0.25},
             tooltip = "Shorten the time it takes to sell an item"
         },
+
+        ["character-health"] = {
+            name = "Character Health",
+            lvl = 1,
+            max_lvl = 100,
+            cost = 10000,
+            sprite = "utility/rail_planner_indication_arrow",
+            t = {},
+            tooltip = "+25 to character health"
+        }
 
         ["ammo-damage"] = {
             name = "Ammo Damage",
@@ -647,6 +661,16 @@ function M.create_stats_gui(player)
         market.info_table.add {
             type = "label",
             caption = tools.round(upgrades["sell-speed"].t[upgrades["sell-speed"].lvl], 2).." seconds"
+        }
+
+    table.insert(market.stats_labels, market.info_table.add {
+        type = "label",
+        caption = "[color=green]Character Health:[/color]"
+    })
+    market.stats_labels["character-health"] =
+        market.info_table.add {
+            type = "label",
+            caption = player.character_health_bonus
         }
 
     table.insert(market.stats_labels, market.info_table.add {
