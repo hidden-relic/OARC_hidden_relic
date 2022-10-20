@@ -47,6 +47,9 @@ function Group.check(player)
                 pcall(group.pet_group.destroy())
 
             end
+        end
+    end
+end
             
 
 function Group.get_count(player)
@@ -106,8 +109,6 @@ function Group.add(player, pet)
         player.print("Max buddies allowed")
     end
 end
-
-group_logging = false
 
 function Group.on_tick()
     if (game.tick % 60 == 0) and global.groups then
