@@ -154,7 +154,7 @@ function M.new(player)
             sprite = "utility/rail_planner_indication_arrow",
             t = {},
             tooltip = "+25 to character health"
-        }
+        },
 
         ["ammo-damage"] = {
             name = "Ammo Damage",
