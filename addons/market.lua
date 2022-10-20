@@ -47,7 +47,7 @@ M.upgrade_func_table = {
     ["character-health"] = function(player)
         local upgrades = global.markets[player.name].upgrades
         player.character_health_bonus = player.character_health_bonus + 25
-    end
+    end,
     ["ammo-damage"] = function(player)
         local upgrades = global.markets[player.name].upgrades
         for _, effect in pairs(upgrades["ammo-damage"].t) do
