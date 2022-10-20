@@ -85,6 +85,56 @@ commands.add_command("tree",
     end
 end)
 
+--------------------------------------------------
+
+-- getting sec/item for 1 assembler
+
+-- N/C=P
+-- item_energy/assembler_speed=production_speed
+
+-- getting item/sec
+
+-- 1/(P/A)=M
+-- 1/(production_speed/product_amount)=item_per_sec
+
+-- getting assemblers required for x/sec
+
+-- I/M=R
+-- x/item_per_sec=assemblers
+
+local function secs_per_item(recipe, assembler)
+    local recipe = recipe
+    local assembler = assembler
+    return recipe.energy/assembler.crafting_speed
+end
+
+local function items_per_sec(recipe, assembler)
+    local recipe = recipe
+    local assembler = assembler
+    local items_per_sec = 0
+    if recipe.products and recipe.products.amount then
+        items_per_sec = 1/(secs_per_item(recipe, assembler)/recipe.products[1].amount)
+    end
+    return items_per_sec
+end
+
+local function get_assemblers(item, per_sec, assembler)
+    if not game.item_prototypes[item] then return end
+    if not game.entity_prototypes[assembler] then return end
+    if not game.recipe_prototypes[item] then return end
+    local assembler = game.entity_prototypes[assembler]
+    local recipe = game.recipe_prototypes[item]
+    return per_sec/items_per_sec(recipe, assembler)
+end
+
+-- game.player.print(get_assemblers("electronic-circuit", 10, "assembling-machine-2"))
+
+
+
+
+
+
+
 commands.add_command("reset", "reset player", function(command)
     local player = game.players[command.player_index]
     local target = player.name

@@ -43,7 +43,16 @@ function RocketLaunchEvent(event)
 
     -- Track additional satellites launched by this force
     local announcement_milestones = {
-        5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000
+        [5] = true,
+        [10] = true,
+        [25] = true,
+        [50] = true,
+        [100] = true,
+        [250] = true,
+        [500] = true,
+        [1000] = true,
+        [2500] = true,
+        [5000] = true
     }
     if global.ocore.satellite_sent[force.name] then
         global.ocore.satellite_sent[force.name] =
