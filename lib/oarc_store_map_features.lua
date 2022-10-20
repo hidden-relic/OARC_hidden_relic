@@ -5,6 +5,7 @@ require("lib/shared_chests")
 require("lib/map_features")
 local mod_gui = require("mod-gui")
 local market = require("addons/market")
+local tools = require("addons/tools")
 
 OARC_STORE_MAP_TEXT = {
     special_chests = "Special buildings for sharing or monitoring items and energy. This will convert the closest wooden chest (to you) within 16 tiles into a special building of your choice. Make sure to leave enough space! The combinators and accumulators can take up several tiles around them.",
@@ -129,7 +130,7 @@ function CreateMapFeatureStoreTab(tab_container, player)
 
     local wallet = global.markets[player.name].balance
     AddLabel(tab_container, "map_feature_store_wallet_lbl",
-             "Coins Available: " .. wallet .. "  [item=coin]",
+             "Coins Available: " .. tools.add_commas(wallet) .. "  [item=coin]",
              {top_margin = 5, bottom_margin = 5})
     AddLabel(tab_container, "coin_info",
              "Earn more coins by killing enemies or selling items.",

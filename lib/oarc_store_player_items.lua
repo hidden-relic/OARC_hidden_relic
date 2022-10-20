@@ -9,9 +9,9 @@ local group = require("addons/groups")
 OARC_STORE_PLAYER_ITEMS = {
     ["Followers"] = {
         ["small-biter"] = {cost = 1000, count = 1},
-        ["medium-biter"] = {cost = 5000, count = 1},
-        ["big-biter"] = {cost = 25000, count = 1},
-        ["behemoth-biter"] = {cost = 100000, count = 1}
+        ["medium-biter"] = {cost = 2500, count = 1},
+        ["big-biter"] = {cost = 5000, count = 1},
+        ["behemoth-biter"] = {cost = 10000, count = 1}
     }
 }
 
@@ -22,7 +22,7 @@ function CreatePlayerStoreTab(tab_container, player)
 
     local wallet = global.markets[player.name].balance
     AddLabel(tab_container, "player_store_wallet_lbl",
-             "Coins Available: " .. wallet .. "  [item=coin]",
+             "Coins Available: " .. tools.add_commas(wallet) .. "  [item=coin]",
              {top_margin = 5, bottom_margin = 5})
 
     local line = tab_container.add {type = "line", direction = "horizontal"}
