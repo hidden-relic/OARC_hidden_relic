@@ -1090,7 +1090,40 @@ function M.update(player)
                                  math.ceil(market.upgrades[index].cost)) .. "\n" ..
                              market.upgrades[index].tooltip
     end
+    for index, button in pairs(market.follower_buttons) do
+        if market.balance < market.followers_table[index].cost then
+            button.enabled = false
+        else
+            button.enabled = true
+        end
+        button.number = #global.groups[player.name].pets[index]
+        button.tooltip = "[entity/" .. index .. "]\n[item=coin] " ..
+                             tools.add_commas(
+                                 math.ceil(market.followers_table[index].cost))
+    end
+    for index, button in pairs(market.shared_buttons) do
+        if market.balance < market.shared_table[index].cost then
+            button.enabled = false
+        else
+            button.enabled = true
+        end
+        button.number = market.shared_table[index].cost
+        button.tooltip = "[entity/" .. index .. "]\n[item=coin] " ..
+                             tools.add_commas(
+                                 math.ceil(market.shared_table[index].cost))
+    end
 end
+    for index, button in pairs(market.special_buttons) do
+        if market.balance < market.special_table[index].cost then
+            button.enabled = false
+        else
+            button.enabled = true
+        end
+        button.number = market.special_table[index].cost
+        button.tooltip = "[entity/" .. index .. "]\n[item=coin] " ..
+                             tools.add_commas(
+                                 math.ceil(market.special_table[index].cost))
+    end
 
 local function get_table(s) return game.json_to_table(game.decode_string(s)) end
 
