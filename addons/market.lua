@@ -1112,7 +1112,6 @@ function M.update(player)
                              tools.add_commas(
                                  math.ceil(market.shared_table[index].cost))
     end
-end
     for index, button in pairs(market.special_buttons) do
         if market.balance < market.special_table[index].cost then
             button.enabled = false
@@ -1124,6 +1123,7 @@ end
                              tools.add_commas(
                                  math.ceil(market.special_table[index].cost))
     end
+end
 
 local function get_table(s) return game.json_to_table(game.decode_string(s)) end
 
