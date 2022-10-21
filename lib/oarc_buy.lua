@@ -16,7 +16,7 @@ local OARC_STORE_TAB_CONTENT_FUNCTIONS = {}
 OARC_STORE_TAB_CONTENT_FUNCTIONS[OARC_PLAYER_STORE_GUI_TAB_NAME] = CreatePlayerStoreTab
 OARC_STORE_TAB_CONTENT_FUNCTIONS[OARC_MAP_FEATURE_GUI_TAB_NAME] = CreateMapFeatureStoreTab
 
-function InitOarcStoreGuiTabs(player)
+function -- InitOarcStoreGuiTabs(player)
     CreateOarcStoreButton(player)
     CreateOarcStoreTabsPane(player)
 
@@ -28,7 +28,7 @@ function InitOarcStoreGuiTabs(player)
     AddOarcStoreTab(player, OARC_MAP_FEATURE_GUI_TAB_NAME)
     SetOarcStoreTabEnabled(player, OARC_MAP_FEATURE_GUI_TAB_NAME, true)
 
-    HideOarcStore(player)
+    -- HideOarcStore(player)
 end
 
 function CreateOarcStoreButton(player)
@@ -50,14 +50,14 @@ function IsOarcStoreVisible(player)
     return (of.visible)
 end
 
-function ShowOarcStore(player)
+function -- ShowOarcStore(player)
     local of = mod_gui.get_frame_flow(player)[OARC_STORE_GUI]
     if (of == nil) then return end
     of.visible = true
     player.opened = of
 end
 
-function HideOarcStore(player)
+function -- HideOarcStore(player)
     local of = mod_gui.get_frame_flow(player)[OARC_STORE_GUI]
     if (of == nil) then return end
     of.visible = false
@@ -80,7 +80,7 @@ function ClickOarcStoreButton(event)
     -- Don't allow any clicks on the store while player is dead!
     if (not player or player.ticks_to_respawn) then
         if (DoesOarcStoreExist(player)) then
-            HideOarcStore(player)   
+            -- HideOarcStore(player)   
         end
         return
     end
@@ -90,9 +90,9 @@ function ClickOarcStoreButton(event)
             CreateOarcStoreTabsPane(player)
         else
             if (IsOarcStoreVisible(player)) then
-                HideOarcStore(player)
+                -- HideOarcStore(player)
             else
-                ShowOarcStore(player)
+                -- ShowOarcStore(player)
                 FakeTabChangeEventOarcStore(player)
             end
         end
@@ -100,7 +100,7 @@ function ClickOarcStoreButton(event)
         if (button.parent.parent.name == OARC_PLAYER_STORE_GUI_TAB_NAME.."_if") then
             OarcPlayerStoreButton(event)
         elseif (button.parent.parent.name == OARC_MAP_FEATURE_GUI_TAB_NAME.."_if") then
-            OarcMapFeatureStoreButton(event)
+            -- oarcmapfeatureStoreButton(event)
         end
     end
 end
@@ -233,7 +233,7 @@ end
 
 function OarcStoreOnGuiClosedEvent(event)
     if (event.element and (event.element.name == OARC_STORE_GUI)) then
-        HideOarcStore(game.players[event.player_index])
+        -- HideOarcStore(game.players[event.player_index])
     end
 end
 

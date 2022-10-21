@@ -120,7 +120,7 @@ function SeparateSpawnsPlayerCreated(player_index, clear_inv)
     end
 
     -- Reset counts for map feature usage for this player.
-    OarcMapFeaturePlayerCreatedEvent(player)
+    -- -- oarcmapfeaturePlayerCreatedEvent(player)
 
     -- Ensure cleared inventory!
     if (clear_inv) then
@@ -132,7 +132,7 @@ function SeparateSpawnsPlayerCreated(player_index, clear_inv)
     end
 
     HideOarcGui(player)
-    HideOarcStore(player)
+    -- HideOarcStore(player)
     DisplayWelcomeTextGui(player)
 end
 
@@ -1053,7 +1053,7 @@ function QueuePlayerForDelayedSpawn(playerName, spawn, moatEnabled, vanillaSpawn
         })
 
         HideOarcGui(game.players[playerName])
-        HideOarcStore(game.players[playerName])
+        -- HideOarcStore(game.players[playerName])
         DisplayPleaseWaitForSpawnDialog(game.players[playerName],
                                         delay_spawn_seconds)
 
@@ -1100,6 +1100,7 @@ function SendPlayerToSpawn(player)
                      game.forces[global.ocfg.main_force]
                          .get_spawn_position(GAME_SURFACE_NAME))
     end
+    return true
 end
 
 function SendPlayerToRandomSpawn(player)

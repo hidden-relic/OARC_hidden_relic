@@ -197,7 +197,7 @@ script.on_init(function(event)
         MagicFactoriesInit()
     end
 
-    OarcMapFeatureInitGlobalCounters()
+    -- oarcmapfeatureInitGlobalCounters()
     OarcAutoDeconOnInit()
 
     -- Display starting point text as a display of dominance.
@@ -338,7 +338,7 @@ script.on_event(defines.events.on_player_created, function(event)
 
     InitOarcGuiTabs(player)
 
-    if global.ocfg.enable_coin_shop then InitOarcStoreGuiTabs(player) end
+    if global.ocfg.enable_coin_shop then -- InitOarcStoreGuiTabs(player) end
 end)
 
 script.on_event(defines.events.on_player_respawned, function(event)

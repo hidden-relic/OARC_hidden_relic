@@ -104,6 +104,7 @@ OARC_STORE_MAP_FEATURES = {
             initial_cost = 1000,
             additional_cost = 1,
             multiplier_cost = 2,
+            max_cost = 50000,
             text = "Converts the closest empty wooden chest into a water tile!"
         }
     },
@@ -164,9 +165,9 @@ function CreateMapFeatureStoreTab(tab_container, player)
                 blocked = true
             end
 
-            local count = OarcMapFeaturePlayerCountGet(player, category,
+            local count = -- oarcmapfeaturePlayerCountGet(player, category,
                                                        item_name)
-            local cost = OarcMapFeatureCostScaling(player, category, item_name)
+            local cost = -- oarcmapfeatureCostScaling(player, category, item_name)
             local color = "[color=green]"
             if ((cost > wallet) or (cost < 0) or blocked) then
                 color = "[color=red]"
@@ -213,16 +214,16 @@ function CreateMapFeatureStoreTab(tab_container, player)
     end
 end
 
-function OarcMapFeatureInitGlobalCounters()
+function -- oarcmapfeatureInitGlobalCounters()
     global.oarc_store = {}
     global.oarc_store.pmf_counts = {}
 end
 
-function OarcMapFeaturePlayerCreatedEvent(player)
+function -- oarcmapfeaturePlayerCreatedEvent(player)
     global.oarc_store.pmf_counts[player.name] = {}
 end
 
-function OarcMapFeaturePlayerCountGet(player, category_name, feature_name)
+function -- oarcmapfeaturePlayerCountGet(player, category_name, feature_name)
     if (not global.oarc_store.pmf_counts[player.name][feature_name]) then
         global.oarc_store.pmf_counts[player.name][feature_name] = 0
         return 0
@@ -231,13 +232,13 @@ function OarcMapFeaturePlayerCountGet(player, category_name, feature_name)
     return global.oarc_store.pmf_counts[player.name][feature_name]
 end
 
-function OarcMapFeaturePlayerCountChange(player, category_name, feature_name,
+function -- oarcmapfeaturePlayerCountChange(player, category_name, feature_name,
                                          change)
 
     if (not global.oarc_store.pmf_counts[player.name][feature_name]) then
         if (change < 0) then
             log(
-                "ERROR - OarcMapFeaturePlayerCountChange - Removing when count is not set??")
+                "ERROR - -- oarcmapfeaturePlayerCountChange - Removing when count is not set??")
         end
         global.oarc_store.pmf_counts[player.name][feature_name] = change
         return
@@ -255,12 +256,12 @@ function OarcMapFeaturePlayerCountChange(player, category_name, feature_name,
 end
 
 -- Return cost (0 or more) or return -1 if disabled.
-function OarcMapFeatureCostScaling(player, category_name, feature_name)
+function -- oarcmapfeatureCostScaling(player, category_name, feature_name)
 
     local map_feature = OARC_STORE_MAP_FEATURES[category_name][feature_name]
 
     -- Check limit first.
-    local count = OarcMapFeaturePlayerCountGet(player, category_name,
+    local count = -- oarcmapfeaturePlayerCountGet(player, category_name,
                                                feature_name)
     if (map_feature.limit and (count >= map_feature.limit)) then return -1 end
 
@@ -279,7 +280,7 @@ function OarcMapFeatureCostScaling(player, category_name, feature_name)
     end
 end
 
-function OarcMapFeatureStoreButton(event)
+function -- oarcmapfeatureStoreButton(event)
     local button = event.element
     local player = game.players[event.player_index]
 
@@ -288,7 +289,7 @@ function OarcMapFeatureStoreButton(event)
     local map_feature = OARC_STORE_MAP_FEATURES[button.parent.name][button.name]
 
     -- Calculate cost based on how many player has purchased?
-    local cost = OarcMapFeatureCostScaling(player, button.parent.name,
+    local cost = -- oarcmapfeatureCostScaling(player, button.parent.name,
                                            button.name)
 
     -- Check if we have enough money

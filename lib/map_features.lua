@@ -315,8 +315,7 @@ function RequestSpawnSpecialChunk(player, spawn_function, feature_name)
             -- Teleport to center of chunk to be safe.
             SafeTeleport(player, game.surfaces[GAME_SURFACE_NAME],
                          GetCenterTilePosFromChunkPos(closest_chunk))
-            OarcMapFeaturePlayerCountChange(player, "special_chunks",
-                                            feature_name, 1)
+            -- -- oarcmapfeaturePlayerCountChange(player, "special_chunks", feature_name, 1)
             return true
         else
             player.print(

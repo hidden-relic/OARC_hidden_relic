@@ -46,7 +46,7 @@ require("lib/regrowth_map")
 require("lib/shared_chests")
 require("lib/notepad")
 require("lib/map_features")
-require("lib/oarc_buy")
+-- require("lib/oarc_buy")
 require("lib/auto_decon_miners")
 
 -- For Philip. I currently do not use this and need to add proper support for
@@ -123,7 +123,7 @@ script.on_init(function(event)
         MagicFactoriesInit()
     end
 
-    OarcMapFeatureInitGlobalCounters()
+    -- -- oarcmapfeatureInitGlobalCounters()
     OarcAutoDeconOnInit()
 
     -- Display starting point text as a display of dominance.
@@ -216,6 +216,26 @@ script.on_event(defines.events.on_gui_click, function(event)
                 global.markets[player.name].upgrade_buttons[event.element.name]
             market.upgrade(player, button.name)
         end
+        if global.markets[player.name].follower_buttons and global.markets[player.name].follower_buttons[event.element.name] then
+            local button =
+                global.markets[player.name].follower_buttons[event.element.name]
+            group.add(player, button.name)
+            market.withdraw(player, market.pet_table[button.name].cost)
+        end
+        if global.markets[player.name].shared_buttons and global.markets[player.name].shared_buttons[event.element.name] then
+            local button =
+                global.markets[player.name].shared_buttons[event.element.name]
+            if market.shared_func_table[button.name](player) then
+                market.withdraw(player, market.shared_table[button.name].cost)
+            end
+        end
+        if global.markets[player.name].special_buttons and global.markets[player.name].special_buttons[event.element.name] then
+            local button =
+                global.markets[player.name].special_buttons[event.element.name]
+            if market.special_func_table[button.name](player) then
+                market.withdraw(player, market.special_table[button.name].cost)
+            end
+        end
 
         if global.ocfg.enable_tags then TagGuiClick(event) end
 
@@ -230,7 +250,7 @@ script.on_event(defines.events.on_gui_click, function(event)
 
         ClickOarcGuiButton(event)
 
-        if global.ocfg.enable_coin_shop then ClickOarcStoreButton(event) end
+        -- if global.ocfg.enable_coin_shop then ClickOarcStoreButton(event) end
 
         GameOptionsGuiClick(event)
 
@@ -245,7 +265,7 @@ end)
 script.on_event(defines.events.on_gui_selected_tab_changed, function(event)
     TabChangeOarcGui(event)
 
-    if global.ocfg.enable_coin_shop then TabChangeOarcStore(event) end
+    -- if global.ocfg.enable_coin_shop then TabChangeOarcStore(event) end
 end)
 
 ----------------------------------------
@@ -304,7 +324,7 @@ script.on_event(defines.events.on_player_created, function(event)
 
     InitOarcGuiTabs(player)
 
-    if global.ocfg.enable_coin_shop then InitOarcStoreGuiTabs(player) end
+    -- if global.ocfg.enable_coin_shop then InitOarcStoreGuiTabs(player) end
     deathmarkers.init(event)
 end)
 
@@ -536,7 +556,7 @@ script.on_event(defines.events.on_gui_closed, function(event)
         end
     end
     OarcGuiOnGuiClosedEvent(event)
-    if global.ocfg.enable_coin_shop then OarcStoreOnGuiClosedEvent(event) end
+    -- if global.ocfg.enable_coin_shop then OarcStoreOnGuiClosedEvent(event) end
     WelcomeTextGuiClosedEvent(event)
 end)
 

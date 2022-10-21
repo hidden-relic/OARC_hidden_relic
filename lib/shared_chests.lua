@@ -255,8 +255,7 @@ function ConvertWoodenChestToSharedChestInput(player)
     local pos = FindClosestWoodenChestAndDestroy(player)
     if (pos) then
         SharedChestsSpawnInput(player, pos)
-        OarcMapFeaturePlayerCountChange(player, "special_chests",
-                                        "logistic-chest-storage", 1)
+        -- oarcmapfeaturePlayerCountChange(player, "special_chests", "logistic-chest-storage", 1)
         return true
     end
     return false
@@ -266,8 +265,7 @@ function ConvertWoodenChestToSharedChestOutput(player)
     local pos = FindClosestWoodenChestAndDestroy(player)
     if (pos) then
         SharedChestsSpawnOutput(player, pos)
-        OarcMapFeaturePlayerCountChange(player, "special_chests",
-                                        "logistic-chest-requester", 1)
+        -- oarcmapfeaturePlayerCountChange(player, "special_chests", "logistic-chest-requester", 1)
         return true
     end
     return false
@@ -305,8 +303,7 @@ function ConvertWoodenChestToShareEnergyInput(player)
             position = {x = pos.x + 1, y = pos.y}
         }) then
             SharedEnergySpawnInput(player, pos)
-            OarcMapFeaturePlayerCountChange(player, "special_chests",
-                                            "accumulator", 1)
+            -- oarcmapfeaturePlayerCountChange(player, "special_chests", "accumulator", 1)
             return true
         else
             player.print(
@@ -327,8 +324,7 @@ function ConvertWoodenChestToShareEnergyOutput(player)
             position = {x = pos.x + 1, y = pos.y}
         }) then
             SharedEnergySpawnOutput(player, pos)
-            OarcMapFeaturePlayerCountChange(player, "special_chests",
-                                            "electric-energy-interface", 1)
+            -- oarcmapfeaturePlayerCountChange(player, "special_chests", "electric-energy-interface", 1)
             return true
         else
             player.print(
@@ -380,23 +376,19 @@ function DestroyClosestSharedChestEntity(player)
             if (name == "electric-energy-interface") then
                 if (closest.electric_buffer_size ==
                     SHARED_ELEC_INPUT_BUFFER_SIZE) then
-                    OarcMapFeaturePlayerCountChange(player, "special_chests",
-                                                    "accumulator", -1)
+                    -- oarcmapfeaturePlayerCountChange(player, "special_chests", "accumulator", -1)
                 else
-                    OarcMapFeaturePlayerCountChange(player, "special_chests",
-                                                    "electric-energy-interface",
-                                                    -1)
+                    -- oarcmapfeaturePlayerCountChange(player, "special_chests", "electric-energy-interface", -1)
                 end
             elseif (name == "logistic-chest-storage") then
-                OarcMapFeaturePlayerCountChange(player, "special_chests",
-                                                "logistic-chest-storage", -1)
+                -- oarcmapfeaturePlayerCountChange(player, "special_chests", "logistic-chest-storage", -1)
             elseif (name == "logistic-chest-requester") then
-                OarcMapFeaturePlayerCountChange(player, "special_chests",
-                                                "logistic-chest-requester", -1)
+                -- oarcmapfeaturePlayerCountChange(player, "special_chests", "logistic-chest-requester", -1)
             end
 
             closest.destroy()
             player.print("Special entity removed!")
+            return true
         end
     else
         player.print("Special entity not found? Are you close enough? -- ERROR")

@@ -12,9 +12,13 @@ local Group = {}
 
 Group.pet_data = {
     ["small-biter"] = {cost = 1000, color = {121, 180, 222}},
-    ["medium-biter"] = {cost = 2500, color = {138, 106, 107}},
-    ["big-biter"] = {cost = 5000, color = {98, 92, 129}},
-    ["behemoth-biter"] = {cost = 10000, color = {94, 192, 136}}
+    ["medium-biter"] = {cost = 2000, color = {138, 106, 107}},
+    ["big-biter"] = {cost = 4000, color = {98, 92, 129}},
+    ["behemoth-biter"] = {cost = 10000, color = {94, 192, 136}},
+    ["small-spitter"] = {cost = 1500, color = {121, 180, 222}},
+    ["medium-spitter"] = {cost = 3000, color = {138, 106, 107}},
+    ["big-spitter"] = {cost = 6000, color = {98, 92, 129}},
+    ["behemoth-spitter"] = {cost = 12000, color = {94, 192, 136}}
 }
 
 function Group.new(player)

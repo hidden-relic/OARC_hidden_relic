@@ -31,6 +31,62 @@ function M.init()
     return markets
 end
 
+M.pet_table = {
+    ["small-biter"] = {cost = 1000, count = 1},
+    ["medium-biter"] = {cost = 2000, count = 1},
+    ["big-biter"] = {cost = 4000, count = 1},
+    ["behemoth-biter"] = {cost = 10000, count = 1},
+    ["small-spitter"] = {cost = 1500, count = 1},
+    ["medium-spitter"] = {cost = 3000, count = 1},
+    ["big-spitter"] = {cost = 6000, count = 1},
+    ["behemoth-spitter"] = {cost = 12000, count = 1}
+}
+M.pet_func_table = {
+    ["small-biter"] = function(player) group.add(player, "small-biter") return end,
+    ["medium-biter"] = function(player) group.add(player, "medium-biter") return end,
+    ["big-biter"] = function(player) group.add(player, "big-biter") return end,
+    ["behemoth-biter"] = function(player) group.add(player, "behemoth-biter") return end,
+    ["small-spitter"] = function(player) group.add(player, "small-spitter") return end,
+    ["medium-spitter"] = function(player) group.add(player, "medium-spitter") return end,
+    ["big-spitter"] = function(player) group.add(player, "big-spitter") return end,
+    ["behemoth-spitter"] = function(player) group.add(player, "behemoth-spitter") return end
+}
+
+M.shared_table = {
+    ["special_logistic-chest-storage"] = {cost = 2000},
+    ["special_logistic-chest-requester"] = {cost = 2000},
+    ["special_constant-combinator"] = {cost = 2000},
+    ["special_accumulator"] = {cost = 2000},
+    ["special_electric-energy-interface"] = {cost = 2000},
+    ["special_deconstruction-planner"] = {cost = 0}
+}
+M.shared_func_table = {
+    ["special_logistic-chest-storage"] = function(player) ConvertWoodenChestToSharedChestInput(player) return end,
+["special_logistic-chest-requester"] = function(player) ConvertWoodenChestToSharedChestOutput(player) return end,
+["special_constant-combinator"] = function(player) ConvertWoodenChestToSharedChestCombinators(player) return end,
+["special_accumulator"] = function(player) ConvertWoodenChestToShareEnergyInput(player) return end,
+["special_electric-energy-interface"] = function(player) ConvertWoodenChestToShareEnergyOutput(player) return end,
+["special_deconstruction-planner"] = function(player) DestroyClosestSharedChestEntity(player) return end
+}
+
+M.special_func_table = {
+    ["special_electric-furnace"] = function(player) RequestSpawnSpecialChunk(player, SpawnFurnaceChunk, "electric-furnace") return end,
+["special_oil-refinery"] = function(player) RequestSpawnSpecialChunk(player, SpawnOilRefineryChunk, "oil-refinery")return end,
+["special_assembling-machine-3"] = function(player) RequestSpawnSpecialChunk(player, SpawnAssemblyChunk, "assembling-machine-3") return end,
+["special_centrifuge"] = function(player) RequestSpawnSpecialChunk(player, SpawnCentrifugeChunk, "centrifuge") return end,
+["special_assembling-machine-1"] = function(player) SendPlayerToSpawn(player) return end,
+["special_offshore-pump"] = function(player) ConvertWoodenChestToWaterFill(player) return end
+}
+
+M.special_table = {
+    ["special_electric-furnace"] = {cost = 10000},
+    ["special_oil-refinery"] = {cost = 10000},
+    ["special_assembling-machine-3"] = {cost = 10000},
+    ["special_centrifuge"] = {cost = 10000},
+    ["special_assembling-machine-1"] = {cost = 10},
+    ["special_offshore-pump"] = {cost = 1000}
+}
+
 M.upgrade_cost_table = {
     ["sell-speed"] = 2,
     ["character-health"] = 0.5,
@@ -487,6 +543,8 @@ function M.create_market_gui(player)
 
     market.frame_flow = gui.get_frame_flow(player)
 
+    -- market main window
+
     market.market_frame = market.frame_flow.add {
         type = "frame",
         direction = "vertical",
@@ -496,25 +554,38 @@ function M.create_market_gui(player)
         type = "flow",
         direction = "vertical"
     }
-    market.items_frame = market.market_flow.add {
+
+    -- -- market info
+
+    market.item_label_left = market.market_flow.add {
+        type = "label",
+        caption = "Left click buys 1, Shift+Left click buys 100, Ctrl+Left click buys 1000"
+    }
+    market.item_label_right = market.market_flow.add {
+        type = "label",
+        caption = "Right click buys 10, Shift+Right click buys 50, Ctrl+Right click buys 500"
+    }
+    market.item_label_both = market.market_flow.add {
+        type = "label",
+        caption = "Using Ctrl+Shift is not supported and will act as a normal Left or Right click"
+    }
+
+    -- market container
+
+    market.container_flow = market.market_flow.add {
+        type = "frame",
+        direction = "horizontal"
+    }
+
+    -- market items (left side)
+
+    market.items_frame = market.container_flow.add {
         type = "frame",
         direction = "vertical"
     }
     market.items_flow = market.items_frame.add {
         type = "scroll-pane",
         direction = "vertical"
-    }
-    market.item_label_left = market.items_flow.add {
-        type = "label",
-        caption = "Left click buys 1, Shift+Left click buys 100, Ctrl+Left click buys 1000"
-    }
-    market.item_label_right = market.items_flow.add {
-        type = "label",
-        caption = "Right click buys 10, Shift+Right click buys 50, Ctrl+Right click buys 500"
-    }
-    market.item_label_both = market.items_flow.add {
-        type = "label",
-        caption = "Using Ctrl+Shift is not supported and will act as a normal Left or Right click"
     }
     market.item_table = market.items_flow.add {
         type = "table",
@@ -538,15 +609,32 @@ function M.create_market_gui(player)
                 }
         end
     end
-    market.upgrades_frame = market.market_flow.add {
+
+    -- market special (right side)
+
+    market.special_store_frame = market.container_flow.add {
         type = "frame",
-        direction = "vertical"
+        direction="vertical"
     }
-    market.upgrades_flow = market.upgrades_frame.add {
-        type = "scroll-pane",
+    market.special_store_flow = market.special_store_frame.add {
+        type = "flow",
         direction = "vertical"
     }
 
+    -- -- market upgrades
+
+    market.upgrades_frame = market.special_store_flow.add {
+        type = "frame",
+        direction = "horizontal"
+    }
+    market.upgrades_flow = market.upgrades_frame.add {
+        type = "flow",
+        direction = "vertical"
+    }
+    market.upgrades_label = market.upgrades_flow.add {
+        type = "label",
+        caption = "[color=orange]Upgrades[/color]"
+    }
     market.upgrades_table = market.upgrades_flow.add {
         type = "table",
         column_count = 20
@@ -560,6 +648,96 @@ function M.create_market_gui(player)
             number = upgrade.lvl,
             tooltip = upgrade.name .. "\n[item=coin] " ..
                 tools.add_commas(upgrade.cost) .. "\n" .. upgrade.tooltip
+        }
+    end
+
+    -- -- market followers
+
+    market.followers_frame = market.special_store_flow.add {
+        type = "frame",
+        direction = "horizontal"
+    }
+    market.followers_flow = market.followers_frame.add {
+        type = "flow",
+        direction = "vertical"
+    }
+    market.followers_label = market.followers_flow.add {
+        type = "label",
+        caption = "[color=orange]Pets[/color]"
+    }
+    market.followers_table = market.followers_flow.add {
+        type = "table",
+        column_count = 8
+    }
+    market.follower_buttons = {}
+    for name, pet in pairs(M.pet_table) do
+        market.follower_buttons[name] = market.followers_table.add {
+            name = name,
+            type = "sprite-button",
+            sprite = "entity/"..name,
+            number = 0,
+            tooltip = "[img=entity/" .. name .. "]\n[item=coin] " ..
+                tools.add_commas(pet.cost)
+        }
+    end
+
+    -- -- market shared
+
+    market.shared_frame = market.special_store_flow.add {
+        type = "frame",
+        direction = "horizontal"
+    }
+    market.shared_flow = market.shared_frame.add {
+        type = "flow",
+        direction = "vertical"
+    }
+    market.shared_label = market.shared_flow.add {
+        type = "label",
+        caption = "[color=orange]Shared[/color]"
+    }
+    market.shared_table = market.shared_flow.add {
+        type = "table",
+        column_count = 6
+    }
+    market.shared_buttons = {}
+    for name, shared in pairs(M.shared_table) do
+        market.shared_buttons[name] = market.shared_table.add {
+            name = name,
+            type = "sprite-button",
+            sprite = "item/"..string.gsub(name, "special_", ""),
+            number = shared.cost,
+            tooltip = "[img=item/" .. string.gsub(name, "special_", "") .. "]\n[item=coin] " ..
+                tools.add_commas(shared.cost)
+        }
+    end
+
+    -- -- market special
+
+    market.special_frame = market.special_store_flow.add {
+        type = "frame",
+        direction = "horizontal"
+    }
+    market.special_flow = market.special_frame.add {
+        type = "flow",
+        direction = "vertical"
+    }
+    market.special_label = market.special_flow.add {
+        type = "label",
+        caption = "[color=orange]Special[/color]"
+    }
+    market.special_table = market.special_flow.add {
+        type = "table",
+        column_count = 6
+    }
+    market.special_buttons = {}
+    for name, special in pairs(M.special_table) do
+        market.special_buttons[name] = market.special_table.add {
+            name = name,
+            type = "sprite-button",
+            sprite = "item/"..string.gsub(name, "special_", ""),
+            number = special.cost,
+            tooltip = "[img=item/" .. name .. "]\n[item=coin] " ..
+                tools.add_commas(special.cost)
         }
     end
 end
@@ -738,6 +916,7 @@ end
 
 function M.toggle_market_gui(player)
     local player = player
+    if not player.character or not player.character.valid then return end
     local market = global.markets[player.name]
     M.update(player)
     if market.market_frame.visible == true then
@@ -767,6 +946,7 @@ end
 
 function M.toggle_stats_gui(player)
     local player = player
+    if not player.character or not player.character.valid then return end
     local market = global.markets[player.name]
     M.update(player)
     if market.stats_frame.visible == true then
@@ -797,6 +977,7 @@ end
 function M.update(player)
     local next = next
     local player = player
+    if not player.character or not player.character.valid then return end
     local market = global.markets[player.name]
     local balance = math.floor(market.balance)
     local stats = market.stats
@@ -940,7 +1121,7 @@ function M.check_sell_chest(player)
     local player = player
     local market = global.markets[player.name]
     get_chest_inv(market.sell_chest).sort_and_merge()
-    M.check_sac(player)
+    -- M.check_sac(player)
     M.check_for_sale(player)
 end
 
