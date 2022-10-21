@@ -147,10 +147,12 @@ function Group.on_tick()
             if not game.players[index] then return end
             Group.get_count(game.players[index])
             if global.groups[game.players[index].name].pet_group.members then
+                if game.players[index].character and game.players[index].character.valid then
                 global.groups[game.players[index].name].pet_group.set_command{
                     type = defines.command.go_to_location,
                     destination_entity = game.players[index].character
                 }
+            end
             end
         end
     end
