@@ -87,7 +87,7 @@ M.special_func_table = {
 ["special_assembling-machine-1"] = function(player) return SendPlayerToSpawn(player) end,
 ["special_offshore-pump"] = function(player)
     if ConvertWoodenChestToWaterFill(player) then
-        global.markets[player.name].stats.waterfill_cost = global.markets[player.name].stats.waterfill_cost * 1.1
+        global.markets[player.name].stats.waterfill_cost = math.floor(global.markets[player.name].stats.waterfill_cost * 1.01)
         return true
     end
 end
