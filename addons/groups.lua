@@ -73,9 +73,9 @@ function Group.get_count(player)
             if entry.valid then
                 group.pet_group.add_member(entry)
                 group.total = group.total + 1
+            else
+                entry = nil
             end
-        else
-            entry = nil
         end
     end
     return group.total

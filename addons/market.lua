@@ -63,41 +63,42 @@ M.shared_table = {
 }
 
 M.shared_func_table = {
-    ["special_logistic-chest-storage"] = function(player) ConvertWoodenChestToSharedChestInput(player) return end,
-["special_logistic-chest-requester"] = function(player) ConvertWoodenChestToSharedChestOutput(player) return end,
-["special_constant-combinator"] = function(player) ConvertWoodenChestToSharedChestCombinators(player) return end,
-["special_accumulator"] = function(player) ConvertWoodenChestToShareEnergyInput(player) return end,
-["special_electric-energy-interface"] = function(player) ConvertWoodenChestToShareEnergyOutput(player) return end,
-["special_deconstruction-planner"] = function(player) DestroyClosestSharedChestEntity(player) return end
+    ["special_logistic-chest-storage"] = function(player) return ConvertWoodenChestToSharedChestInput(player) end,
+["special_logistic-chest-requester"] = function(player) return ConvertWoodenChestToSharedChestOutput(player) end,
+["special_constant-combinator"] = function(player) return ConvertWoodenChestToSharedChestCombinators(player) end,
+["special_accumulator"] = function(player) return ConvertWoodenChestToShareEnergyInput(player) end,
+["special_electric-energy-interface"] = function(player) return ConvertWoodenChestToShareEnergyOutput(player) end,
+["special_deconstruction-planner"] = function(player) return DestroyClosestSharedChestEntity(player) end
 }
 
 M.shared_cost_table = {
-    ["special_logistic-chest-storage"] = 1.1
-["special_logistic-chest-requester"] = 1.1
-["special_constant-combinator"] = 1.1
-["special_accumulator"] = 1.1
-["special_electric-energy-interface"] = 1.1
+    ["special_logistic-chest-storage"] = 1.1,
+["special_logistic-chest-requester"] = 1.1,
+["special_constant-combinator"] = 1.1,
+["special_accumulator"] = 1.1,
+["special_electric-energy-interface"] = 1.1,
 ["special_deconstruction-planner"] = 1.1
 }
 M.special_func_table = {
-    ["special_electric-furnace"] = function(player) RequestSpawnSpecialChunk(player, SpawnFurnaceChunk, "electric-furnace") return end,
-["special_oil-refinery"] = function(player) RequestSpawnSpecialChunk(player, SpawnOilRefineryChunk, "oil-refinery")return end,
-["special_assembling-machine-3"] = function(player) RequestSpawnSpecialChunk(player, SpawnAssemblyChunk, "assembling-machine-3") return end,
-["special_centrifuge"] = function(player) RequestSpawnSpecialChunk(player, SpawnCentrifugeChunk, "centrifuge") return end,
-["special_assembling-machine-1"] = function(player) SendPlayerToSpawn(player) return end,
+    ["special_electric-furnace"] = function(player) return RequestSpawnSpecialChunk(player, SpawnFurnaceChunk, "electric-furnace") end,
+["special_oil-refinery"] = function(player) return RequestSpawnSpecialChunk(player, SpawnOilRefineryChunk, "oil-refinery") end,
+["special_assembling-machine-3"] = function(player) return RequestSpawnSpecialChunk(player, SpawnAssemblyChunk, "assembling-machine-3") end,
+["special_centrifuge"] = function(player) return RequestSpawnSpecialChunk(player, SpawnCentrifugeChunk, "centrifuge") end,
+["special_assembling-machine-1"] = function(player) return SendPlayerToSpawn(player) end,
 ["special_offshore-pump"] = function(player)
-    ConvertWoodenChestToWaterFill(player)
-    global.markets[player.name].stats.waterfill_cost = global.markets[player.name].stats.waterfill_cost * 1.1
-    return
+    if ConvertWoodenChestToWaterFill(player) then
+        global.markets[player.name].stats.waterfill_cost = global.markets[player.name].stats.waterfill_cost * 1.1
+        return true
+    end
 end
 }
 
 M.special_cost_table = {
-    ["special_electric-furnace"] = 1.1
-["special_oil-refinery"] = 1.1
-["special_assembling-machine-3"] = 1.1
-["special_centrifuge"] = 1.1
-["special_assembling-machine-1"] = 1.1
+    ["special_electric-furnace"] = 1.1,
+["special_oil-refinery"] = 1.1,
+["special_assembling-machine-3"] = 1.1,
+["special_centrifuge"] = 1.1,
+["special_assembling-machine-1"] = 1.1,
 ["special_offshore-pump"] = 1.1
 }
 

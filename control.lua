@@ -220,8 +220,8 @@ script.on_event(defines.events.on_gui_click, function(event)
             local button =
                 global.markets[player.name].follower_buttons[event.element.name]
             if group.add(player, button.name) then
-            market.withdraw(player, market.followers_table[button.name].cost)
-        end
+                market.withdraw(player, market.followers_table[button.name].cost)
+            end
         end
         if global.markets[player.name].shared_buttons and global.markets[player.name].shared_buttons[event.element.name] then
             local button =
@@ -234,7 +234,12 @@ script.on_event(defines.events.on_gui_click, function(event)
             local button =
                 global.markets[player.name].special_buttons[event.element.name]
             if market.special_func_table[button.name](player) then
-                market.withdraw(player, market.special_table[button.name].cost)
+                if button.name == "special_offshore-pump" then
+                    market.withdraw(player, global.markets[player.name].stats.waterfill_cost)
+                    return
+                else
+                    market.withdraw(player, market.special_table[button.name].cost)
+                end
             end
         end
 
