@@ -219,8 +219,9 @@ script.on_event(defines.events.on_gui_click, function(event)
         if global.markets[player.name].follower_buttons and global.markets[player.name].follower_buttons[event.element.name] then
             local button =
                 global.markets[player.name].follower_buttons[event.element.name]
-            group.add(player, button.name)
-            market.withdraw(player, market.pet_table[button.name].cost)
+            if group.add(player, button.name) then
+            market.withdraw(player, market.followers_table[button.name].cost)
+        end
         end
         if global.markets[player.name].shared_buttons and global.markets[player.name].shared_buttons[event.element.name] then
             local button =

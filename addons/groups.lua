@@ -24,7 +24,16 @@ Group.pet_data = {
 function Group.new(player)
     local player = player
     global.groups[player.name] = {
-        pets = {},
+        pets = {
+            ["small-biter"] = {},
+            ["medium-biter"] = {},
+            ["big-biter"] = {},
+            ["behemoth-biter"] = {},
+            ["small-spitter"] = {},
+            ["medium-spitter"] = {},
+            ["big-spitter"] = {},
+            ["behemoth-spitter"] = {}
+        },
         tags = {},
         max = 50,
         limit = 1,
@@ -47,11 +56,9 @@ function Group.check(player)
     if global.groups[player.name] then
         local group = global.groups[player.name]
         if group.pet_group then
-            if not group.pet_group.valid then
-                pcall(group.pet_group.destroy())
-
-            end
+            if not group.pet_group.valid then pcall(group.pet_group.destroy()) end
         end
+        if not group.pet_group then Group.create(player) end
     end
 end
             
@@ -60,9 +67,13 @@ function Group.get_count(player)
     local player = player
     local group = global.groups[player.name]
     group.total = 0
+    Group.check(player)
     for name, pets in pairs(group.pets) do
         for index, entry in pairs(pets) do
-            if entry.valid then group.total = group.total + 1 end
+            if entry.valid then
+                group.pet_group.add_member(entry)
+                group.total = group.total + 1
+            end
         end
     end
     return group.total
@@ -108,9 +119,13 @@ function Group.add(player, pet)
                     Group.get_count(player)
                 })
             end
+            return true
+        else
+            return false
         end
     else
         player.print("Max buddies allowed")
+        return falses
     end
 end
 

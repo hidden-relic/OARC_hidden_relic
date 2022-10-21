@@ -31,7 +31,7 @@ function M.init()
     return markets
 end
 
-M.pet_table = {
+M.followers_table = {
     ["small-biter"] = {cost = 1000, count = 1},
     ["medium-biter"] = {cost = 2000, count = 1},
     ["big-biter"] = {cost = 4000, count = 1},
@@ -41,7 +41,7 @@ M.pet_table = {
     ["big-spitter"] = {cost = 6000, count = 1},
     ["behemoth-spitter"] = {cost = 12000, count = 1}
 }
-M.pet_func_table = {
+M.followers_func_table = {
     ["small-biter"] = function(player) group.add(player, "small-biter") return end,
     ["medium-biter"] = function(player) group.add(player, "medium-biter") return end,
     ["big-biter"] = function(player) group.add(player, "big-biter") return end,
@@ -670,7 +670,7 @@ function M.create_market_gui(player)
         column_count = 8
     }
     market.follower_buttons = {}
-    for name, pet in pairs(M.pet_table) do
+    for name, pet in pairs(M.followers_table) do
         market.follower_buttons[name] = market.followers_table.add {
             name = name,
             type = "sprite-button",
@@ -1091,37 +1091,37 @@ function M.update(player)
                              market.upgrades[index].tooltip
     end
     for index, button in pairs(market.follower_buttons) do
-        if market.balance < market.followers_table[index].cost then
+        if market.balance < M.followers_table[index].cost then
             button.enabled = false
         else
             button.enabled = true
         end
-        button.number = #global.groups[player.name].pets[index]
-        button.tooltip = "[entity/" .. index .. "]\n[item=coin] " ..
+        button.number = #global.groups[player.name].pets[index] or 0
+        button.tooltip = "[entity=" .. index .. "]\n[item=coin] " ..
                              tools.add_commas(
-                                 math.ceil(market.followers_table[index].cost))
+                                 math.ceil(M.followers_table[index].cost))
     end
     for index, button in pairs(market.shared_buttons) do
-        if market.balance < market.shared_table[index].cost then
+        if market.balance < M.shared_table[index].cost then
             button.enabled = false
         else
             button.enabled = true
         end
-        button.number = market.shared_table[index].cost
-        button.tooltip = "[entity/" .. index .. "]\n[item=coin] " ..
+        button.number = M.shared_table[index].cost
+        button.tooltip = "[img=item/" .. string.gsub(index, "special_", "") .. "]\n[item=coin] " ..
                              tools.add_commas(
-                                 math.ceil(market.shared_table[index].cost))
+                                 math.ceil(M.shared_table[index].cost))
     end
     for index, button in pairs(market.special_buttons) do
-        if market.balance < market.special_table[index].cost then
+        if market.balance < M.special_table[index].cost then
             button.enabled = false
         else
             button.enabled = true
         end
-        button.number = market.special_table[index].cost
-        button.tooltip = "[entity/" .. index .. "]\n[item=coin] " ..
+        button.number = M.special_table[index].cost
+        button.tooltip = "[img=item/" .. string.gsub(index, "special_", "") .. "]\n[item=coin] " ..
                              tools.add_commas(
-                                 math.ceil(market.special_table[index].cost))
+                                 math.ceil(M.special_table[index].cost))
     end
 end
 
