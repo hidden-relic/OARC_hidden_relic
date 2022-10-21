@@ -1121,7 +1121,7 @@ function M.update(player)
         else
             button.enabled = true
         end
-        button.number = #global.groups[player.name].pets[index] or 0
+        button.number = global.groups[player.name].counts[index] or 0
         button.tooltip = "[entity=" .. index .. "]\n[item=coin] " ..
                              tools.add_commas(
                                  math.ceil(M.followers_table[index].cost))

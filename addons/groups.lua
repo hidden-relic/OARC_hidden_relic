@@ -56,9 +56,8 @@ function Group.check(player)
     if global.groups[player.name] then
         local group = global.groups[player.name]
         if group.pet_group then
-            if not group.pet_group.valid then pcall(group.pet_group.destroy()) end
+            if not group.pet_group or not group.pet_group.valid then Group.create(player) end
         end
-        if not group.pet_group then Group.create(player) end
     end
 end
             
@@ -67,12 +66,23 @@ function Group.get_count(player)
     local player = player
     local group = global.groups[player.name]
     group.total = 0
+    group.counts = {
+        ["small-biter"] = 0,
+        ["medium-biter"] = 0,
+        ["big-biter"] = 0,
+        ["behemoth-biter"] = 0,
+        ["small-spitter"] = 0,
+        ["medium-spitter"] = 0,
+        ["big-spitter"] = 0,
+        ["behemoth-spitter"] = 0
+    }
     Group.check(player)
     for name, pets in pairs(group.pets) do
         for index, entry in pairs(pets) do
             if entry.valid then
                 group.pet_group.add_member(entry)
                 group.total = group.total + 1
+                group.counts[entry.name] = group.counts[entry.name] + 1
             else
                 entry = nil
             end
@@ -134,16 +144,12 @@ end
 function Group.on_tick()
     if (game.tick % 60 == 0) and global.groups then
         for index, entry in pairs(global.groups) do
-            if not entry then return end
-            if not entry.pet_group then return end
-            if not entry.pet_group.valid then return end
             if not game.players[index] then return end
-            if entry.pet_group.members then
-                entry.pet_group.set_command{
-                    type = defines.command.attack_area,
-                    destination = game.players[index].position,
-                    radius = 16,
-                    use_group_distraction=false
+            Group.get_count(game.players[index])
+            if global.groups[game.players[index].name].pet_group.members then
+                global.groups[game.players[index].name].pet_group.set_command{
+                    type = defines.command.go_to_location,
+                    destination_entity = game.players[index].character
                 }
             end
         end
