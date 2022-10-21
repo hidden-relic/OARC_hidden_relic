@@ -142,7 +142,7 @@ function Group.add(player, pet)
 end
 
 function Group.on_tick()
-    if (game.tick % 60 == 0) and global.groups then
+    if (game.tick % 300 == 0) and global.groups then
         for index, entry in pairs(global.groups) do
             if not game.players[index] then return end
             Group.get_count(game.players[index])
