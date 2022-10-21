@@ -41,6 +41,7 @@ M.followers_table = {
     ["big-spitter"] = {cost = 6000, count = 1},
     ["behemoth-spitter"] = {cost = 12000, count = 1}
 }
+
 M.followers_func_table = {
     ["small-biter"] = function(player) group.add(player, "small-biter") return end,
     ["medium-biter"] = function(player) group.add(player, "medium-biter") return end,
@@ -60,6 +61,7 @@ M.shared_table = {
     ["special_electric-energy-interface"] = {cost = 2000},
     ["special_deconstruction-planner"] = {cost = 0}
 }
+
 M.shared_func_table = {
     ["special_logistic-chest-storage"] = function(player) ConvertWoodenChestToSharedChestInput(player) return end,
 ["special_logistic-chest-requester"] = function(player) ConvertWoodenChestToSharedChestOutput(player) return end,
@@ -69,13 +71,34 @@ M.shared_func_table = {
 ["special_deconstruction-planner"] = function(player) DestroyClosestSharedChestEntity(player) return end
 }
 
+M.shared_cost_table = {
+    ["special_logistic-chest-storage"] = 1.1
+["special_logistic-chest-requester"] = 1.1
+["special_constant-combinator"] = 1.1
+["special_accumulator"] = 1.1
+["special_electric-energy-interface"] = 1.1
+["special_deconstruction-planner"] = 1.1
+}
 M.special_func_table = {
     ["special_electric-furnace"] = function(player) RequestSpawnSpecialChunk(player, SpawnFurnaceChunk, "electric-furnace") return end,
 ["special_oil-refinery"] = function(player) RequestSpawnSpecialChunk(player, SpawnOilRefineryChunk, "oil-refinery")return end,
 ["special_assembling-machine-3"] = function(player) RequestSpawnSpecialChunk(player, SpawnAssemblyChunk, "assembling-machine-3") return end,
 ["special_centrifuge"] = function(player) RequestSpawnSpecialChunk(player, SpawnCentrifugeChunk, "centrifuge") return end,
 ["special_assembling-machine-1"] = function(player) SendPlayerToSpawn(player) return end,
-["special_offshore-pump"] = function(player) ConvertWoodenChestToWaterFill(player) return end
+["special_offshore-pump"] = function(player)
+    ConvertWoodenChestToWaterFill(player)
+    global.markets[player.name].stats.waterfill_cost = global.markets[player.name].stats.waterfill_cost * 1.1
+    return
+end
+}
+
+M.special_cost_table = {
+    ["special_electric-furnace"] = 1.1
+["special_oil-refinery"] = 1.1
+["special_assembling-machine-3"] = 1.1
+["special_centrifuge"] = 1.1
+["special_assembling-machine-1"] = 1.1
+["special_offshore-pump"] = 1.1
 }
 
 M.special_table = {
@@ -187,7 +210,8 @@ function M.new(player)
             items_sold = {},
             item_most_sold_total = "",
             item_most_sold_coin = "",
-            history = {}
+            history = {},
+            waterfill_cost = 1000
         }
     }
     local market = global.markets[player.name]
@@ -1113,15 +1137,27 @@ function M.update(player)
                                  math.ceil(M.shared_table[index].cost))
     end
     for index, button in pairs(market.special_buttons) do
-        if market.balance < M.special_table[index].cost then
-            button.enabled = false
-        else
-            button.enabled = true
-        end
-        button.number = M.special_table[index].cost
-        button.tooltip = "[img=item/" .. string.gsub(index, "special_", "") .. "]\n[item=coin] " ..
+        if index == "special_offshore-pump" then
+            if market.balance < market.stats.waterfill_cost then
+                button.enabled = false
+            else
+                button.enabled = true
+            end
+            button.number = market.stats.waterfill_cost
+            button.tooltip = "[img=item/" .. string.gsub(index, "special_", "") .. "]\n[item=coin] " ..
                              tools.add_commas(
-                                 math.ceil(M.special_table[index].cost))
+                                 math.ceil(market.stats.waterfill_cost))
+        else
+            if market.balance < M.special_table[index].cost then
+                button.enabled = false
+            else
+                button.enabled = true
+            end
+            button.number = M.special_table[index].cost
+            button.tooltip = "[img=item/" .. string.gsub(index, "special_", "") .. "]\n[item=coin] " ..
+                                 tools.add_commas(
+                                     math.ceil(M.special_table[index].cost))
+        end
     end
 end
 
