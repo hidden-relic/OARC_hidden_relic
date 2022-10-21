@@ -74,6 +74,8 @@ function Group.get_count(player)
                 group.pet_group.add_member(entry)
                 group.total = group.total + 1
             end
+        else
+            entry = nil
         end
     end
     return group.total
