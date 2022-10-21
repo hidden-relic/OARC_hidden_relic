@@ -102,8 +102,8 @@ OARC_STORE_MAP_FEATURES = {
         ["special_assembling-machine-1"] = {initial_cost = 10, text = "Teleport home."},
         ["special_offshore-pump"] = {
             initial_cost = 1000,
-            additional_cost = 10,
-            multiplier_cost = 1.8,
+            additional_cost = 1,
+            multiplier_cost = 2,
             text = "Converts the closest empty wooden chest into a water tile!"
         }
     },
