@@ -38,7 +38,17 @@ function Group.new(player)
         max = 50,
         limit = 1,
         total = 0,
-        pet_group = {}
+        pet_group = {},
+        counts = {
+            ["small-biter"] = 0,
+            ["medium-biter"] = 0,
+            ["big-biter"] = 0,
+            ["behemoth-biter"] = 0,
+            ["small-spitter"] = 0,
+            ["medium-spitter"] = 0,
+            ["big-spitter"] = 0,
+            ["behemoth-spitter"] = 0
+        }
     }
 end
 
