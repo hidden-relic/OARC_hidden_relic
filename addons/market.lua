@@ -3,6 +3,7 @@ local tools = require("addons.tools")
 local prodscore = require('production-score')
 local flib_table = require('flib.table')
 local group = require("addons.groups")
+local flying_tag = require("flying_tags")
 
 local M = {}
 
@@ -536,6 +537,13 @@ function M.create_sell_chest(player, position)
         position = {x = position.x + 6, y = position.y},
         force = player.force
     }
+    local new_tag = {
+        entity = market.sell_chest,
+        offset = {x = 0, y = 1},
+        text = "SELL Chest",
+        color = {r=0, g=1, b=1}
+    }
+    flying_tag.create(new_tag)
     tools.protect_entity(market.sell_chest)
 end
 

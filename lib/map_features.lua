@@ -5,6 +5,7 @@
 require("lib/oarc_utils")
 local tools = require("addons/tools")
 local market = require("addons.market")
+local flying_tag = require("flying_tags")
 
 -- Used to generate placement of buildings.
 MAGIC_BUILDING_MIN_DISTANCE = 40
@@ -282,6 +283,13 @@ function SpawnEnemyTurret(pos)
         position = pos,
         force = "enemy"
     }
+    local new_tag = {
+        entity = turret,
+        offset = {x = 0, y = 1},
+        text = {"", "Enemy ", turret.localised_name},
+        color = {r=1, g=0, b=0}
+    }
+    flying_tag.create(new_tag)
     local turret_inv = turret.get_inventory(defines.inventory.turret_ammo)
     turret_inv.insert({name = "uranium-rounds-magazine", count = 200})
 
@@ -349,6 +357,13 @@ function spawnSpecialChunkInputElec(center_pos)
         position = center_pos,
         force = "neutral"
     }
+    local new_tag = {
+        entity = inputElec,
+        offset = {x = 0, y = 1},
+        text = "GIVE Shared Power",
+        color = {r=0, g=1, b=1}
+    }
+    flying_tag.create(new_tag)
     inputElec.destructible = false
     inputElec.minable = false
     inputElec.operable = false
@@ -553,6 +568,13 @@ function SpawnMagicBuilding(entity_name, position)
         force = "neutral",
         direction = direction
     }
+    local new_tag = {
+        entity = magic_building,
+        offset = {x = 0, y = 1},
+        text = {"", "Magic ", magic_building.localised_name},
+        color = {r=1, g=0, b=1}
+    }
+    flying_tag.create(new_tag)
     magic_building.destructible = false
     magic_building.minable = false
     magic_building.operable = true
