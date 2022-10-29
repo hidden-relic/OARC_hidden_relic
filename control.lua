@@ -411,6 +411,11 @@ end)
 script.on_event(defines.events.on_built_entity, function(event)
     if global.ocfg.enable_autofill then Autofill(event) end
 
+    local player = game.players[event.player_index]
+    if event.created_entity.name == "gun-turret" and global.markets.autofill[player.name] then
+        table.insert{global.markets.autofill[player.name], event.created_entity}
+    end
+
     if global.ocfg.enable_regrowth then
         if (event.created_entity.surface.name ~= GAME_SURFACE_NAME) then
             return
@@ -577,6 +582,10 @@ script.on_event(defines.events.on_entity_damaged, function(event)
     local health = math.floor(entity.health)
     local health_percentage = entity.get_health_ratio()
     local text_color = {r = 1 - health_percentage, g = health_percentage, b = 0}
+    if cause and cause.name == "gun-turret" and cause.last_user and global.markets.special_turrets[cause.last_user.name] then
+        player = cause.last_user
+        player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + damage * 0.00001)
+    end
 
     -- Gets the location of the text
     local size = entity.get_radius()

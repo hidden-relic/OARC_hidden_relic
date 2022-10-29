@@ -49,8 +49,8 @@ function SharedEnergySpawnInput(player, pos)
     local new_tag = {
         entity = inputElec,
         offset = {x = 0, y = 1},
-        text = "USE shared power",
-        color = {r=0, g=1, b=1}
+        text = "->G",
+        color = {r=0, g=1, b=1, a=0.8}
     }
     flying_tag.create(new_tag)
     inputElec.destructible = false
@@ -99,8 +99,8 @@ function SharedEnergySpawnOutput(player, pos)
     local new_tag = {
         entity = outputElec,
         offset = {x = 0, y = 1},
-        text = "GIVE Shared Power",
-        color = {r=0, g=1, b=1}
+        text = "G->",
+        color = {r=0, g=1, b=1, a=0.8}
     }
     flying_tag.create(new_tag)
     outputElec.destructible = false
@@ -421,8 +421,8 @@ function SharedChestsSpawnInput(player, pos)
     local new_tag = {
         entity = inputChest,
         offset = {x = 0, y = 1},
-        text = "GIVE Shared Items",
-        color = {r=0, g=1, b=1}
+        text = "->G",
+        color = {r=0, g=1, b=1, a=0.8}
     }
     flying_tag.create(new_tag)
     inputChest.destructible = false
@@ -452,8 +452,8 @@ function SharedChestsSpawnOutput(player, pos, enable_example)
     local new_tag = {
         entity = outputChest,
         offset = {x = 0, y = 1},
-        text = "REQUEST Shared Items",
-        color = {r=0, g=1, b=1}
+        text = "G->",
+        color = {r=0, g=1, b=1, a=0.8}
     }
     flying_tag.create(new_tag)
     outputChest.destructible = false

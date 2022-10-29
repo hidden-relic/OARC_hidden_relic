@@ -775,7 +775,7 @@ end)
 commands.add_command("tp", "teleport", function(command)
     local player = game.players[command.player_index]
     if not player.admin then
-        tools.error("You are not admin my friend")
+        tools.error(player, "You are not admin my friend")
         return
     end
     local target_pos = command.parameter

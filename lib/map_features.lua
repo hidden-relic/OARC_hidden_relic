@@ -361,7 +361,7 @@ function spawnSpecialChunkInputElec(center_pos)
         entity = inputElec,
         offset = {x = 0, y = 1},
         text = "GIVE Shared Power",
-        color = {r=0, g=1, b=1}
+        color = {r=0, g=1, b=1, a=0.5}
     }
     flying_tag.create(new_tag)
     inputElec.destructible = false
