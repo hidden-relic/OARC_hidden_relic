@@ -133,8 +133,6 @@ script.on_init(function(event)
 
     -- ###### FAGC ######
 
-    -- ###### FAGC ######
-
     -- clear the logging file every restart to keep it minimal size
     game.write_file("fagc-actions.txt", "", false, 0)
 
@@ -169,15 +167,10 @@ script.on_event(defines.events.on_rocket_launched,
 -- Chunk Generation
 ----------------------------------------
 script.on_event(defines.events.on_chunk_generated, function(event)
-
     if (event.surface.name ~= GAME_SURFACE_NAME) then return end
-
     if global.ocfg.enable_regrowth then RegrowthChunkGenerate(event) end
-
     if global.ocfg.enable_undecorator then UndecorateOnChunkGenerate(event) end
-
     SeparateSpawnsGenerateChunk(event)
-
     CreateHoldingPen(event.surface, event.area)
 end)
 
@@ -579,9 +572,9 @@ script.on_event(defines.events.on_entity_damaged, function(event)
     local health = math.floor(entity.health)
     local health_percentage = entity.get_health_ratio()
     local text_color = {r = 1 - health_percentage, g = health_percentage, b = 0}
-    if cause and cause.name == "gun-turret" and cause.last_user and global.markets.special_turrets[cause.last_user.name] then
+    if cause and cause.name == "gun-turret" and cause.last_user and global.markets.autolvl_turrets[cause.last_user.name] then
         player = cause.last_user
-        player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + damage * 0.00001)
+        player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + damage * 0.0000001)
     end
 
     -- Gets the location of the text
