@@ -1212,7 +1212,7 @@ function CoinsFromEnemiesOnPostEntityDied(event)
             elseif event.cause.type == "car" or event.cause.type == "spider-vehicle" then
                 if not event.cause.get_driver() then return end
                 DropCoins(coin_chance, event.cause.get_driver().player)
-            elseif event.cause.name == "gun-turret" and event.cause.last_user and global.markets.autolvl_turrets[event.cause.last_user.name] then
+            elseif event.cause.name == "gun-turret" and event.cause.last_user and global.markets.coin_turrets[event.cause.last_user.name] then
                 DropCoins(coin_chance, event.cause.last_user)
             elseif event.cause.type == "combat-robot" then
                 if event.cause.combat_robot_owner and event.cause.combat_robot_owner.player then
