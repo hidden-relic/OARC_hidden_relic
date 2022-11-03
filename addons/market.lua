@@ -115,9 +115,10 @@ M.special_table = {
 M.upgrade_cost_table = {
     ["sell-speed"] = 2,
     ["character-health"] = 0.5,
-    ["ammo-damage"] = 0.2,
-    ["turret-attack"] = 0.2,
-    ["gun-speed"] = 0.2,
+    ["gun"] = 0.2,
+    ["tank-flame"] = 0.2,
+    ["rocket"] = 0.2,
+    ["laser"] = 0.2,
     ["mining-drill-productivity-bonus"] = 0.2,
     ["maximum-following-robot-count"] = 0.2,
     ["group-limit"] = 0.25,
@@ -129,34 +130,29 @@ M.upgrade_cost_table = {
 M.upgrade_func_table = {
     ["sell-speed"] = function(player) return end,
     ["character-health"] = function(player)
-        local upgrades = global.markets[player.name].upgrades
         player.character_health_bonus = player.character_health_bonus + 25
     end,
-    ["ammo-damage"] = function(player)
-        local upgrades = global.markets[player.name].upgrades
-        for _, effect in pairs(upgrades["ammo-damage"].t) do
-            player.force.set_ammo_damage_modifier(effect.ammo_category, player.force.get_ammo_damage_modifier(effect.ammo_category)+effect.modifier)
-        end
+    ["gun"] = function(player)
+        player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet")+0.1)
+        player.force.set_turret_attack_modifier("gun-turret", player.force.get_turret_attack_modifier("gun-turret")+0.1)
+        player.force.set_gun_speed_modifier("bullet", player.force.get_gun_speed_modifier("bullet")+0.01)
     end,
-    ["turret-attack"] = function(player)
-        local upgrades = global.markets[player.name].upgrades
-        for _, effect in pairs(upgrades["turret-attack"].t) do
-            player.force.set_turret_attack_modifier(effect.turret_id,
-                player.force
-                .get_turret_attack_modifier(
-                    effect.turret_id) +
-                effect.modifier)
-        end
+    ["tank-flame"] = function(player)
+        player.force.set_ammo_damage_modifier("flamethrower", player.force.get_ammo_damage_modifier("flamethrower")+0.1)
+        player.force.set_ammo_damage_modifier("cannon-shell", player.force.get_ammo_damage_modifier("cannon-shell")+0.1)
+        player.force.set_turret_attack_modifier("flamethrower-turret", player.force.get_turret_attack_modifier("flamethrower-turret")+0.1)
+        player.force.set_gun_speed_modifier("cannon-shell", player.force.get_gun_speed_modifier("cannon-shell")+0.01)
     end,
-    ["gun-speed"] = function(player)
-        local upgrades = global.markets[player.name].upgrades
-        for _, effect in pairs(upgrades["gun-speed"].t) do
-            player.force.set_gun_speed_modifier(effect.ammo_category,
-                player.force
-                .get_gun_speed_modifier(
-                    effect.ammo_category) +
-                effect.modifier)
-        end
+    ["rocket"] = function(player)
+        player.force.set_ammo_damage_modifier("rocket", player.force.get_ammo_damage_modifier("rocket")+0.1)
+        player.force.set_gun_speed_modifier("rocket", player.force.get_gun_speed_modifier("rocket")+0.01)
+    end,
+    ["laser"] = function(player)
+        player.force.set_ammo_damage_modifier("laser", player.force.get_ammo_damage_modifier("laser")+0.1)
+        player.force.set_ammo_damage_modifier("electric", player.force.get_ammo_damage_modifier("electric")+0.1)
+        player.force.set_ammo_damage_modifier("beam", player.force.get_ammo_damage_modifier("beam")+0.1)
+        player.force.set_turret_attack_modifier("laser-turret", player.force.get_turret_attack_modifier("laser-turret")+0.1)
+        player.force.set_gun_speed_modifier("laser", player.force.get_gun_speed_modifier("laser")+0.01)
     end,
     ["mining-drill-productivity-bonus"] = function(player)
         local upgrades = global.markets[player.name].upgrades
@@ -256,63 +252,72 @@ function M.new(player)
             tooltip = "+25 to character health"
         },
 
-        ["ammo-damage"] = {
-            name = "Ammo Damage",
+        ["gun"] = {
+            name = "Weaponry",
             lvl = 1,
             max_lvl = 100,
             cost = 10000,
-            sprite = "technology/physical-projectile-damage-7",
-            t = {
-                {type = "ammo-damage", ammo_category = "bullet", modifier = 0.1},
-                {type = "ammo-damage", ammo_category = "rocket", modifier = 0.1},
-                {
-                    type = "ammo-damage",
-                    ammo_category = "flamethrower",
-                    modifier = 0.1
-                },
-                {type = "ammo-damage", ammo_category = "laser", modifier = 0.1}
-            },
-            tooltip = "+10% Damage [img=item/firearm-magazine] [img=item/piercing-rounds-magazine] [img=item/uranium-rounds-magazine] [img=item/rocket] [img=item/explosive-rocket] [img=item/flamethrower-ammo] [img=item/flamethrower-turret] [img=item/laser-turret] [img=item/personal-laser-defense-equipment]"
+            sprite = "item/submachine-gun",
+            t = {},
+            tooltip = "+10% Bullet Damage\n+10% Gun Turret Attack\n %10% Bullet Speed\n[img=item/firearm-magazine] [img=item/piercing-rounds-magazine] [img=item/uranium-rounds-magazine] [img=item/gun-turret]"
         },
 
-        ["turret-attack"] = {
-            name = "Turret Attack",
+        ["tank-flame"] = {
+            name = "Hot & Heavy",
             lvl = 1,
             max_lvl = 100,
             cost = 10000,
             sprite = "technology/energy-weapons-damage-4",
-            t = {
-                {
-                    type = "turret-attack",
-                    turret_id = "gun-turret",
-                    modifier = 0.1
-                },
-                {
-                    type = "turret-attack",
-                    turret_id = "flamethrower-turret",
-                    modifier = 0.1
-                },
-                {
-                    type = "turret-attack",
-                    turret_id = "laser-turret",
-                    modifier = 0.1
-                }
-            },
-            tooltip = "+10% Turret Attack [img=item/gun-turret] [img=item/flamethrower-turret] [img=item/laser-turret]"
+            t = {},
+            tooltip = "+10% Tank Shell Damage\n+10%Tank Shell Speed\n+10% Flamethrower Damage\n+10% Flamethrower Turret Attack\n [img=item/flamethrower-ammo] [img=item/flamethrower-turret] [img=item/cannon-shell]"
         },
 
-        ["gun-speed"] = {
-            name = "Gun Speed",
+        ["rocket"] = {
+            name = "Rocketry",
             lvl = 1,
             max_lvl = 100,
             cost = 10000,
             sprite = "technology/weapon-shooting-speed-4",
-            t = {
-                {type = "gun-speed", ammo_category = "bullet", modifier = 0.1},
-                {type = "gun-speed", ammo_category = "rocket", modifier = 0.1},
-                {type = "gun-speed", ammo_category = "laser", modifier = 0.1}
-            },
-            tooltip = "+10% Speed [img=item/firearm-magazine] [img=item/piercing-rounds-magazine] [img=item/uranium-rounds-magazine] [img=item/rocket] [img=item/explosive-rocket] [img=item/laser-turret] [img=item/personal-laser-defense-equipment]"
+            t = {},
+            tooltip = "+10% Rocket Damage\n+10% Rocket Speed\n[img=item/rocket] [img=item/explosive-rocket]"
+        },
+
+        ["laser"] = {
+            name = "Lasers",
+            lvl = 1,
+            max_lvl = 100,
+            cost = 10000,
+            sprite = "technology/weapon-shooting-speed-4",
+            t = {},
+            tooltip = "+10% Laser Damage\n+10% Laser Speed\n+10% Laser Turret Attack\n+10% Electric+Beam Attack\n[img=item/laser-turret] [img=item/personal-laser-defense-equipment] [img=entity/destroyer] [img=entity/distractor] [img=item/discharge-defense-equipment]"
+        },
+
+                ["autolvl-turret"] = {
+            name = "Gun Turret Combat Training",
+            lvl = 0,
+            max_lvl = 1,
+            cost = 100000,
+            sprite = "utility/turret_attack_modifier_constant",
+            t = {},
+            tooltip = "Enable Combat Training on your gun turrets.\nThe more damage they deal, the more damage they do.\nAffects entire team\nONLY 1 GUN TURRET UPGRADE PER GAME"
+        },
+        ["coin-turret"] = {
+            name = "Gun Turret Coin Addon",
+            lvl = 0,
+            max_lvl = 1,
+            cost = 100000,
+            sprite = "utility/hint_arrow_up",
+            t = {},
+            tooltip = "Enable Coin earnings on your gun turrets.\nMust be built by you, not your robots\nONLY 1 GUN TURRET UPGRADE PER GAME"  
+        },
+        ["autofill-turret"] = {
+            name = "Gun Turret Autofill",
+            lvl = 0,
+            max_lvl = 1,
+            cost = 100000,
+            sprite = "item/firearm-magazine",
+            t = {},
+            tooltip = "Enable Autofill on your gun turrets.\nTakes ammo from shared\nONLY 1 GUN TURRET UPGRADE PER GAME"
         },
 
         ["mining-drill-productivity-bonus"] = {
@@ -343,33 +348,6 @@ function M.new(player)
             sprite = "entity/small-biter",
             t = {},
             tooltip = "+1 Pet [img=entity/small-biter] [img=entity/medium-biter] [img=entity/big-biter] [img=entity/behemoth-biter]"
-        },
-        ["autolvl-turret"] = {
-            name = "Gun Turret Combat Training",
-            lvl = 0,
-            max_lvl = 1,
-            cost = 100000,
-            sprite = "utility/turret_attack_modifier_constant",
-            t = {},
-            tooltip = "Enable Combat Training on your gun turrets.\nThe more damage they deal, the more damage they do.\nAffects entire team\nONLY 1 GUN TURRET UPGRADE PER GAME"
-        },
-        ["coin-turret"] = {
-            name = "Gun Turret Coin Addon",
-            lvl = 0,
-            max_lvl = 1,
-            cost = 100000,
-            sprite = "utility/hint_arrow_up",
-            t = {},
-            tooltip = "Enable Coin earnings on your gun turrets.\nMust be built by you, not your robots\nONLY 1 GUN TURRET UPGRADE PER GAME"  
-        },
-        ["autofill-turret"] = {
-            name = "Gun Turret Autofill",
-            lvl = 0,
-            max_lvl = 1,
-            cost = 100000,
-            sprite = "item/firearm-magazine",
-            t = {},
-            tooltip = "Enable Autofill on your gun turrets.\nTakes ammo from shared\nONLY 1 GUN TURRET UPGRADE PER GAME"
         },
     }
     M.create_market_button(player)
@@ -586,7 +564,7 @@ function M.create_sell_chest(player, position)
     }
     local new_tag = {
         entity = market.sell_chest,
-        offset = {x = 0, y = 1},
+        offset = {x = 1, y = 0},
         text = "SELL Chest",
         color = {r=0, g=1, b=1}
     }
