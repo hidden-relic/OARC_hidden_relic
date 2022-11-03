@@ -71,7 +71,7 @@ function CreateOarcGuiButton(player)
             name = "oarc_button",
             -- caption = "CLICK ME FOR MORE INFO",
             type = "sprite-button",
-            sprite="utility/white_warning",
+            sprite="utility/warning_white",
             style = mod_gui.button_style
         }
         b.style.padding = 2
@@ -120,7 +120,7 @@ function ClickOarcGuiButton(event)
     if (event.element.caption ~= "") then
         event.element.caption = ""
         event.element.style.width = 20
-        event.element.sprite = "utility/white_warning"
+        event.element.sprite = "utility/warning_white"
     end
 
     if (not DoesOarcGuiExist(player)) then

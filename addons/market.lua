@@ -258,6 +258,7 @@ function M.new(player)
             max_lvl = 100,
             cost = 10000,
             sprite = "item/submachine-gun",
+            hovered_sprite = "item/gun-turret",
             t = {},
             tooltip = "+10% Bullet Damage\n+10% Gun Turret Attack\n %10% Bullet Speed\n[img=item/firearm-magazine] [img=item/piercing-rounds-magazine] [img=item/uranium-rounds-magazine] [img=item/gun-turret]"
         },
@@ -267,7 +268,8 @@ function M.new(player)
             lvl = 1,
             max_lvl = 100,
             cost = 10000,
-            sprite = "technology/energy-weapons-damage-4",
+            sprite = "item/flamethrower",
+            hovered_sprite = "item/tank",
             t = {},
             tooltip = "+10% Tank Shell Damage\n+10%Tank Shell Speed\n+10% Flamethrower Damage\n+10% Flamethrower Turret Attack\n [img=item/flamethrower-ammo] [img=item/flamethrower-turret] [img=item/cannon-shell]"
         },
@@ -277,7 +279,8 @@ function M.new(player)
             lvl = 1,
             max_lvl = 100,
             cost = 10000,
-            sprite = "technology/weapon-shooting-speed-4",
+            sprite = "item/rocket",
+            hovered_sprite = "item/explosive-rocket",
             t = {},
             tooltip = "+10% Rocket Damage\n+10% Rocket Speed\n[img=item/rocket] [img=item/explosive-rocket]"
         },
@@ -287,7 +290,8 @@ function M.new(player)
             lvl = 1,
             max_lvl = 100,
             cost = 10000,
-            sprite = "technology/weapon-shooting-speed-4",
+            sprite = "item/laser-turret",
+            hovered_sprite = "item/personal-laser-defense-equipment",
             t = {},
             tooltip = "+10% Laser Damage\n+10% Laser Speed\n+10% Laser Turret Attack\n+10% Electric+Beam Attack\n[img=item/laser-turret] [img=item/personal-laser-defense-equipment] [img=entity/destroyer] [img=entity/distractor] [img=item/discharge-defense-equipment]"
         },
@@ -297,7 +301,8 @@ function M.new(player)
             lvl = 0,
             max_lvl = 1,
             cost = 100000,
-            sprite = "utility/turret_attack_modifier_constant",
+            sprite = "item/gun-turret",
+            hovered_sprite = "utility/turret_attack_modifier_constant",
             t = {},
             tooltip = "Enable Combat Training on your gun turrets.\nThe more damage they deal, the more damage they do.\nAffects entire team\nONLY 1 GUN TURRET UPGRADE PER GAME"
         },
@@ -306,7 +311,8 @@ function M.new(player)
             lvl = 0,
             max_lvl = 1,
             cost = 100000,
-            sprite = "utility/hint_arrow_up",
+            sprite = "item/gun-turret",
+            hovered_sprite = "utility/hint_arrow_up",
             t = {},
             tooltip = "Enable Coin earnings on your gun turrets.\nMust be built by you, not your robots\nONLY 1 GUN TURRET UPGRADE PER GAME"  
         },
@@ -315,7 +321,8 @@ function M.new(player)
             lvl = 0,
             max_lvl = 1,
             cost = 100000,
-            sprite = "item/firearm-magazine",
+            sprite = "item/gun-turret",
+            hovered_sprite = "item/firearm-magazine",
             t = {},
             tooltip = "Enable Autofill on your gun turrets.\nTakes ammo from shared\nONLY 1 GUN TURRET UPGRADE PER GAME"
         },
@@ -695,14 +702,17 @@ function M.create_market_gui(player)
     }
     market.upgrades_table = market.upgrades_flow.add {
         type = "table",
-        column_count = 8
+        column_count = 6
     }
     market.upgrade_buttons = {}
     for name, upgrade in pairs(market.upgrades) do
+        local hovered_sprite = upgrade.sprite
+        if upgrade.hovered_sprite then hovered_sprite = upgrade.hovered_sprite end
         market.upgrade_buttons[name] = market.upgrades_table.add {
             name = name,
             type = "sprite-button",
             sprite = upgrade.sprite,
+            hovered_sprite = hovered_sprite,
             number = upgrade.lvl,
             tooltip = upgrade.name .. "\n[item=coin] " ..
             tools.add_commas(upgrade.cost) .. "\n" .. upgrade.tooltip
@@ -912,32 +922,42 @@ function M.create_stats_gui(player)
 
     table.insert(market.stats_labels, market.info_table.add {
         type = "label",
-        caption = "[color=green]Ammo Damage:[/color]"
+        caption = "[color=green]Weaponry:[/color]"
     })
-    market.stats_labels["ammo-damage"] = 
+    market.stats_labels["gun"] = 
     market.info_table.add {
         type = "label",
-        caption = player.force.get_ammo_damage_modifier(upgrades["ammo-damage"].t[1].ammo_category)
+        caption = player.force.get_ammo_damage_modifier("bullet")
     }
 
     table.insert(market.stats_labels, market.info_table.add {
         type = "label",
-        caption = "[color=green]Turret Attack:[/color]"
+        caption = "[color=green]Hot & Heavy:[/color]"
     })
-    market.stats_labels["turret-attack"] = 
+    market.stats_labels["tank-flame"] = 
     market.info_table.add {
         type = "label",
-        caption = player.force.get_turret_attack_modifier(upgrades["turret-attack"].t[1].turret_id)
+        caption = player.force.get_turret_attack_modifier("flamethrower-turret")
     }
 
     table.insert(market.stats_labels, market.info_table.add {
         type = "label",
-        caption = "[color=green]Gun Speed:[/color]"
+        caption = "[color=green]Rocketry:[/color]"
     })
-    market.stats_labels["gun-speed"] = 
+    market.stats_labels["rocket"] = 
     market.info_table.add {
         type = "label",
-        caption = player.force.get_gun_speed_modifier(upgrades["gun-speed"].t[1].ammo_category)
+        caption = player.force.get_gun_speed_modifier("rocket")
+    }
+
+    table.insert(market.stats_labels, market.info_table.add {
+        type = "label",
+        caption = "[color=green]Lasers:[/color]"
+    })
+    market.stats_labels["laser"] = 
+    market.info_table.add {
+        type = "label",
+        caption = player.force.get_gun_speed_modifier("laser")
     }
 
     table.insert(market.stats_labels, market.info_table.add {
@@ -1113,9 +1133,10 @@ function M.update(player)
 
     market.stats_labels["sell-speed"].caption = tools.round(market.upgrades["sell-speed"].t[market.upgrades["sell-speed"].lvl], 2).." seconds"
     market.stats_labels["character-health"].caption = player.character_health_bonus
-    market.stats_labels["ammo-damage"].caption = player.force.get_ammo_damage_modifier(market.upgrades["ammo-damage"].t[1].ammo_category)
-    market.stats_labels["turret-attack"].caption = player.force.get_turret_attack_modifier(market.upgrades["turret-attack"].t[1].turret_id)
-    market.stats_labels["gun-speed"].caption = player.force.get_gun_speed_modifier(market.upgrades["gun-speed"].t[1].ammo_category)
+    market.stats_labels["gun"].caption = player.force.get_ammo_damage_modifier("bullet")
+    market.stats_labels["tank-flame"].caption = player.force.get_turret_attack_modifier("flamethrower-turret")
+    market.stats_labels["rocket"].caption = player.force.get_gun_speed_modifier("rocket")
+    market.stats_labels["laser"].caption = player.force.get_gun_speed_modifier("laser")
     market.stats_labels["mining-drill-productivity-bonus"].caption = player.force.mining_drill_productivity_bonus
     market.stats_labels["maximum-following-robot-count"].caption = player.force.maximum_following_robot_count
     market.stats_labels["group-limit"].caption = market.upgrades["group-limit"].lvl
