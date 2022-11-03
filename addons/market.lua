@@ -181,12 +181,21 @@ M.upgrade_func_table = {
     end,
     ["autolvl-turret"] = function(player)
         global.markets.autolvl_turrets[player.name] = true
+        global.markets[player.name].upgrades["coin-turret"].lvl = 1
+        global.markets[player.name].upgrades["autofill-turret"].lvl = 1
+        M.update(player)
     end,
     ["coin-turret"] = function(player)
         global.markets.coin_turrets[player.name] = true
+        global.markets[player.name].upgrades["autolvl-turret"].lvl = 1
+        global.markets[player.name].upgrades["autofill-turret"].lvl = 1
+        M.update(player)
     end,
     ["autofill-turret"] = function(player)
         table.insert(global.markets.autofill_turrets, {name=player.name})
+        global.markets[player.name].upgrades["coin-turret"].lvl = 1
+        global.markets[player.name].upgrades["autolvl-turret"].lvl = 1
+        M.update(player)
     end,
 }
 
@@ -341,7 +350,7 @@ function M.new(player)
             cost = 100000,
             sprite = "utility/turret_attack_modifier_constant",
             t = {},
-            tooltip = "Enable Combat Training on your gun turrets.\nThe more damage they deal, the more damage they do.\nAffects entire team"
+            tooltip = "Enable Combat Training on your gun turrets.\nThe more damage they deal, the more damage they do.\nAffects entire team\nONLY 1 GUN TURRET UPGRADE PER GAME"
         },
         ["coin-turret"] = {
             name = "Gun Turret Coin Addon",
@@ -350,7 +359,7 @@ function M.new(player)
             cost = 100000,
             sprite = "utility/hint_arrow_up",
             t = {},
-            tooltip = "Enable Coin earnings on your gun turrets.\nMust be built by you, not your robots"  
+            tooltip = "Enable Coin earnings on your gun turrets.\nMust be built by you, not your robots\nONLY 1 GUN TURRET UPGRADE PER GAME"  
         },
         ["autofill-turret"] = {
             name = "Gun Turret Autofill",
@@ -359,7 +368,7 @@ function M.new(player)
             cost = 100000,
             sprite = "item/firearm-magazine",
             t = {},
-            tooltip = "Enable Autofill on your gun turrets.\nTakes ammo from shared"
+            tooltip = "Enable Autofill on your gun turrets.\nTakes ammo from shared\nONLY 1 GUN TURRET UPGRADE PER GAME"
         },
     }
     M.create_market_button(player)
@@ -1149,7 +1158,7 @@ function M.update(player)
         }
     end
     for index, button in pairs(market.upgrade_buttons) do
-        if market.balance < market.upgrades[index].cost then
+        if market.balance < market.upgrades[index].cost or market.upgrades[index].lvl >= market.upgrades[index].max_lvl then
             button.enabled = false
         else
             button.enabled = true
@@ -1161,7 +1170,7 @@ function M.update(player)
         market.upgrades[index].tooltip
     end
     for index, button in pairs(market.follower_buttons) do
-        if market.balance < M.followers_table[index].cost then
+        if market.balance < M.followers_table[index].cost or group.get_count(player) >= global.groups[player.name].limit then
             button.enabled = false
         else
             button.enabled = true
