@@ -208,6 +208,7 @@ function M.increase(player, upgrade)
         upgrade.cost = upgrade.cost +
         (upgrade.cost * M.upgrade_cost_table[name])
         M.withdraw(player, current_cost)
+        global.markets.jackpot = global.markets.jackpot + current_cost*0.25
         local up_func = M.upgrade_func_table[name]
         up_func(player)
     else
