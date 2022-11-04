@@ -285,7 +285,7 @@ function SpawnEnemyTurret(pos)
     }
     local new_tag = {
         entity = turret,
-        offset = {x = -2, y = 0},
+        offset = {x = 2, y = -1},
         text = {"", "Enemy ", turret.localised_name},
         color = {r=1, g=0, b=0}
     }
@@ -359,7 +359,7 @@ function spawnSpecialChunkInputElec(center_pos)
     }
     local new_tag = {
         entity = inputElec,
-        offset = {x = -2, y = 0},
+        offset = {x = 2, y = -1},
         text = "GIVE Shared Power",
         color = {r=0, g=1, b=1, a=0.5}
     }
@@ -570,7 +570,7 @@ function SpawnMagicBuilding(entity_name, position)
     }
     local new_tag = {
         entity = magic_building,
-        offset = {x = -2, y = 0},
+        offset = {x = 2, y = -1},
         text = {"", "Magic ", magic_building.localised_name},
         color = {r=1, g=0, b=1}
     }

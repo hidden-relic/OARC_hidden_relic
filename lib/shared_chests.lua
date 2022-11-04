@@ -48,7 +48,7 @@ function SharedEnergySpawnInput(player, pos)
     }
     local new_tag = {
         entity = inputElec,
-        offset = {x = -2, y = 0},
+        offset = {x = 2, y = -1},
         text = "->G",
         color = {r=0, g=1, b=1, a=0.8}
     }
@@ -98,7 +98,7 @@ function SharedEnergySpawnOutput(player, pos)
     }
     local new_tag = {
         entity = outputElec,
-        offset = {x = -2, y = 0},
+        offset = {x = 2, y = -1},
         text = "G->",
         color = {r=0, g=1, b=1, a=0.8}
     }
@@ -420,7 +420,7 @@ function SharedChestsSpawnInput(player, pos)
     }
     local new_tag = {
         entity = inputChest,
-        offset = {x = -2, y = 0},
+        offset = {x = 2, y = -1},
         text = "->G",
         color = {r=0, g=1, b=1, a=0.8}
     }
@@ -451,7 +451,7 @@ function SharedChestsSpawnOutput(player, pos, enable_example)
     }
     local new_tag = {
         entity = outputChest,
-        offset = {x = -2, y = 0},
+        offset = {x = 2, y = -1},
         text = "G->",
         color = {r=0, g=1, b=1, a=0.8}
     }
