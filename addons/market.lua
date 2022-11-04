@@ -571,7 +571,7 @@ function M.create_sell_chest(player, position)
     }
     local new_tag = {
         entity = market.sell_chest,
-        offset = {x = -2, y = 0},
+        offset = {x = 1, y = -0.5},
         text = "SELL Chest",
         color = {r=0, g=1, b=1}
     }

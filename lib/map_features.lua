@@ -285,7 +285,7 @@ function SpawnEnemyTurret(pos)
     }
     local new_tag = {
         entity = turret,
-        offset = {x = 2, y = -1},
+        offset = {x = 0, y = 2},
         text = {"", "Enemy ", turret.localised_name},
         color = {r=1, g=0, b=0}
     }
