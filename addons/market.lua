@@ -639,7 +639,7 @@ function M.create_market_gui(player)
 
     market.container_flow = market.market_flow.add {
         type = "flow",
-        direction = "horizontal"
+        direction = "vertical"
     }
 
     -- market items (left side)
