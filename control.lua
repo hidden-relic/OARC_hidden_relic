@@ -187,68 +187,67 @@ script.on_event(defines.events.on_gui_click, function(event)
     local player = game.players[event.player_index]
 
     if global.markets and global.markets[player.name] then
-        if global.markets[player.name].market_button and event.element ==
-            global.markets[player.name].market_button then
-                market.toggle_market_gui(player)
+        if global.markets[player.name].market_button and event.element == global.markets[player.name].market_button then
+            market.toggle_market_gui(player)
+        end
+        if global.markets[player.name].upgrades_button and event.element == global.markets[player.name].upgrades_button then
+            market.toggle_upgrades_gui(player)
+        end
+        if global.markets[player.name].stats_button and event.element == global.markets[player.name].stats_button then
+            market.toggle_stats_gui(player)
+        end
+        if global.markets[player.name].item_buttons and global.markets[player.name].item_buttons[event.element.name] then
+            local button = global.markets[player.name].item_buttons[event.element.name]
+            local click = event.button
+            local shift = event.shift
+            local ctrl = event.control
+            market.purchase(player, button.name, click, shift, ctrl)
+        end
+        if global.markets[player.name].upgrade_buttons and
+            global.markets[player.name].upgrade_buttons[event.element.name] then
+                local button =
+                global.markets[player.name].upgrade_buttons[event.element.name]
+                market.upgrade(player, button.name)
             end
-            if global.markets[player.name].stats_button and event.element ==
-                global.markets[player.name].stats_button then
-                    market.toggle_stats_gui(player)
+            if global.markets[player.name].follower_buttons and global.markets[player.name].follower_buttons[event.element.name] then
+                local button =
+                global.markets[player.name].follower_buttons[event.element.name]
+                if group.add(player, button.name) then
+                    market.withdraw(player, market.followers_table[button.name].cost)
                 end
-                if global.markets[player.name].item_buttons and
-                    global.markets[player.name].item_buttons[event.element.name] then
-                        local button =
-                        global.markets[player.name].item_buttons[event.element.name]
-                        local click = event.button
-                        local shift = event.shift
-                        local ctrl = event.control
-                        market.purchase(player, button.name, click, shift, ctrl)
+            end
+            if global.markets[player.name].shared_buttons and global.markets[player.name].shared_buttons[event.element.name] then
+                local button =
+                global.markets[player.name].shared_buttons[event.element.name]
+                if market.shared_func_table[button.name](player) then
+                    market.withdraw(player, market.shared_table[button.name].cost)
+                end
+            end
+            if global.markets[player.name].special_buttons and global.markets[player.name].special_buttons[event.element.name] then
+                local button =
+                global.markets[player.name].special_buttons[event.element.name]
+                if market.special_func_table[button.name](player) then
+                    if button.name == "special_offshore-pump" then
+                        market.withdraw(player, global.markets[player.name].stats.waterfill_cost)
+                        return
+                    else
+                        market.withdraw(player, market.special_table[button.name].cost)
                     end
-                    if global.markets[player.name].upgrade_buttons and
-                        global.markets[player.name].upgrade_buttons[event.element.name] then
-                            local button =
-                            global.markets[player.name].upgrade_buttons[event.element.name]
-                            market.upgrade(player, button.name)
-                        end
-                        if global.markets[player.name].follower_buttons and global.markets[player.name].follower_buttons[event.element.name] then
-                            local button =
-                            global.markets[player.name].follower_buttons[event.element.name]
-                            if group.add(player, button.name) then
-                                market.withdraw(player, market.followers_table[button.name].cost)
-                            end
-                        end
-                        if global.markets[player.name].shared_buttons and global.markets[player.name].shared_buttons[event.element.name] then
-                            local button =
-                            global.markets[player.name].shared_buttons[event.element.name]
-                            if market.shared_func_table[button.name](player) then
-                                market.withdraw(player, market.shared_table[button.name].cost)
-                            end
-                        end
-                        if global.markets[player.name].special_buttons and global.markets[player.name].special_buttons[event.element.name] then
-                            local button =
-                            global.markets[player.name].special_buttons[event.element.name]
-                            if market.special_func_table[button.name](player) then
-                                if button.name == "special_offshore-pump" then
-                                    market.withdraw(player, global.markets[player.name].stats.waterfill_cost)
-                                    return
-                                else
-                                    market.withdraw(player, market.special_table[button.name].cost)
-                                end
-                            end
-                        end
+                end
+            end
 
-                        if global.ocfg.enable_tags then TagGuiClick(event) end
+            if global.ocfg.enable_tags then TagGuiClick(event) end
 
-                        WelcomeTextGuiClick(event)
-                        SpawnOptsGuiClick(event)
-                        SpawnCtrlGuiClick(event)
-                        SharedSpwnOptsGuiClick(event)
-                        BuddySpawnOptsGuiClick(event)
-                        BuddySpawnWaitMenuClick(event)
-                        BuddySpawnRequestMenuClick(event)
-                        SharedSpawnJoinWaitMenuClick(event)
+            WelcomeTextGuiClick(event)
+            SpawnOptsGuiClick(event)
+            SpawnCtrlGuiClick(event)
+            SharedSpwnOptsGuiClick(event)
+            BuddySpawnOptsGuiClick(event)
+            BuddySpawnWaitMenuClick(event)
+            BuddySpawnRequestMenuClick(event)
+            SharedSpawnJoinWaitMenuClick(event)
 
-                        ClickOarcGuiButton(event)
+            ClickOarcGuiButton(event)
 
         -- if global.ocfg.enable_coin_shop then ClickOarcStoreButton(event) end
 
