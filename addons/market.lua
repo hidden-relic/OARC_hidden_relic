@@ -1101,7 +1101,7 @@ function M.open_stats_gui(player)
     if market.market_frame.visible == true then
         M.close_market_gui(player)
     end
-    if market.upgradess_frame.visible == true then
+    if market.upgrades_frame.visible == true then
         M.close_upgrades_gui(player)
     end
     market.stats_frame.visible = true

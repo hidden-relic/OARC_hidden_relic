@@ -568,6 +568,8 @@ script.on_event(defines.events.on_gui_closed, function(event)
     if event.element then
         if event.element == global.markets[player.name].market_frame then
             market.close_market_gui(player)
+        elseif event.element == global.markets[player.name].special_store_frame then
+            market.close_upgrades_gui(player)
         elseif event.element == global.markets[player.name].stats_frame then
             market.close_stats_gui(player)
         end
