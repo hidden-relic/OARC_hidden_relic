@@ -592,9 +592,9 @@ script.on_event(defines.events.on_entity_damaged, function(event)
         player = cause.last_user
         player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + damage * 0.0000001)
     end
-    if cause and cause.type == "character" then
+    if cause and cause.type == "character" and damage then
         local player = cause.player
-        player.character_health_bonus = player.character_health_bonus + (original_damage*0.00001)
+        player.character_health_bonus = player.character_health_bonus + (damage*0.00001)
     end
 
     -- Gets the location of the text

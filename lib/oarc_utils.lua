@@ -1282,9 +1282,9 @@ end
 
 -- Find random coordinates within a given distance away
 -- maxTries is the recursion limit basically.
-function FindUngeneratedCoordinates(minDistChunks, maxDistChunks, surface)
-    local position = {x = 0, y = 0}
-    local chunkPos = {x = 0, y = 0}
+function FindUngeneratedCoordinates(minDistChunks, maxDistChunks, surface, position)
+    local position = position or {x = 0, y = 0}
+    local chunkPos = {x = position.x/32, y = position.y/32}
 
     local maxTries = 100
     local tryCounter = 0
