@@ -413,6 +413,7 @@ end)
 ----------------------------------------
 script.on_event(defines.events.on_built_entity, function(event)
     bonuses.on_built_entity(event)
+    market.on_built_entity(event)
     if global.ocfg.enable_autofill then Autofill(event) end
 
     local player = game.players[event.player_index]

@@ -7,11 +7,11 @@ function bonuses.on_built_entity(event)
 		local item = event.item
 		if game.recipe_prototypes[item.name] then
 			if game.recipe_prototypes[item.name].energy then
-				player.character_crafting_speed_modifier = player.character_crafting_speed_modifier + (game.recipe_prototypes[item.name].energy*0.0001)
-			    FlyingText("+" .. game.recipe_prototypes[item.name].energy*0.0001, player.position, {r=0, g=1, b=0}, player.surface)
+				player.character_crafting_speed_modifier = player.character_crafting_speed_modifier + (game.recipe_prototypes[item.name].energy*0.00017)
+			    -- FlyingText("+" .. game.recipe_prototypes[item.name].energy*0.00017, player.position, {r=0, g=1, b=0}, player.surface)
 			elseif game.recipe_prototypes[item.name].energy_required then
-				player.character_crafting_speed_modifier = player.character_crafting_speed_modifier + (game.recipe_prototypes[item.name].energy_required*0.0001)
-				FlyingText("+" .. game.recipe_prototypes[item.name].energy_required*0.0001, player.position, {r=0, g=1, b=0}, player.surface)
+				player.character_crafting_speed_modifier = player.character_crafting_speed_modifier + (game.recipe_prototypes[item.name].energy_required*0.00017)
+				-- FlyingText("+" .. game.recipe_prototypes[item.name].energy_required*0.00017, player.position, {r=0, g=1, b=0}, player.surface)
 			end
 		end
 	end
@@ -44,10 +44,10 @@ function bonuses.on_player_crafted_item(event)
 	local player = game.players[event.player_index]
 	local recipe = event.recipe
 	if recipe.energy then
-		player.character_crafting_speed_modifier = player.character_crafting_speed_modifier + (recipe.energy*0.0001)
+		player.character_crafting_speed_modifier = player.character_crafting_speed_modifier + (recipe.energy*0.00017)
 		FlyingText("+"..recipe.energy*0.0001, player.position, {r=0, g=1, b=0}, player.surface)
 	elseif recipe.energy_required then
-		player.character_crafting_speed_modifier = player.character_crafting_speed_modifier + (recipe.energy_required*0.0001)
+		player.character_crafting_speed_modifier = player.character_crafting_speed_modifier + (recipe.energy_required*0.00017)
 		FlyingText("+"..recipe.energy_required*0.0001, player.position, {r=0, g=1, b=0}, player.surface)
 	end
 end

@@ -1027,14 +1027,17 @@ function M.close_market_gui(player)
     if (market.market_frame == nil) then return end
     market.market_frame.visible = false
     market.player.opened = nil
-    if market.stats_frame.visible == true then
-        market.player.opened = market.stats_frame
-    end
 end
 
 function M.open_market_gui(player)
     local player = player
     local market = global.markets[player.name]
+    if market.special_store_frame.visible == true then
+        M.close_upgrades_gui(player)
+    end
+    if market.stats_frame.visible == true then
+        M.close_stats_gui(player)
+    end
     market.market_frame.visible = true
     market.player.opened = market.market_frame
 end
@@ -1062,6 +1065,12 @@ end
 function M.open_upgrades_gui(player)
     local player = player
     local market = global.markets[player.name]
+    if market.market_frame.visible == true then
+        M.close_market_gui(player)
+    end
+    if market.stats_frame.visible == true then
+        M.close_stats_gui(player)
+    end
     market.special_store_frame.visible = true
     market.player.opened = market.special_store_frame
 end
@@ -1084,14 +1093,17 @@ function M.close_stats_gui(player)
     if (market.stats_frame == nil) then return end
     market.stats_frame.visible = false
     market.player.opened = nil
-    if market.market_frame.visible == true then
-        market.player.opened = market.market_frame
-    end
 end
 
 function M.open_stats_gui(player)
     local player = player
     local market = global.markets[player.name]
+    if market.market_frame.visible == true then
+        M.close_market_gui(player)
+    end
+    if market.upgradess_frame.visible == true then
+        M.close_upgrades_gui(player)
+    end
     market.stats_frame.visible = true
     market.player.opened = market.stats_frame
 end
@@ -1392,14 +1404,14 @@ function M.autofill()
                     entry.insert{name="firearm-magazine", count=1}
                 end
 
-            elseif contents["piercing-rounds-magazine"] and contents["piercing-rounds-magazine"].count < 10 then
+            elseif contents["piercing-rounds-magazine"] and contents["piercing-rounds-magazine"] < 10 then
 
                 if global.oshared.items["piercing-rounds-magazine"] and global.oshared.items["piercing-rounds-magazine"] >= 1 then
                     global.oshared.items["piercing-rounds-magazine"] = global.oshared.items["piercing-rounds-magazine"] - 1
                     entry.insert{name="piercing-rounds-magazine", count=1}
                     -- game.print("inserted red round")
                 end
-            elseif contents["uranium-rounds-magazine"] and contents["uranium-rounds-magazine"].count < 10 then
+            elseif contents["uranium-rounds-magazine"] and contents["uranium-rounds-magazine"] < 10 then
                 -- game.print("found uranium")
                 if global.oshared.items["uranium-rounds-magazine"] and global.oshared.items["uranium-rounds-magazine"] >= 1 then
                     global.oshared.items["uranium-rounds-magazine"] = global.oshared.items["uranium-rounds-magazine"] - 1

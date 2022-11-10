@@ -736,11 +736,17 @@ function RemoveOrResetPlayer(player, remove_player, remove_force, remove_base,
         if global.markets[player.name].market_button then
             global.markets[player.name].market_button.destroy()
         end
+        if global.markets[player.name].upgrades_button then
+            global.markets[player.name].upgrades_button.destroy()
+        end
         if global.markets[player.name].stats_button then
             global.markets[player.name].stats_button.destroy()
         end
         if global.markets[player.name].market_frame then
             global.markets[player.name].market_frame.destroy()
+        end
+        if global.markets[player.name].special_store_frame then
+            global.markets[player.name].special_store_frame.destroy()
         end
         if global.markets[player.name].stats_frame then
             global.markets[player.name].stats_frame.destroy()
