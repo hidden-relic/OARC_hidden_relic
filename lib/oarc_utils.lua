@@ -1293,8 +1293,8 @@ function FindUngeneratedCoordinates(minDistChunks, maxDistChunks, surface, posit
     local maxDistSqr = maxDistChunks ^ 2
 
     while (true) do
-        chunkPos.x = math.random(position.x/32, maxDistChunks) * RandomNegPos()
-        chunkPos.y = math.random(position.y/32, maxDistChunks) * RandomNegPos()
+        chunkPos.x = math.random((position.x/32)-maxDistChunks, (position.x/32)+maxDistChunks)
+        chunkPos.y = math.random((position.y/32)-maxDistChunks, (position.y/32)+maxDistChunks)
 
         local distSqrd = chunkPos.x ^ 2 + chunkPos.y ^ 2
 
