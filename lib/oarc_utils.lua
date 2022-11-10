@@ -1284,7 +1284,7 @@ end
 -- maxTries is the recursion limit basically.
 function FindUngeneratedCoordinates(minDistChunks, maxDistChunks, surface, position)
     local position = position or {x = 0, y = 0}
-    local chunkPos = {x = position.x/32, y = position.y/32}
+    local chunkPos = {x = 0, y = 0}
 
     local maxTries = 1000
     local tryCounter = 0
@@ -1293,8 +1293,8 @@ function FindUngeneratedCoordinates(minDistChunks, maxDistChunks, surface, posit
     local maxDistSqr = maxDistChunks ^ 2
 
     while (true) do
-        chunkPos.x = math.random(chunkPos.x, maxDistChunks) * RandomNegPos()
-        chunkPos.y = math.random(chunkPos.y, maxDistChunks) * RandomNegPos()
+        chunkPos.x = math.random(position.x/32, maxDistChunks) * RandomNegPos()
+        chunkPos.y = math.random(position.y/32, maxDistChunks) * RandomNegPos()
 
         local distSqrd = chunkPos.x ^ 2 + chunkPos.y ^ 2
 
