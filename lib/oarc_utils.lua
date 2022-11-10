@@ -1303,8 +1303,8 @@ function FindUngeneratedCoordinates(minDistChunks, maxDistChunks, surface, posit
         if (tryCounter > maxTries) then
             log("FindUngeneratedCoordinates - Max Tries Hit!")
             break
-
         elseif ((distSqrd < minDistSqr) or (distSqrd > maxDistSqr)) then
+            log(chunkPos.." out of range. ")
         elseif IsChunkAreaUngenerated(chunkPos,
                                       CHECK_SPAWN_UNGENERATED_CHUNKS_SHARED_RADIUS,
                                       surface) then
