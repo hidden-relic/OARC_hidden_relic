@@ -74,8 +74,8 @@ require("compat/factoriomaps")
 GAME_SURFACE_NAME = "oarc"
 
 commands.add_command("trigger-map-cleanup",
-   "Force immediate removal of all expired chunks (unused chunk removal mod)",
-   RegrowthForceRemoveChunksCmd)
+ "Force immediate removal of all expired chunks (unused chunk removal mod)",
+ RegrowthForceRemoveChunksCmd)
 
 --------------------------------------------------------------------------------
 -- ALL EVENT HANLDERS ARE HERE IN ONE PLACE!
@@ -333,7 +333,7 @@ script.on_event(defines.events.on_player_created, function(event)
         ChangePlayerSpawn(player, newSpawn)
 
         QueuePlayerForDelayedSpawn(player.name, newSpawn, false,
-         global.ocfg.enable_vanilla_spawns)
+           global.ocfg.enable_vanilla_spawns)
         player.force = game.create_force(player.name)
         return
     end
@@ -367,9 +367,9 @@ script.on_event(defines.events.on_player_left_game, function(event)
             (global.ocfg.minimum_online_time * TICKS_PER_MINUTE))) then
         log("Player left early: " .. player.name)
         SendBroadcastMsg(player.name ..
-           "'s base was marked for immediate clean up because they left within " ..
-           global.ocfg.minimum_online_time ..
-           " minutes of joining.")
+         "'s base was marked for immediate clean up because they left within " ..
+         global.ocfg.minimum_online_time ..
+         " minutes of joining.")
         RemoveOrResetPlayer(player, true, true, true, true)
     end
 end)
@@ -489,7 +489,7 @@ script.on_event(defines.events.on_console_chat, function(event)
     if (global.ocfg.enable_shared_chat) then
         if (event.player_index ~= nil) then
             ShareChatBetweenForces(game.players[event.player_index],
-             event.message)
+               event.message)
         end
     end
 end)
@@ -601,6 +601,28 @@ script.on_event(defines.events.on_entity_damaged, function(event)
     local p = entity.position
     local size = entity.get_radius() or 1
     local surface = entity.surface
+
+    if cause and cause.type == "character" and damage then
+        local player = cause.player
+        player.character_health_bonus = player.character_health_bonus + (damage*0.001)
+    end
+
+    -- Gets the location of the text
+    if size < 1 then size = 1 end
+    local r = (math.random() - 0.5) * size * 0.75
+    local position = {x = p.x + r, y = p.y - size}
+
+    local message
+    if entity.name == 'character' then
+        message = {'damage-popup.player-health', health}
+    elseif entity.name ~= 'character' and cause and cause.name == 'character' then
+        message = {'damage-popup.player-damage', damage}
+    end
+
+    -- Outputs the message as floating text
+    if message then
+        tools.floating_text(entity.surface, position, message, text_color)
+    end
     if cause and cause.name == "gun-turret" and cause.last_user and global.markets.autolvl_turrets[cause.last_user.name] then
         player = cause.last_user
         player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + damage * 0.0000001)
@@ -640,29 +662,6 @@ script.on_event(defines.events.on_entity_damaged, function(event)
             tools.floating_text(surface, position, message, text_color)
         end
     end
-
-    if cause and cause.type == "character" and damage then
-        local player = cause.player
-        player.character_health_bonus = player.character_health_bonus + (damage*0.001)
-    end
-
-    -- Gets the location of the text
-    if size < 1 then size = 1 end
-    local r = (math.random() - 0.5) * size * 0.75
-    local position = {x = p.x + r, y = p.y - size}
-
-    local message
-    if entity.name == 'character' then
-        message = {'damage-popup.player-health', health}
-    elseif entity.name ~= 'character' and cause and cause.name == 'character' then
-        message = {'damage-popup.player-damage', damage}
-    end
-
-    -- Outputs the message as floating text
-    if message then
-        tools.floating_text(entity.surface, position, message, text_color)
-    end
-
 end)
 
 script.on_event(defines.events.on_entity_died, function(event)
