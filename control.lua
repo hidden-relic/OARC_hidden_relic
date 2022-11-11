@@ -598,13 +598,14 @@ script.on_event(defines.events.on_entity_damaged, function(event)
     local health = math.floor(entity.health)
     local health_percentage = entity.get_health_ratio()
     local text_color = {r = 1 - health_percentage, g = health_percentage, b = 0}
+    if entity.valid then
+        local p = entity.position
+        local size = entity.get_radius()
+        local surface = entity.surface
+    end
     if cause and cause.name == "gun-turret" and cause.last_user and global.markets.autolvl_turrets[cause.last_user.name] then
         player = cause.last_user
         player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + damage * 0.0000001)
-        if entity.valid then
-            local p = entity.position
-            local size = entity.get_radius()
-            local surface = entity.surface
             local roll = math.random(1, 10)
             if roll == 1 and entity.valid then
                 local critical_dmg = entity.damage(damage, player.force)
@@ -648,10 +649,8 @@ script.on_event(defines.events.on_entity_damaged, function(event)
     end
 
     -- Gets the location of the text
-    local size = entity.get_radius()
     if size < 1 then size = 1 end
     local r = (math.random() - 0.5) * size * 0.75
-    local p = entity.position
     local position = {x = p.x + r, y = p.y - size}
 
     local message
