@@ -598,9 +598,9 @@ script.on_event(defines.events.on_entity_damaged, function(event)
     local health = math.floor(entity.health)
     local health_percentage = entity.get_health_ratio()
     local text_color = {r = 1 - health_percentage, g = health_percentage, b = 0}
-    if entity.valid then
+    if entity.valid and cause then
         local p = entity.position
-        local size = entity.get_radius()
+        local size = entity.get_radius() or 1
         local surface = entity.surface
     end
     if cause and cause.name == "gun-turret" and cause.last_user and global.markets.autolvl_turrets[cause.last_user.name] then
@@ -642,7 +642,7 @@ script.on_event(defines.events.on_entity_damaged, function(event)
             tools.floating_text(surface, position, message, text_color)
         end
     end
-    
+
     if cause and cause.type == "character" and damage then
         local player = cause.player
         player.character_health_bonus = player.character_health_bonus + (damage*0.001)
