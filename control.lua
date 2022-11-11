@@ -604,6 +604,7 @@ script.on_event(defines.events.on_entity_damaged, function(event)
         if entity.valid then
             local p = entity.position
             local size = entity.get_radius()
+            local surface = entity.surface
             local roll = math.random(1, 10)
             if roll == 1 and entity.valid then
                 local critical_dmg = entity.damage(damage, player.force)
@@ -637,8 +638,9 @@ script.on_event(defines.events.on_entity_damaged, function(event)
                         message = {'damage-popup.player-damage', 'X4'}
                     end
                 end
-                tools.floating_text(entity.surface, position, message, text_color)
+                tools.floating_text(surface, position, message, text_color)
             end
+        end
     end
     if cause and cause.type == "character" and damage then
         local player = cause.player
