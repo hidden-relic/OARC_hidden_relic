@@ -777,7 +777,7 @@ function M.create_upgrades_gui(player)
             type = "sprite-button",
             sprite = "entity/"..name,
             number = 0,
-            tooltip = "[img=entity/" .. name .. "] +1 "..string.replace(name, "-", " ").."\n[item=coin] " ..
+            tooltip = "[img=entity/" .. name .. "] +1 "..string.gsub(name, "-", " ").."\n[item=coin] " ..
             tools.add_commas(pet.cost)
         }
     end
