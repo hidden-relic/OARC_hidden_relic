@@ -133,69 +133,69 @@ M.upgrade_cost_table = {
 M.upgrade_func_table = {
     ["sell-speed"] = function(player) return end,
     ["character-health"] = function(player)
-        player.character_health_bonus = player.character_health_bonus + 25
-    end,
-    ["gun"] = function(player)
-        player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet")+0.1)
-        player.force.set_turret_attack_modifier("gun-turret", player.force.get_turret_attack_modifier("gun-turret")+0.1)
-        player.force.set_gun_speed_modifier("bullet", player.force.get_gun_speed_modifier("bullet")+0.01)
-    end,
-    ["tank-flame"] = function(player)
-        player.force.set_ammo_damage_modifier("flamethrower", player.force.get_ammo_damage_modifier("flamethrower")+0.1)
-        player.force.set_ammo_damage_modifier("cannon-shell", player.force.get_ammo_damage_modifier("cannon-shell")+0.1)
-        player.force.set_turret_attack_modifier("flamethrower-turret", player.force.get_turret_attack_modifier("flamethrower-turret")+0.1)
-        player.force.set_gun_speed_modifier("cannon-shell", player.force.get_gun_speed_modifier("cannon-shell")+0.01)
-    end,
-    ["rocket"] = function(player)
-        player.force.set_ammo_damage_modifier("rocket", player.force.get_ammo_damage_modifier("rocket")+0.1)
-        player.force.set_gun_speed_modifier("rocket", player.force.get_gun_speed_modifier("rocket")+0.01)
-    end,
-    ["laser"] = function(player)
-        player.force.set_ammo_damage_modifier("laser", player.force.get_ammo_damage_modifier("laser")+0.1)
-        player.force.set_ammo_damage_modifier("electric", player.force.get_ammo_damage_modifier("electric")+0.1)
-        player.force.set_ammo_damage_modifier("beam", player.force.get_ammo_damage_modifier("beam")+0.1)
-        player.force.set_turret_attack_modifier("laser-turret", player.force.get_turret_attack_modifier("laser-turret")+0.1)
-        player.force.set_gun_speed_modifier("laser", player.force.get_gun_speed_modifier("laser")+0.01)
-    end,
-    ["mining-drill-productivity-bonus"] = function(player)
-        local upgrades = global.markets[player.name].upgrades
-        for _, effect in pairs(upgrades["mining-drill-productivity-bonus"].t) do
-            player.force.mining_drill_productivity_bonus = player.force
-            .mining_drill_productivity_bonus +
-            effect.modifier
-        end
-    end,
-    ["maximum-following-robot-count"] = function(player)
-        local upgrades = global.markets[player.name].upgrades
-        for _, effect in pairs(upgrades["maximum-following-robot-count"].t) do
-            player.force.maximum_following_robot_count = player.force
-            .maximum_following_robot_count +
-            effect.modifier
-        end
-    end,
-    ["group-limit"] = function(player)
-        local upgrades = global.markets[player.name].upgrades
-        local player_group = global.groups[player.name]
-        player_group.limit = player_group.limit + 1
-    end,
-    ["autolvl-turret"] = function(player)
-        global.markets.autolvl_turrets[player.name] = true
-        global.markets[player.name].upgrades["coin-turret"].lvl = 1
-        global.markets[player.name].upgrades["autofill-turret"].lvl = 1
-        M.update(player)
-    end,
-    ["coin-turret"] = function(player)
-        global.markets.coin_turrets[player.name] = true
-        global.markets[player.name].upgrades["autolvl-turret"].lvl = 1
-        global.markets[player.name].upgrades["autofill-turret"].lvl = 1
-        M.update(player)
-    end,
-    ["autofill-turret"] = function(player)
-        global.markets.autofill_turrets[player.name] = true
-        global.markets[player.name].upgrades["coin-turret"].lvl = 1
-        global.markets[player.name].upgrades["autolvl-turret"].lvl = 1
-        M.update(player)
-    end,
+    player.character_health_bonus = player.character_health_bonus + 25
+end,
+["gun"] = function(player)
+player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet")+0.1)
+player.force.set_turret_attack_modifier("gun-turret", player.force.get_turret_attack_modifier("gun-turret")+0.1)
+player.force.set_gun_speed_modifier("bullet", player.force.get_gun_speed_modifier("bullet")+0.01)
+end,
+["tank-flame"] = function(player)
+player.force.set_ammo_damage_modifier("flamethrower", player.force.get_ammo_damage_modifier("flamethrower")+0.1)
+player.force.set_ammo_damage_modifier("cannon-shell", player.force.get_ammo_damage_modifier("cannon-shell")+0.1)
+player.force.set_turret_attack_modifier("flamethrower-turret", player.force.get_turret_attack_modifier("flamethrower-turret")+0.1)
+player.force.set_gun_speed_modifier("cannon-shell", player.force.get_gun_speed_modifier("cannon-shell")+0.01)
+end,
+["rocket"] = function(player)
+player.force.set_ammo_damage_modifier("rocket", player.force.get_ammo_damage_modifier("rocket")+0.1)
+player.force.set_gun_speed_modifier("rocket", player.force.get_gun_speed_modifier("rocket")+0.01)
+end,
+["laser"] = function(player)
+player.force.set_ammo_damage_modifier("laser", player.force.get_ammo_damage_modifier("laser")+0.1)
+player.force.set_ammo_damage_modifier("electric", player.force.get_ammo_damage_modifier("electric")+0.1)
+player.force.set_ammo_damage_modifier("beam", player.force.get_ammo_damage_modifier("beam")+0.1)
+player.force.set_turret_attack_modifier("laser-turret", player.force.get_turret_attack_modifier("laser-turret")+0.1)
+player.force.set_gun_speed_modifier("laser", player.force.get_gun_speed_modifier("laser")+0.01)
+end,
+["mining-drill-productivity-bonus"] = function(player)
+local upgrades = global.markets[player.name].upgrades
+for _, effect in pairs(upgrades["mining-drill-productivity-bonus"].t) do
+    player.force.mining_drill_productivity_bonus = player.force
+    .mining_drill_productivity_bonus +
+    effect.modifier
+end
+end,
+["maximum-following-robot-count"] = function(player)
+local upgrades = global.markets[player.name].upgrades
+for _, effect in pairs(upgrades["maximum-following-robot-count"].t) do
+    player.force.maximum_following_robot_count = player.force
+    .maximum_following_robot_count +
+    effect.modifier
+end
+end,
+["group-limit"] = function(player)
+local upgrades = global.markets[player.name].upgrades
+local player_group = global.groups[player.name]
+player_group.limit = player_group.limit + 1
+end,
+["autolvl-turret"] = function(player)
+global.markets.autolvl_turrets[player.name] = true
+global.markets[player.name].upgrades["coin-turret"].lvl = 1
+global.markets[player.name].upgrades["autofill-turret"].lvl = 1
+M.update(player)
+end,
+["coin-turret"] = function(player)
+global.markets.coin_turrets[player.name] = true
+global.markets[player.name].upgrades["autolvl-turret"].lvl = 1
+global.markets[player.name].upgrades["autofill-turret"].lvl = 1
+M.update(player)
+end,
+["autofill-turret"] = function(player)
+global.markets.autofill_turrets[player.name] = true
+global.markets[player.name].upgrades["coin-turret"].lvl = 1
+global.markets[player.name].upgrades["autolvl-turret"].lvl = 1
+M.update(player)
+end,
 }
 
 function M.increase(player, upgrade)
@@ -310,65 +310,65 @@ function M.new(player)
             tooltip = "Enable Combat Training on your gun turrets.\nGun turrets that you place will occasionally deal critical damage\nAs your gun turrets do damage, they add to a permanent damage bonus that your entire team receives\nONLY 1 GUN TURRET UPGRADE PER GAME"
             },
 
-        ["coin-turret"] = {
-            name = "Gun Turret Coin Addon",
-            lvl = 0,
-            max_lvl = 1,
-            cost = 1000000,
-            sprite = "utility/hint_arrow_up",
-            hovered_sprite = "item/gun-turret",
-            t = {},
-            tooltip = "Enable Coin earnings on your gun turrets.\nMust be built by you, not your robots\nONLY 1 GUN TURRET UPGRADE PER GAME"  
-        },
-        ["autofill-turret"] = {
-            name = "Gun Turret Autofill",
-            lvl = 0,
-            max_lvl = 1,
-            cost = 1000000,
-            sprite = "item/firearm-magazine",
-            hovered_sprite = "item/gun-turret",
-            t = {},
-            tooltip = "Enable Autofill on your gun turrets.\nTurret must be built by player, not robot!\nTakes ammo from shared\nONLY 1 GUN TURRET UPGRADE PER GAME"
-        },
+            ["coin-turret"] = {
+                name = "Gun Turret Coin Addon",
+                lvl = 0,
+                max_lvl = 1,
+                cost = 1000000,
+                sprite = "utility/hint_arrow_up",
+                hovered_sprite = "item/gun-turret",
+                t = {},
+                tooltip = "Enable Coin earnings on your gun turrets.\nMust be built by you, not your robots\nONLY 1 GUN TURRET UPGRADE PER GAME"  
+            },
+            ["autofill-turret"] = {
+                name = "Gun Turret Autofill",
+                lvl = 0,
+                max_lvl = 1,
+                cost = 1000000,
+                sprite = "item/firearm-magazine",
+                hovered_sprite = "item/gun-turret",
+                t = {},
+                tooltip = "Enable Autofill on your gun turrets.\nTurret must be built by player, not robot!\nTakes ammo from shared\nONLY 1 GUN TURRET UPGRADE PER GAME"
+            },
 
-        ["mining-drill-productivity-bonus"] = {
-            name = "Mining Drill Productivity",
-            lvl = 1,
-            max_lvl = 100,
-            cost = 10000,
-            sprite = "technology/mining-productivity-1",
-            t = {{type = "mining-drill-productivity-bonus", modifier = 0.1}},
-            tooltip = "+10% Productivity [img=technology/mining-productivity-1]"
-        },
+            ["mining-drill-productivity-bonus"] = {
+                name = "Mining Drill Productivity",
+                lvl = 1,
+                max_lvl = 100,
+                cost = 10000,
+                sprite = "technology/mining-productivity-1",
+                t = {{type = "mining-drill-productivity-bonus", modifier = 0.1}},
+                tooltip = "+10% Productivity [img=technology/mining-productivity-1]"
+            },
 
-        ["maximum-following-robot-count"] = {
-            name = "Follower Robot Count",
-            lvl = 1,
-            max_lvl = 100,
-            cost = 10000,
-            sprite = "technology/follower-robot-count-1",
-            t = {{type = "maximum-following-robots-count", modifier = 5}},
-            tooltip = "+5 Robots [img=entity/distractor] [img=entity/destroyer] [img=entity/defender]"
-        },
+            ["maximum-following-robot-count"] = {
+                name = "Follower Robot Count",
+                lvl = 1,
+                max_lvl = 100,
+                cost = 10000,
+                sprite = "technology/follower-robot-count-1",
+                t = {{type = "maximum-following-robots-count", modifier = 5}},
+                tooltip = "+5 Robots [img=entity/distractor] [img=entity/destroyer] [img=entity/defender]"
+            },
 
-        ["group-limit"] = {
-            name = "Pet Limit",
-            lvl = 1,
-            max_lvl = 50,
-            cost = 10000,
-            sprite = "entity/small-biter",
-            t = {},
-            tooltip = "+1 Pet [img=entity/small-biter] [img=entity/medium-biter] [img=entity/big-biter] [img=entity/behemoth-biter]"
-        },
-    }
-    M.create_market_button(player)
-    M.create_upgrades_button(player)
-    M.create_stats_button(player)
-    M.create_teleport_home_button(player)
-    M.create_market_gui(player)
-    M.create_upgrades_gui(player)
-    M.create_stats_gui(player)
-end
+            ["group-limit"] = {
+                name = "Pet Limit",
+                lvl = 1,
+                max_lvl = 50,
+                cost = 10000,
+                sprite = "entity/small-biter",
+                t = {},
+                tooltip = "+1 Pet [img=entity/small-biter] [img=entity/medium-biter] [img=entity/big-biter] [img=entity/behemoth-biter]"
+            },
+        }
+        M.create_market_button(player)
+        M.create_upgrades_button(player)
+        M.create_stats_button(player)
+        M.create_teleport_home_button(player)
+        M.create_market_gui(player)
+        M.create_upgrades_gui(player)
+        M.create_stats_gui(player)
+    end
 
     function M.deposit(player, v)
         local player = player
@@ -865,9 +865,9 @@ function M.create_stats_gui(player)
     if #market.stats.history > 0 then
         for _, transaction in pairs(market.stats.history) do
             table.insert(market.history_labels, market.history_table
-             .add {type = "label", caption = transaction.prefix})
+               .add {type = "label", caption = transaction.prefix})
             table.insert(market.history_labels, market.history_table
-             .add {type = "label", caption = transaction.suffix})
+               .add {type = "label", caption = transaction.suffix})
         end
     end
     market.info_frame = market.stats_frame.add {
@@ -1186,9 +1186,9 @@ function M.update(player)
         market.history_labels = {}
         for _, transaction in pairs(market.stats.history) do
             table.insert(market.history_labels, market.history_table
-             .add {type = "label", caption = transaction.prefix})
+               .add {type = "label", caption = transaction.prefix})
             table.insert(market.history_labels, market.history_table
-             .add {type = "label", caption = transaction.suffix})
+               .add {type = "label", caption = transaction.suffix})
         end
     end
     market.stats_labels.total_coin_earned.caption =
@@ -1238,7 +1238,7 @@ function M.update(player)
         button.number = market.upgrades[index].lvl
         button.tooltip = market.upgrades[index].name .. "\n[item=coin] " ..
         tools.add_commas(
-         math.ceil(market.upgrades[index].cost)) .. "\n" ..
+           math.ceil(market.upgrades[index].cost)) .. "\n" ..
         market.upgrades[index].tooltip
     end
     for index, button in pairs(market.follower_buttons) do
@@ -1250,7 +1250,7 @@ function M.update(player)
         button.number = global.groups[player.name].counts[index] or 0
         button.tooltip = "[entity=" .. index .. "]\n[item=coin] " ..
         tools.add_commas(
-         math.ceil(M.followers_table[index].cost))
+           math.ceil(M.followers_table[index].cost))
     end
     for index, button in pairs(market.shared_buttons) do
         if market.balance < M.shared_table[index].cost then
@@ -1261,7 +1261,7 @@ function M.update(player)
         button.number = M.shared_table[index].cost
         button.tooltip = "[img=item/" .. string.gsub(index, "special_", "") .. "]\n[item=coin] " ..
         tools.add_commas(
-         math.ceil(M.shared_table[index].cost))
+           math.ceil(M.shared_table[index].cost))
     end
     for index, button in pairs(market.special_buttons) do
         if index == "special_offshore-pump" then
@@ -1273,7 +1273,7 @@ function M.update(player)
             button.number = market.stats.waterfill_cost
             button.tooltip = "[img=item/" .. string.gsub(index, "special_", "") .. "]\n[item=coin] " ..
             tools.add_commas(
-             math.ceil(market.stats.waterfill_cost))
+               math.ceil(market.stats.waterfill_cost))
         else
             if market.balance < M.special_table[index].cost then
                 button.enabled = false
@@ -1283,7 +1283,7 @@ function M.update(player)
             button.number = M.special_table[index].cost
             button.tooltip = "[img=item/" .. string.gsub(index, "special_", "") .. "]\n[item=coin] " ..
             tools.add_commas(
-             math.ceil(M.special_table[index].cost))
+               math.ceil(M.special_table[index].cost))
         end
     end
 end
@@ -1333,8 +1333,8 @@ function M.check_for_sale(player)
         })
         market.ticks_to_sell = game.tick +
         (60 *
-           market.upgrades["sell-speed"].t[market.upgrades["sell-speed"]
-           .lvl])
+         market.upgrades["sell-speed"].t[market.upgrades["sell-speed"]
+         .lvl])
     end
     if game.tick >= market.ticks_to_sell then
         M.sell(player, market.item_for_sale)
@@ -1366,7 +1366,7 @@ function M.check_sac(player)
                 end
                 player.insert {name = blessing, count = 1}
                 game.print("[color=red]" .. player.name ..
-                   " [/color][color=purple]has received a [/color][color=acid]Greater[/color][color=purple] blessing[/color]")
+                 " [/color][color=purple]has received a [/color][color=acid]Greater[/color][color=purple] blessing[/color]")
             end
         end
         t = get_table(
@@ -1387,16 +1387,16 @@ function M.check_sac(player)
                 end
                 player.insert {name = blessing, count = 1}
                 game.print("[color=red]" .. player.name ..
-                   " [/color][color=purple]has received a blessing[/color]")
+                 " [/color][color=purple]has received a blessing[/color]")
             end
         end
     end
 end
 
 function M.on_built_entity(event)
-    if event.created_entity.name == "gun-turret" and global.markets.autofill_turrets[game.players[event.player_index].name] then
+    if event.created_entity.name == "gun-turret" then
         local turret_inv = event.created_entity.get_inventory(defines.inventory.turret_ammo)
-        table.insert(global.markets.autofill_turrets.turrets, turret_inv)
+        table.insert(global.markets.autofill_turrets.turrets, {turret=turret_inv, player=game.players[event.player_index].name})
     end
 end
 
@@ -1410,45 +1410,49 @@ end
 
 function M.autofill()
     for index, entry in pairs(global.markets.autofill_turrets.turrets) do
-        local contents = M.validate_turret(entry)
+        local contents = M.validate_turret(entry.turret)
         if not contents then
             table.remove(global.markets.autofill_turrets.turrets, index)
         else
-            if contents["firearm-magazine"] and contents["firearm-magazine"] < 10 then
-                if global.oshared.items["firearm-magazine"] and global.oshared.items["firearm-magazine"] >= 1 then
-                    global.oshared.items["firearm-magazine"] = global.oshared.items["firearm-magazine"] - 1
-                    entry.insert{name="firearm-magazine", count=1}
-                end
+            if global.markets.autofill_turrets[entry.player] then
 
-            elseif contents["piercing-rounds-magazine"] and contents["piercing-rounds-magazine"] < 10 then
+                if contents["firearm-magazine"] and contents["firearm-magazine"] < 10 then
+                    if global.oshared.items["firearm-magazine"] and global.oshared.items["firearm-magazine"] >= 1 then
+                        global.oshared.items["firearm-magazine"] = global.oshared.items["firearm-magazine"] - 1
+                        entry.turret.insert{name="firearm-magazine", count=1}
+                    end
 
-                if global.oshared.items["piercing-rounds-magazine"] and global.oshared.items["piercing-rounds-magazine"] >= 1 then
-                    global.oshared.items["piercing-rounds-magazine"] = global.oshared.items["piercing-rounds-magazine"] - 1
-                    entry.insert{name="piercing-rounds-magazine", count=1}
-                    -- game.print("inserted red round")
-                end
-            elseif contents["uranium-rounds-magazine"] and contents["uranium-rounds-magazine"] < 10 then
-                -- game.print("found uranium")
-                if global.oshared.items["uranium-rounds-magazine"] and global.oshared.items["uranium-rounds-magazine"] >= 1 then
-                    global.oshared.items["uranium-rounds-magazine"] = global.oshared.items["uranium-rounds-magazine"] - 1
-                    entry.insert{name="uranium-rounds-magazine", count=1}
-                    -- game.print("inserted uranium round")
-                end
-            else
-                if not contents["firearm-magazine"] and not contents["piercing-rounds-magazine"] and not contents["uranium-rounds-magazine"] then
+                elseif contents["piercing-rounds-magazine"] and contents["piercing-rounds-magazine"] < 10 then
+                    if global.oshared.items["piercing-rounds-magazine"] and global.oshared.items["piercing-rounds-magazine"] >= 1 then
+                        global.oshared.items["piercing-rounds-magazine"] = global.oshared.items["piercing-rounds-magazine"] - 1
+                        entry.turret.insert{name="piercing-rounds-magazine", count=1}
+                        -- game.print("inserted red round")
+                    end
 
+                elseif contents["uranium-rounds-magazine"] and contents["uranium-rounds-magazine"] < 10 then
+                    -- game.print("found uranium")
                     if global.oshared.items["uranium-rounds-magazine"] and global.oshared.items["uranium-rounds-magazine"] >= 1 then
                         global.oshared.items["uranium-rounds-magazine"] = global.oshared.items["uranium-rounds-magazine"] - 1
-                        entry.insert{name="uranium-rounds-magazine", count=1}
+                        entry.turret.insert{name="uranium-rounds-magazine", count=1}
+                        -- game.print("inserted uranium round")
+                    end
+                    
+                else
+                    if not contents["firearm-magazine"] and not contents["piercing-rounds-magazine"] and not contents["uranium-rounds-magazine"] then
 
-                    elseif global.oshared.items["piercing-rounds-magazine"] and global.oshared.items["piercing-rounds-magazine"] >= 1 then
-                        global.oshared.items["piercing-rounds-magazine"] = global.oshared.items["piercing-rounds-magazine"] - 1
-                        entry.insert{name="piercing-rounds-magazine", count=1}
+                        if global.oshared.items["uranium-rounds-magazine"] and global.oshared.items["uranium-rounds-magazine"] >= 1 then
+                            global.oshared.items["uranium-rounds-magazine"] = global.oshared.items["uranium-rounds-magazine"] - 1
+                            entry.turret.insert{name="uranium-rounds-magazine", count=1}
 
-                    elseif global.oshared.items["firearm-magazine"] and global.oshared.items["firearm-magazine"] >= 1 then
-                        global.oshared.items["firearm-magazine"] = global.oshared.items["firearm-magazine"] - 1
-                        entry.insert{name="firearm-magazine", count=1}
+                        elseif global.oshared.items["piercing-rounds-magazine"] and global.oshared.items["piercing-rounds-magazine"] >= 1 then
+                            global.oshared.items["piercing-rounds-magazine"] = global.oshared.items["piercing-rounds-magazine"] - 1
+                            entry.turret.insert{name="piercing-rounds-magazine", count=1}
 
+                        elseif global.oshared.items["firearm-magazine"] and global.oshared.items["firearm-magazine"] >= 1 then
+                            global.oshared.items["firearm-magazine"] = global.oshared.items["firearm-magazine"] - 1
+                            entry.turret.insert{name="firearm-magazine", count=1}
+
+                        end
                     end
                 end
             end
