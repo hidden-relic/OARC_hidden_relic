@@ -601,20 +601,20 @@ script.on_event(defines.events.on_entity_damaged, function(event)
     if cause and cause.name == "gun-turret" and cause.last_user and global.markets.autolvl_turrets[cause.last_user.name] then
         player = cause.last_user
         player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + damage * 0.0000001)
+        local p = entity.position
         local roll = math.random(1, 10)
-        if roll == 1 then
+        if roll == 1 and entity.valid then
             local critical_dmg = entity.damage(damage, player.force)
             player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + critical_dmg * 0.000001)
             text_color.b = 1 - health_percentage
             local size = entity.get_radius()
             if size < 1 then size = 1 end
             local r = (math.random() - 0.5) * size * 0.75
-            local p = entity.position
             local position = {x = p.x + r, y = p.y - size}
             local message = {'damage-popup.player-damage', 'X2'}
 
             roll = math.random(1, 20)
-            if roll == 1 then
+            if roll == 1 and entity.valid then
                 health = math.floor(entity.health)
                 health_percentage = entity.get_health_ratio()
                 text_color = {r = 1 - health_percentage, g = health_percentage, b = 1 - health_percentage}
@@ -625,7 +625,7 @@ script.on_event(defines.events.on_entity_damaged, function(event)
                 message = {'damage-popup.player-damage', 'X3'}
 
                 roll = math.random(1, 40)
-                if roll == 1 then
+                if roll == 1 and entity.valid then
                     health = math.floor(entity.health)
                     health_percentage = entity.get_health_ratio()
                     text_color = {r = 1 - health_percentage, g = health_percentage, b = 1 - health_percentage}
