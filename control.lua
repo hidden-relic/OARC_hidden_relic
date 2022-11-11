@@ -74,8 +74,8 @@ require("compat/factoriomaps")
 GAME_SURFACE_NAME = "oarc"
 
 commands.add_command("trigger-map-cleanup",
-   "Force immediate removal of all expired chunks (unused chunk removal mod)",
-   RegrowthForceRemoveChunksCmd)
+ "Force immediate removal of all expired chunks (unused chunk removal mod)",
+ RegrowthForceRemoveChunksCmd)
 
 --------------------------------------------------------------------------------
 -- ALL EVENT HANLDERS ARE HERE IN ONE PLACE!
@@ -195,6 +195,14 @@ script.on_event(defines.events.on_gui_click, function(event)
         end
         if global.markets[player.name].stats_button and event.element == global.markets[player.name].stats_button then
             market.toggle_stats_gui(player)
+        end
+        if global.markets[player.name].teleport_home_button and event.element == global.markets[player.name].teleport_home_button then
+            if global.markets[player.name].balance >= market.teleport_home_cost then
+                SendPlayerToSpawn(player)
+                market.withdraw(player, market.teleport_home_cost)
+                local t = {"whoosh", "zoooom", "weeee", "zap", "bam", "boom", "gone", "amazing", "omg", "honey, i'm home!", "knock knock", "barfs", "whoa", "vomits", "should've taken that left turn at Albuquerque", "this seems...familiar"}
+                tools.floating_text(player.surface, player.position, t[math.random(1, #t)], {r=math.random(0, 255), g=math.random(0, 255), b=math.random(0, 255)})
+            end
         end
         if global.markets[player.name].item_buttons and global.markets[player.name].item_buttons[event.element.name] then
             local button = global.markets[player.name].item_buttons[event.element.name]
@@ -325,7 +333,7 @@ script.on_event(defines.events.on_player_created, function(event)
         ChangePlayerSpawn(player, newSpawn)
 
         QueuePlayerForDelayedSpawn(player.name, newSpawn, false,
-         global.ocfg.enable_vanilla_spawns)
+           global.ocfg.enable_vanilla_spawns)
         player.force = game.create_force(player.name)
         return
     end
@@ -359,9 +367,9 @@ script.on_event(defines.events.on_player_left_game, function(event)
             (global.ocfg.minimum_online_time * TICKS_PER_MINUTE))) then
         log("Player left early: " .. player.name)
         SendBroadcastMsg(player.name ..
-           "'s base was marked for immediate clean up because they left within " ..
-           global.ocfg.minimum_online_time ..
-           " minutes of joining.")
+         "'s base was marked for immediate clean up because they left within " ..
+         global.ocfg.minimum_online_time ..
+         " minutes of joining.")
         RemoveOrResetPlayer(player, true, true, true, true)
     end
 end)
@@ -481,7 +489,7 @@ script.on_event(defines.events.on_console_chat, function(event)
     if (global.ocfg.enable_shared_chat) then
         if (event.player_index ~= nil) then
             ShareChatBetweenForces(game.players[event.player_index],
-             event.message)
+               event.message)
         end
     end
 end)
@@ -593,10 +601,47 @@ script.on_event(defines.events.on_entity_damaged, function(event)
     if cause and cause.name == "gun-turret" and cause.last_user and global.markets.autolvl_turrets[cause.last_user.name] then
         player = cause.last_user
         player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + damage * 0.0000001)
+        local roll = math.random(1, 10)
+        if roll == 1 then
+            local critical_dmg = entity.damage(damage, player.force)
+            player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + critical_dmg * 0.000001)
+            text_color.b = 1 - health_percentage
+            local size = entity.get_radius()
+            if size < 1 then size = 1 end
+            local r = (math.random() - 0.5) * size * 0.75
+            local p = entity.position
+            local position = {x = p.x + r, y = p.y - size}
+            local message = {'damage-popup.player-damage', 'X2'}
+
+            roll = math.random(1, 20)
+            if roll == 1 then
+                health = math.floor(entity.health)
+                health_percentage = entity.get_health_ratio()
+                text_color = {r = 1 - health_percentage, g = health_percentage, b = 1 - health_percentage}
+                critical_dmg = entity.damage(damage, player.force)
+                player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + critical_dmg * 0.00001)
+                r = (math.random() - 0.5) * size * 0.75
+                position = {x = p.x + r, y = p.y - size}
+                message = {'damage-popup.player-damage', 'X3'}
+
+                roll = math.random(1, 40)
+                if roll == 1 then
+                    health = math.floor(entity.health)
+                    health_percentage = entity.get_health_ratio()
+                    text_color = {r = 1 - health_percentage, g = health_percentage, b = 1 - health_percentage}
+                    critical_dmg = entity.damage(damage, player.force)
+                    player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + critical_dmg * 0.0001)
+                    r = (math.random() - 0.5) * size * 0.75
+                    position = {x = p.x + r, y = p.y - size}
+                    message = {'damage-popup.player-damage', 'X4'}
+                end
+            end
+            tools.floating_text(entity.surface, position, message, text_color)
+        end
     end
     if cause and cause.type == "character" and damage then
         local player = cause.player
-        player.character_health_bonus = player.character_health_bonus + (damage*0.00001)
+        player.character_health_bonus = player.character_health_bonus + (damage*0.001)
     end
 
     -- Gets the location of the text

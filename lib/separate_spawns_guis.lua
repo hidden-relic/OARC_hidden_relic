@@ -767,6 +767,7 @@ function SpawnCtrlGuiClick(event)
                 local spawn = FindUngeneratedCoordinates(10, 100, player.surface, global.ocore.sharedSpawns[player.name].position)
                 local newSpawn = spawn
                 ChangePlayerSpawn(joiningPlayer, newSpawn)
+                ChangePlayerSpawn(player, global.ocore.playerSpawns[player.name].position)
                 QueuePlayerForDelayedSpawn(joiningPlayer.name, newSpawn, moatChoice, global.ocfg.enable_vanilla_spawns)
                 table.insert(global.ocore.sharedSpawns[player.name].players, joiningPlayer.name)
                 joiningPlayer.force = game.players[player.name].force

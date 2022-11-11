@@ -45,10 +45,10 @@ function bonuses.on_player_crafted_item(event)
 	local recipe = event.recipe
 	if recipe.energy then
 		player.character_crafting_speed_modifier = player.character_crafting_speed_modifier + (recipe.energy*0.00017)
-		FlyingText("+"..recipe.energy*0.0001, player.position, {r=0, g=1, b=0}, player.surface)
+		-- FlyingText("+"..recipe.energy*0.0001, player.position, {r=0, g=1, b=0}, player.surface)
 	elseif recipe.energy_required then
 		player.character_crafting_speed_modifier = player.character_crafting_speed_modifier + (recipe.energy_required*0.00017)
-		FlyingText("+"..recipe.energy_required*0.0001, player.position, {r=0, g=1, b=0}, player.surface)
+		-- FlyingText("+"..recipe.energy_required*0.0001, player.position, {r=0, g=1, b=0}, player.surface)
 	end
 end
 

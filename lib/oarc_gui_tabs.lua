@@ -72,7 +72,7 @@ function CreateOarcGuiButton(player)
             -- caption = "CLICK ME FOR MORE INFO",
             type = "sprite-button",
             sprite="utility/warning_white",
-            style = mod_gui.button_style
+            -- style = mod_gui.button_style
         }
         b.style.padding = 2
         -- b.style.width=20

@@ -14,6 +14,9 @@ local M = {}
 --     return o                -- return o
 -- end
 
+M.teleport_home_cost = 10
+M.teleport_home_timeout = 5
+
 function M.init()
     local markets = {jackpot=0, autofill_turrets={turrets={}}, autolvl_turrets={}, coin_turrets={}}
     local pre_item_values = prodscore.generate_price_list()
@@ -85,7 +88,7 @@ M.special_func_table = {
     ["special_oil-refinery"] = function(player) return RequestSpawnSpecialChunk(player, SpawnOilRefineryChunk, "oil-refinery") end,
     ["special_assembling-machine-3"] = function(player) return RequestSpawnSpecialChunk(player, SpawnAssemblyChunk, "assembling-machine-3") end,
     ["special_centrifuge"] = function(player) return RequestSpawnSpecialChunk(player, SpawnCentrifugeChunk, "centrifuge") end,
-    ["special_assembling-machine-1"] = function(player) return SendPlayerToSpawn(player) end,
+    -- ["special_assembling-machine-1"] = function(player) return SendPlayerToSpawn(player) end,
     ["special_offshore-pump"] = function(player)
     if ConvertWoodenChestToWaterFill(player) then
         global.markets[player.name].stats.waterfill_cost = math.floor(global.markets[player.name].stats.waterfill_cost * 1.01)
@@ -99,7 +102,7 @@ M.special_cost_table = {
     ["special_oil-refinery"] = 1.1,
     ["special_assembling-machine-3"] = 1.1,
     ["special_centrifuge"] = 1.1,
-    ["special_assembling-machine-1"] = 1.1,
+    -- ["special_assembling-machine-1"] = 1.1,
     ["special_offshore-pump"] = 1.1
 }
 
@@ -108,7 +111,7 @@ M.special_table = {
     ["special_oil-refinery"] = {cost = 10000},
     ["special_assembling-machine-3"] = {cost = 10000},
     ["special_centrifuge"] = {cost = 10000},
-    ["special_assembling-machine-1"] = {cost = 10},
+    -- ["special_assembling-machine-1"] = {cost = 10},
     ["special_offshore-pump"] = {cost = 1000}
 }
 
@@ -130,69 +133,69 @@ M.upgrade_cost_table = {
 M.upgrade_func_table = {
     ["sell-speed"] = function(player) return end,
     ["character-health"] = function(player)
-    player.character_health_bonus = player.character_health_bonus + 25
-end,
-["gun"] = function(player)
-player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet")+0.1)
-player.force.set_turret_attack_modifier("gun-turret", player.force.get_turret_attack_modifier("gun-turret")+0.1)
-player.force.set_gun_speed_modifier("bullet", player.force.get_gun_speed_modifier("bullet")+0.01)
-end,
-["tank-flame"] = function(player)
-player.force.set_ammo_damage_modifier("flamethrower", player.force.get_ammo_damage_modifier("flamethrower")+0.1)
-player.force.set_ammo_damage_modifier("cannon-shell", player.force.get_ammo_damage_modifier("cannon-shell")+0.1)
-player.force.set_turret_attack_modifier("flamethrower-turret", player.force.get_turret_attack_modifier("flamethrower-turret")+0.1)
-player.force.set_gun_speed_modifier("cannon-shell", player.force.get_gun_speed_modifier("cannon-shell")+0.01)
-end,
-["rocket"] = function(player)
-player.force.set_ammo_damage_modifier("rocket", player.force.get_ammo_damage_modifier("rocket")+0.1)
-player.force.set_gun_speed_modifier("rocket", player.force.get_gun_speed_modifier("rocket")+0.01)
-end,
-["laser"] = function(player)
-player.force.set_ammo_damage_modifier("laser", player.force.get_ammo_damage_modifier("laser")+0.1)
-player.force.set_ammo_damage_modifier("electric", player.force.get_ammo_damage_modifier("electric")+0.1)
-player.force.set_ammo_damage_modifier("beam", player.force.get_ammo_damage_modifier("beam")+0.1)
-player.force.set_turret_attack_modifier("laser-turret", player.force.get_turret_attack_modifier("laser-turret")+0.1)
-player.force.set_gun_speed_modifier("laser", player.force.get_gun_speed_modifier("laser")+0.01)
-end,
-["mining-drill-productivity-bonus"] = function(player)
-local upgrades = global.markets[player.name].upgrades
-for _, effect in pairs(upgrades["mining-drill-productivity-bonus"].t) do
-    player.force.mining_drill_productivity_bonus = player.force
-    .mining_drill_productivity_bonus +
-    effect.modifier
-end
-end,
-["maximum-following-robot-count"] = function(player)
-local upgrades = global.markets[player.name].upgrades
-for _, effect in pairs(upgrades["maximum-following-robot-count"].t) do
-    player.force.maximum_following_robot_count = player.force
-    .maximum_following_robot_count +
-    effect.modifier
-end
-end,
-["group-limit"] = function(player)
-local upgrades = global.markets[player.name].upgrades
-local player_group = global.groups[player.name]
-player_group.limit = player_group.limit + 1
-end,
-["autolvl-turret"] = function(player)
-global.markets.autolvl_turrets[player.name] = true
-global.markets[player.name].upgrades["coin-turret"].lvl = 1
-global.markets[player.name].upgrades["autofill-turret"].lvl = 1
-M.update(player)
-end,
-["coin-turret"] = function(player)
-global.markets.coin_turrets[player.name] = true
-global.markets[player.name].upgrades["autolvl-turret"].lvl = 1
-global.markets[player.name].upgrades["autofill-turret"].lvl = 1
-M.update(player)
-end,
-["autofill-turret"] = function(player)
-global.markets.autofill_turrets[player.name] = true
-global.markets[player.name].upgrades["coin-turret"].lvl = 1
-global.markets[player.name].upgrades["autolvl-turret"].lvl = 1
-M.update(player)
-end,
+        player.character_health_bonus = player.character_health_bonus + 25
+    end,
+    ["gun"] = function(player)
+        player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet")+0.1)
+        player.force.set_turret_attack_modifier("gun-turret", player.force.get_turret_attack_modifier("gun-turret")+0.1)
+        player.force.set_gun_speed_modifier("bullet", player.force.get_gun_speed_modifier("bullet")+0.01)
+    end,
+    ["tank-flame"] = function(player)
+        player.force.set_ammo_damage_modifier("flamethrower", player.force.get_ammo_damage_modifier("flamethrower")+0.1)
+        player.force.set_ammo_damage_modifier("cannon-shell", player.force.get_ammo_damage_modifier("cannon-shell")+0.1)
+        player.force.set_turret_attack_modifier("flamethrower-turret", player.force.get_turret_attack_modifier("flamethrower-turret")+0.1)
+        player.force.set_gun_speed_modifier("cannon-shell", player.force.get_gun_speed_modifier("cannon-shell")+0.01)
+    end,
+    ["rocket"] = function(player)
+        player.force.set_ammo_damage_modifier("rocket", player.force.get_ammo_damage_modifier("rocket")+0.1)
+        player.force.set_gun_speed_modifier("rocket", player.force.get_gun_speed_modifier("rocket")+0.01)
+    end,
+    ["laser"] = function(player)
+        player.force.set_ammo_damage_modifier("laser", player.force.get_ammo_damage_modifier("laser")+0.1)
+        player.force.set_ammo_damage_modifier("electric", player.force.get_ammo_damage_modifier("electric")+0.1)
+        player.force.set_ammo_damage_modifier("beam", player.force.get_ammo_damage_modifier("beam")+0.1)
+        player.force.set_turret_attack_modifier("laser-turret", player.force.get_turret_attack_modifier("laser-turret")+0.1)
+        player.force.set_gun_speed_modifier("laser", player.force.get_gun_speed_modifier("laser")+0.01)
+    end,
+    ["mining-drill-productivity-bonus"] = function(player)
+        local upgrades = global.markets[player.name].upgrades
+        for _, effect in pairs(upgrades["mining-drill-productivity-bonus"].t) do
+            player.force.mining_drill_productivity_bonus = player.force
+            .mining_drill_productivity_bonus +
+            effect.modifier
+        end
+    end,
+    ["maximum-following-robot-count"] = function(player)
+        local upgrades = global.markets[player.name].upgrades
+        for _, effect in pairs(upgrades["maximum-following-robot-count"].t) do
+            player.force.maximum_following_robot_count = player.force
+            .maximum_following_robot_count +
+            effect.modifier
+        end
+    end,
+    ["group-limit"] = function(player)
+        local upgrades = global.markets[player.name].upgrades
+        local player_group = global.groups[player.name]
+        player_group.limit = player_group.limit + 1
+    end,
+    ["autolvl-turret"] = function(player)
+        global.markets.autolvl_turrets[player.name] = true
+        global.markets[player.name].upgrades["coin-turret"].lvl = 1
+        global.markets[player.name].upgrades["autofill-turret"].lvl = 1
+        M.update(player)
+    end,
+    ["coin-turret"] = function(player)
+        global.markets.coin_turrets[player.name] = true
+        global.markets[player.name].upgrades["autolvl-turret"].lvl = 1
+        global.markets[player.name].upgrades["autofill-turret"].lvl = 1
+        M.update(player)
+    end,
+    ["autofill-turret"] = function(player)
+        global.markets.autofill_turrets[player.name] = true
+        global.markets[player.name].upgrades["coin-turret"].lvl = 1
+        global.markets[player.name].upgrades["autolvl-turret"].lvl = 1
+        M.update(player)
+    end,
 }
 
 function M.increase(player, upgrade)
@@ -301,69 +304,71 @@ function M.new(player)
             lvl = 0,
             max_lvl = 1,
             cost = 1000000,
-            sprite = "item/gun-turret",
-            hovered_sprite = "utility/turret_attack_modifier_constant",
+            sprite = "utility/turret_attack_modifier_constant",
+            hovered_sprite = "item/gun-turret",
             t = {},
-            tooltip = "Enable Combat Training on your gun turrets.\nThe more damage they deal, the more damage they do.\nAffects entire team\nONLY 1 GUN TURRET UPGRADE PER GAME"
-            },
-            ["coin-turret"] = {
-                name = "Gun Turret Coin Addon",
-                lvl = 0,
-                max_lvl = 1,
-                cost = 1000000,
-                sprite = "item/gun-turret",
-                hovered_sprite = "utility/hint_arrow_up",
-                t = {},
-                tooltip = "Enable Coin earnings on your gun turrets.\nMust be built by you, not your robots\nONLY 1 GUN TURRET UPGRADE PER GAME"  
-            },
-            ["autofill-turret"] = {
-                name = "Gun Turret Autofill",
-                lvl = 0,
-                max_lvl = 1,
-                cost = 1000000,
-                sprite = "item/gun-turret",
-                hovered_sprite = "item/firearm-magazine",
-                t = {},
-                tooltip = "Enable Autofill on your gun turrets.\nTakes ammo from shared\nONLY 1 GUN TURRET UPGRADE PER GAME"
+            tooltip = "Enable Combat Training on your gun turrets.\nGun turrets that you place will occasionally deal critical damage\nAs your gun turrets do damage, they add to a permanent damage bonus that your entire team receives\nONLY 1 GUN TURRET UPGRADE PER GAME"
             },
 
-            ["mining-drill-productivity-bonus"] = {
-                name = "Mining Drill Productivity",
-                lvl = 1,
-                max_lvl = 100,
-                cost = 10000,
-                sprite = "technology/mining-productivity-1",
-                t = {{type = "mining-drill-productivity-bonus", modifier = 0.1}},
-                tooltip = "+10% Productivity [img=technology/mining-productivity-1]"
-            },
+        ["coin-turret"] = {
+            name = "Gun Turret Coin Addon",
+            lvl = 0,
+            max_lvl = 1,
+            cost = 1000000,
+            sprite = "utility/hint_arrow_up",
+            hovered_sprite = "item/gun-turret",
+            t = {},
+            tooltip = "Enable Coin earnings on your gun turrets.\nMust be built by you, not your robots\nONLY 1 GUN TURRET UPGRADE PER GAME"  
+        },
+        ["autofill-turret"] = {
+            name = "Gun Turret Autofill",
+            lvl = 0,
+            max_lvl = 1,
+            cost = 1000000,
+            sprite = "item/firearm-magazine",
+            hovered_sprite = "item/gun-turret",
+            t = {},
+            tooltip = "Enable Autofill on your gun turrets.\nTurret must be built by player, not robot!\nTakes ammo from shared\nONLY 1 GUN TURRET UPGRADE PER GAME"
+        },
 
-            ["maximum-following-robot-count"] = {
-                name = "Follower Robot Count",
-                lvl = 1,
-                max_lvl = 100,
-                cost = 10000,
-                sprite = "technology/follower-robot-count-1",
-                t = {{type = "maximum-following-robots-count", modifier = 5}},
-                tooltip = "+5 Robots [img=entity/distractor] [img=entity/destroyer] [img=entity/defender]"
-            },
+        ["mining-drill-productivity-bonus"] = {
+            name = "Mining Drill Productivity",
+            lvl = 1,
+            max_lvl = 100,
+            cost = 10000,
+            sprite = "technology/mining-productivity-1",
+            t = {{type = "mining-drill-productivity-bonus", modifier = 0.1}},
+            tooltip = "+10% Productivity [img=technology/mining-productivity-1]"
+        },
 
-            ["group-limit"] = {
-                name = "Pet Limit",
-                lvl = 1,
-                max_lvl = 50,
-                cost = 10000,
-                sprite = "entity/small-biter",
-                t = {},
-                tooltip = "+1 Pet [img=entity/small-biter] [img=entity/medium-biter] [img=entity/big-biter] [img=entity/behemoth-biter]"
-            },
-        }
-        M.create_market_button(player)
-        M.create_upgrades_button(player)
-        M.create_stats_button(player)
-        M.create_market_gui(player)
-        M.create_upgrades_gui(player)
-        M.create_stats_gui(player)
-    end
+        ["maximum-following-robot-count"] = {
+            name = "Follower Robot Count",
+            lvl = 1,
+            max_lvl = 100,
+            cost = 10000,
+            sprite = "technology/follower-robot-count-1",
+            t = {{type = "maximum-following-robots-count", modifier = 5}},
+            tooltip = "+5 Robots [img=entity/distractor] [img=entity/destroyer] [img=entity/defender]"
+        },
+
+        ["group-limit"] = {
+            name = "Pet Limit",
+            lvl = 1,
+            max_lvl = 50,
+            cost = 10000,
+            sprite = "entity/small-biter",
+            t = {},
+            tooltip = "+1 Pet [img=entity/small-biter] [img=entity/medium-biter] [img=entity/big-biter] [img=entity/behemoth-biter]"
+        },
+    }
+    M.create_market_button(player)
+    M.create_upgrades_button(player)
+    M.create_stats_button(player)
+    M.create_teleport_home_button(player)
+    M.create_market_gui(player)
+    M.create_upgrades_gui(player)
+    M.create_stats_gui(player)
+end
 
     function M.deposit(player, v)
         local player = player
@@ -616,6 +621,17 @@ function M.create_stats_button(player)
     }
 end
 
+function M.create_teleport_home_button(player)
+    local player = player
+    local market = global.markets[player.name]
+    market.teleport_home_button = market.button_flow.add {
+        name = "teleport_home_button",
+        type = "sprite-button",
+        sprite = "virtual-signal/signal-H",
+        tooltip = "Teleport home\n[item=coin] "..M.teleport_home_cost.."\nHome: "..serpent.line(global.ocore.playerSpawns[player.name])
+    }
+end
+
 function M.create_market_gui(player)
     local player = player
     local market = global.markets[player.name]
@@ -761,7 +777,7 @@ function M.create_upgrades_gui(player)
             type = "sprite-button",
             sprite = "entity/"..name,
             number = 0,
-            tooltip = "[img=entity/" .. name .. "]\n[item=coin] " ..
+            tooltip = "[img=entity/" .. name .. "] +1 "..string.replace(name, "-", " ").."\n[item=coin] " ..
             tools.add_commas(pet.cost)
         }
     end
@@ -849,9 +865,9 @@ function M.create_stats_gui(player)
     if #market.stats.history > 0 then
         for _, transaction in pairs(market.stats.history) do
             table.insert(market.history_labels, market.history_table
-               .add {type = "label", caption = transaction.prefix})
+             .add {type = "label", caption = transaction.prefix})
             table.insert(market.history_labels, market.history_table
-               .add {type = "label", caption = transaction.suffix})
+             .add {type = "label", caption = transaction.suffix})
         end
     end
     market.info_frame = market.stats_frame.add {
@@ -1170,9 +1186,9 @@ function M.update(player)
         market.history_labels = {}
         for _, transaction in pairs(market.stats.history) do
             table.insert(market.history_labels, market.history_table
-               .add {type = "label", caption = transaction.prefix})
+             .add {type = "label", caption = transaction.prefix})
             table.insert(market.history_labels, market.history_table
-               .add {type = "label", caption = transaction.suffix})
+             .add {type = "label", caption = transaction.suffix})
         end
     end
     market.stats_labels.total_coin_earned.caption =
@@ -1222,7 +1238,7 @@ function M.update(player)
         button.number = market.upgrades[index].lvl
         button.tooltip = market.upgrades[index].name .. "\n[item=coin] " ..
         tools.add_commas(
-           math.ceil(market.upgrades[index].cost)) .. "\n" ..
+         math.ceil(market.upgrades[index].cost)) .. "\n" ..
         market.upgrades[index].tooltip
     end
     for index, button in pairs(market.follower_buttons) do
@@ -1234,7 +1250,7 @@ function M.update(player)
         button.number = global.groups[player.name].counts[index] or 0
         button.tooltip = "[entity=" .. index .. "]\n[item=coin] " ..
         tools.add_commas(
-           math.ceil(M.followers_table[index].cost))
+         math.ceil(M.followers_table[index].cost))
     end
     for index, button in pairs(market.shared_buttons) do
         if market.balance < M.shared_table[index].cost then
@@ -1245,7 +1261,7 @@ function M.update(player)
         button.number = M.shared_table[index].cost
         button.tooltip = "[img=item/" .. string.gsub(index, "special_", "") .. "]\n[item=coin] " ..
         tools.add_commas(
-           math.ceil(M.shared_table[index].cost))
+         math.ceil(M.shared_table[index].cost))
     end
     for index, button in pairs(market.special_buttons) do
         if index == "special_offshore-pump" then
@@ -1257,7 +1273,7 @@ function M.update(player)
             button.number = market.stats.waterfill_cost
             button.tooltip = "[img=item/" .. string.gsub(index, "special_", "") .. "]\n[item=coin] " ..
             tools.add_commas(
-               math.ceil(market.stats.waterfill_cost))
+             math.ceil(market.stats.waterfill_cost))
         else
             if market.balance < M.special_table[index].cost then
                 button.enabled = false
@@ -1267,7 +1283,7 @@ function M.update(player)
             button.number = M.special_table[index].cost
             button.tooltip = "[img=item/" .. string.gsub(index, "special_", "") .. "]\n[item=coin] " ..
             tools.add_commas(
-               math.ceil(M.special_table[index].cost))
+             math.ceil(M.special_table[index].cost))
         end
     end
 end
@@ -1317,8 +1333,8 @@ function M.check_for_sale(player)
         })
         market.ticks_to_sell = game.tick +
         (60 *
-         market.upgrades["sell-speed"].t[market.upgrades["sell-speed"]
-         .lvl])
+           market.upgrades["sell-speed"].t[market.upgrades["sell-speed"]
+           .lvl])
     end
     if game.tick >= market.ticks_to_sell then
         M.sell(player, market.item_for_sale)
@@ -1350,7 +1366,7 @@ function M.check_sac(player)
                 end
                 player.insert {name = blessing, count = 1}
                 game.print("[color=red]" .. player.name ..
-                 " [/color][color=purple]has received a [/color][color=acid]Greater[/color][color=purple] blessing[/color]")
+                   " [/color][color=purple]has received a [/color][color=acid]Greater[/color][color=purple] blessing[/color]")
             end
         end
         t = get_table(
@@ -1371,7 +1387,7 @@ function M.check_sac(player)
                 end
                 player.insert {name = blessing, count = 1}
                 game.print("[color=red]" .. player.name ..
-                 " [/color][color=purple]has received a blessing[/color]")
+                   " [/color][color=purple]has received a blessing[/color]")
             end
         end
     end
@@ -1454,10 +1470,10 @@ function M.on_tick()
             end
         end
     end
-    if (game.tick % 60 == 1) then
+    if (game.tick % 300 == 1) then
         M.autofill()
     end
-    if (game.tick % 10 == 1) then
+    if (game.tick % 14 == 1) then
         for _, player in pairs(game.players) do
             player = tools.get_player(player)
             if global.markets then
