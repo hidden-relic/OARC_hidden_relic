@@ -633,7 +633,7 @@ script.on_event(defines.events.on_entity_damaged, function(event)
         local roll = math.random(1, math.floor(101-critical_lvl))
         if roll == 1 and entity.valid then
             local critical_dmg = entity.damage(damage, player.force)
-            player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + critical_dmg * 0.000001)
+            -- if player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + critical_dmg * 0.000001)
             text_color={r=0, g=0, b=1}
             if size < 1 then size = 1 end
             local r = (math.random() - 0.5) * size * 0.75
@@ -648,7 +648,7 @@ script.on_event(defines.events.on_entity_damaged, function(event)
                     health_percentage = entity.get_health_ratio()
                     text_color = {r = 255, g = 215, b = 0}
                     critical_dmg = entity.damage(damage, player.force)
-                    player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + critical_dmg * 0.00001)
+                    -- player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + critical_dmg * 0.00001)
                     r = (math.random() - 0.5) * size * 0.75
                     position = {x = p.x + r, y = p.y - size}
                     message = {'damage-popup.player-damage', 'X3'}
@@ -661,7 +661,7 @@ script.on_event(defines.events.on_entity_damaged, function(event)
                             health_percentage = entity.get_health_ratio()
                             text_color = {r = 153, g = 50, b = 204}
                             critical_dmg = entity.damage(damage, player.force)
-                            player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + critical_dmg * 0.0001)
+                            -- player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + critical_dmg * 0.0001)
                             r = (math.random() - 0.5) * size * 0.75
                             position = {x = p.x + r, y = p.y - size}
                             message = {'damage-popup.player-damage', 'X4'}
