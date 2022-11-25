@@ -628,6 +628,7 @@ script.on_event(defines.events.on_entity_damaged, function(event)
         player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + damage * 0.0000001)
     end
     if cause and cause.name == "gun-turret" and cause.last_user and global.markets.critical_turrets[cause.last_user.name] then
+        local player = cause.last_user
         local critical_lvl = global.markets[cause.last_user.name].upgrades["critical-turret"].lvl
         local roll = math.random(1, 10)
         if roll == 1 and entity.valid then
@@ -638,7 +639,7 @@ script.on_event(defines.events.on_entity_damaged, function(event)
             local r = (math.random() - 0.5) * size * 0.75
             local position = {x = p.x + r, y = p.y - size}
             local message = {'damage-popup.player-damage', 'X2'}
-            game.print("x")
+            -- game.print("x")
 
             if critical_lvl > 1 then
                 roll = math.random(1, 10)
@@ -651,7 +652,7 @@ script.on_event(defines.events.on_entity_damaged, function(event)
                     r = (math.random() - 0.5) * size * 0.75
                     position = {x = p.x + r, y = p.y - size}
                     message = {'damage-popup.player-damage', 'X3'}
-                    game.print("xx")
+                    -- game.print("xx")
 
                     if critical_lvl > 2 then
                         roll = math.random(1, 10)
@@ -664,7 +665,7 @@ script.on_event(defines.events.on_entity_damaged, function(event)
                             r = (math.random() - 0.5) * size * 0.75
                             position = {x = p.x + r, y = p.y - size}
                             message = {'damage-popup.player-damage', 'X4'}
-                            game.print("xxx")
+                            -- game.print("xxx")
                         end
                     end
                 end
