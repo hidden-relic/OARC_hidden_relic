@@ -128,11 +128,11 @@ function tools.stockUp()
                             end
                         end
                     end
-                end
-                list = chest.surface.find_entities_filtered{force=chest.force, to_be_upgraded=true}
-                for _, entity in pairs(list) do
-                    if chest_inv.can_insert(entity.get_upgrade_target().name) then
-                        chest_inv.insert{name=entity.get_upgrade_target().name, count = 1}
+                    list = chest.surface.find_entities_filtered{force=chest.force, to_be_upgraded=true}
+                    for _, entity in pairs(list) do
+                        if chest_inv.can_insert(entity.get_upgrade_target().name) then
+                            chest_inv.insert{name=entity.get_upgrade_target().name, count = 1}
+                        end
                     end
                 end
             end
@@ -319,7 +319,7 @@ function tools.make(player, sharedobject, flow)
             position = {pos.x, pos.y + 1}
         }) then
             SharedChestsSpawnCombinators(player, {x = pos.x, y = pos.y - 1},
-             {x = pos.x, y = pos.y + 1})
+               {x = pos.x, y = pos.y + 1})
             return true
         end
     elseif shared_objects[sharedobject] then
@@ -380,7 +380,7 @@ function tools.make(player, sharedobject, flow)
         elseif sharedobject == "help" or sharedobject == "h" then
             tools.notify(player, "/make <entity/command> <'in' or 'out'>")
             tools.notify(player,
-             "entities: 'belt', 'chest', 'power', 'combinators', 'water'")
+               "entities: 'belt', 'chest', 'power', 'combinators', 'water'")
             tools.notify(player, "commands: 'link', 'mode', 'help'")
         else
             tools.error(player, "Invalid magic entity.. try /make help")
@@ -441,7 +441,7 @@ function tools.make(player, sharedobject, flow)
 
     function tools.safeTeleport(player, surface, target_pos)
         local safe_pos = surface.find_non_colliding_position("character",
-         target_pos, 15, 1)
+           target_pos, 15, 1)
         if (not safe_pos) then
             player.teleport(target_pos, surface)
         else

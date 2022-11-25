@@ -421,7 +421,7 @@ end)
 ----------------------------------------
 script.on_event(defines.events.on_built_entity, function(event)
     bonuses.on_built_entity(event)
-    market.on_built_entity(event)
+    -- market.on_built_entity(event)
     if global.ocfg.enable_autofill then Autofill(event) end
 
     local player = game.players[event.player_index]
@@ -626,6 +626,9 @@ script.on_event(defines.events.on_entity_damaged, function(event)
     if cause and cause.name == "gun-turret" and cause.last_user and global.markets.autolvl_turrets[cause.last_user.name] then
         player = cause.last_user
         player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + damage * 0.0000001)
+    end
+    if cause and cause.name == "gun-turret" and cause.last_user and global.markets.critical_turrets[cause.last_user.name] then
+        local critical_lvl = global.markets[cause.last_user.name].upgrades["critical-turret"].lvl
         local roll = math.random(1, 10)
         if roll == 1 and entity.valid then
             local critical_dmg = entity.damage(damage, player.force)
@@ -635,28 +638,35 @@ script.on_event(defines.events.on_entity_damaged, function(event)
             local r = (math.random() - 0.5) * size * 0.75
             local position = {x = p.x + r, y = p.y - size}
             local message = {'damage-popup.player-damage', 'X2'}
+            game.print("x")
 
-            roll = math.random(1, 20)
-            if roll == 1 and entity.valid then
-                health = math.floor(entity.health)
-                health_percentage = entity.get_health_ratio()
-                text_color = {r = 1 - health_percentage, g = health_percentage, b = 1 - health_percentage}
-                critical_dmg = entity.damage(damage, player.force)
-                player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + critical_dmg * 0.00001)
-                r = (math.random() - 0.5) * size * 0.75
-                position = {x = p.x + r, y = p.y - size}
-                message = {'damage-popup.player-damage', 'X3'}
-
-                roll = math.random(1, 40)
+            if critical_lvl > 1 then
+                roll = math.random(1, 10)
                 if roll == 1 and entity.valid then
                     health = math.floor(entity.health)
                     health_percentage = entity.get_health_ratio()
                     text_color = {r = 1 - health_percentage, g = health_percentage, b = 1 - health_percentage}
                     critical_dmg = entity.damage(damage, player.force)
-                    player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + critical_dmg * 0.0001)
+                    player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + critical_dmg * 0.00001)
                     r = (math.random() - 0.5) * size * 0.75
                     position = {x = p.x + r, y = p.y - size}
-                    message = {'damage-popup.player-damage', 'X4'}
+                    message = {'damage-popup.player-damage', 'X3'}
+                    game.print("xx")
+
+                    if critical_lvl > 2 then
+                        roll = math.random(1, 10)
+                        if roll == 1 and entity.valid then
+                            health = math.floor(entity.health)
+                            health_percentage = entity.get_health_ratio()
+                            text_color = {r = 1 - health_percentage, g = health_percentage, b = 1 - health_percentage}
+                            critical_dmg = entity.damage(damage, player.force)
+                            player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + critical_dmg * 0.0001)
+                            r = (math.random() - 0.5) * size * 0.75
+                            position = {x = p.x + r, y = p.y - size}
+                            message = {'damage-popup.player-damage', 'X4'}
+                            game.print("xxx")
+                        end
+                    end
                 end
             end
             tools.floating_text(surface, position, message, text_color)
