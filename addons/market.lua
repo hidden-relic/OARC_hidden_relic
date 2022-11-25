@@ -125,7 +125,7 @@ M.upgrade_cost_table = {
     ["mining-drill-productivity-bonus"] = 0.2,
     ["maximum-following-robot-count"] = 0.2,
     ["group-limit"] = 0.25,
-    ["critical-turret"] = 1.5,
+    ["critical-turret"] = 0.05,
     ["autolvl-turret"] = 0,
     ["coin-turret"] = 0,
 }
@@ -180,20 +180,26 @@ player_group.limit = player_group.limit + 1
 end,
 ["autolvl-turret"] = function(player)
 global.markets.autolvl_turrets[player.name] = true
--- global.markets[player.name].upgrades["coin-turret"].lvl = 1
--- global.markets[player.name].upgrades["autofill-turret"].lvl = 1
 M.update(player)
 end,
 ["coin-turret"] = function(player)
 global.markets.coin_turrets[player.name] = true
--- global.markets[player.name].upgrades["autolvl-turret"].lvl = 1
--- global.markets[player.name].upgrades["autofill-turret"].lvl = 1
 M.update(player)
 end,
 ["critical-turret"] = function(player)
-global.markets.critical_turrets[player.name] = true
--- global.markets[player.name].upgrades["coin-turret"].lvl = 1
--- global.markets[player.name].upgrades["autolvl-turret"].lvl = 1
+local upgrades = global.markets[player.name].upgrades
+if not global.markets.critical_turrets[player.name] then
+    global.markets.critical_turrets[player.name] = true
+    upgrades["critical-turret"].cost = 10000
+end
+if upgrades["critical-turret"].lvl == 30 then
+    global.markets[player.name].upgrade_buttons["critical-turret"].sprite = "item/piercing-rounds-magazine"
+    upgrades["critical-turret"].cost = upgrades["critical-turret"].cost*2
+end
+if upgrades["critical-turret"].lvl == 60 then
+    global.markets[player.name].upgrade_buttons["critical-turret"].sprite = "item/uranium-rounds-magazine"
+    upgrades["critical-turret"].cost = upgrades["critical-turret"].cost*2
+end
 M.update(player)
 end,
 }
@@ -323,12 +329,12 @@ function M.new(player)
             ["critical-turret"] = {
                 name = "Gun Turret Critical Bonus",
                 lvl = 0,
-                max_lvl = 3,
+                max_lvl = 100,
                 cost = 1000000,
                 sprite = "item/firearm-magazine",
                 hovered_sprite = "item/gun-turret",
                 t = {},
-                tooltip = "Enable random critical damage on your gun turrets."
+                tooltip = "Enable random critical damage on your gun turrets.\nYou must buy in to receive the bonus, then upgrade the critical rate at a cheaper price.\nAt lvl 1, there is a 1 in 100 chance to deal double damage. Each upgrade shortens the range by 1.\nAt lvl 30 and 60, you gain the possibility to do 3x and 4x damage respectively.\nAt lvl 30, you will have a 1 in 70 chance to hit twice. If you do, you then have a 1 in 5 chance to hit a 3rd time.\nAt lvl 60, you will have a 1 in 40 chance to hit twice, then a 1 in 5 chance to hit a 3rd time, and a 1 in 3 chance to follow up with a 4th.\nMax lvl is 100, which would be a double strike every time, with a 1 in 5 chance for a 3rd, a 1 in 3 for a 4th"
             },
 
             ["mining-drill-productivity-bonus"] = {

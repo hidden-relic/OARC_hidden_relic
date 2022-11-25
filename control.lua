@@ -630,42 +630,42 @@ script.on_event(defines.events.on_entity_damaged, function(event)
     if cause and cause.name == "gun-turret" and cause.last_user and global.markets.critical_turrets[cause.last_user.name] then
         local player = cause.last_user
         local critical_lvl = global.markets[cause.last_user.name].upgrades["critical-turret"].lvl
-        local roll = math.random(1, 10)
+        local roll = math.random(1, math.floor(101-critical_lvl))
         if roll == 1 and entity.valid then
             local critical_dmg = entity.damage(damage, player.force)
             player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + critical_dmg * 0.000001)
-            text_color.b = 1 - health_percentage
+            text_color={r=0, g=0, b=1}
             if size < 1 then size = 1 end
             local r = (math.random() - 0.5) * size * 0.75
             local position = {x = p.x + r, y = p.y - size}
             local message = {'damage-popup.player-damage', 'X2'}
-            -- game.print("x")
+            if global.crit_log == true then game.print("x2 "..critical_dmg) end
 
-            if critical_lvl > 1 then
-                roll = math.random(1, 10)
+            if critical_lvl >= 30 then
+                roll = math.random(1, 5)
                 if roll == 1 and entity.valid then
                     health = math.floor(entity.health)
                     health_percentage = entity.get_health_ratio()
-                    text_color = {r = 1 - health_percentage, g = health_percentage, b = 1 - health_percentage}
+                    text_color = {r = 255, g = 215, b = 0}
                     critical_dmg = entity.damage(damage, player.force)
                     player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + critical_dmg * 0.00001)
                     r = (math.random() - 0.5) * size * 0.75
                     position = {x = p.x + r, y = p.y - size}
                     message = {'damage-popup.player-damage', 'X3'}
-                    -- game.print("xx")
+                    if global.crit_log == true then game.print("x3 "..critical_dmg) end
 
-                    if critical_lvl > 2 then
-                        roll = math.random(1, 10)
+                    if critical_lvl >= 60 then
+                        roll = math.random(1, 3)
                         if roll == 1 and entity.valid then
                             health = math.floor(entity.health)
                             health_percentage = entity.get_health_ratio()
-                            text_color = {r = 1 - health_percentage, g = health_percentage, b = 1 - health_percentage}
+                            text_color = {r = 153, g = 50, b = 204}
                             critical_dmg = entity.damage(damage, player.force)
                             player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + critical_dmg * 0.0001)
                             r = (math.random() - 0.5) * size * 0.75
                             position = {x = p.x + r, y = p.y - size}
                             message = {'damage-popup.player-damage', 'X4'}
-                            -- game.print("xxx")
+                            if global.crit_log == true then game.print("x4 "..critical_dmg) end
                         end
                     end
                 end
