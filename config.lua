@@ -20,7 +20,7 @@ SERVER_MSG = "Rules: Be polite. Ask before changing other players's stuff. Have 
 
 SCENARIO_INFO_MSG = "Latest updates in this scenario version:\n"..
 "Market system :: Players can now buy items and upgrades for coin.\n"..
-"Coin is acquired by killing bugs or by using the Green Chest\b"..
+"Coin is acquired by killing bugs or by using the Green Chest\n"..
 "Green Chest :: Players can now sell items for coin by placing them inside the Green Chest. \n"..
 "Player Bonuses :: Players will slowly gain bonuses to their\n"..
 "player crafting/running/mining speed,\n"..

@@ -19,9 +19,9 @@ end
 
 function tools.sortByValue(t)
     local keys = {}
-
+    
     for key, _ in pairs(t) do table.insert(keys, key) end
-
+    
     table.sort(keys, function(keyLhs, keyRhs) return t[keyLhs] < t[keyRhs] end)
     local r = {}
     for _, key in ipairs(keys) do r[key] = t[key] end
@@ -86,7 +86,7 @@ function tools.get_player(o) -- pass in table, string, or int
     elseif o_type == 'string' or o_type == 'number' then -- if its a string or int
         p = game.players[o] -- get the player by game.players[string or int]
     end
-
+    
     if p and p.valid and p.is_player() then return p end -- do all validity checks and return valid player object
 end
 
@@ -104,10 +104,10 @@ function tools.stockUp()
     if (game.tick % 1800 == 0) then
         if material_chest and material_chest.valid then
             local chest_inv = material_chest.get_inventory(defines.inventory
-                                                               .chest)
+            .chest)
             chest_inv.clear()
             local list = game.surfaces[GAME_SURFACE_NAME]
-                             .find_entities_filtered {
+            .find_entities_filtered {
                 type = "entity-ghost",
                 force = material_chest.force
             }
@@ -119,7 +119,7 @@ function tools.stockUp()
             end
             for _, ghost in pairs(list) do
                 if ghost.ghost_name == "curved-rail" or ghost.ghost_name ==
-                    "straight-rail" then
+                "straight-rail" then
                     if chest_inv.can_insert("rail") then
                         chest_inv.insert {name = "rail", count = 1}
                     end
@@ -168,10 +168,10 @@ function tools.floating_text_on_player(player, text, color)
 end
 
 function tools.floating_text_on_player_offset(player, text, color, x_offset,
-                                              y_offset)
+    y_offset)
     player = tools.get_player(player)
     if not player or not player.valid then return end
-
+    
     local position = player.position
     return tools.floating_text(player.surface, {
         x = position.x + x_offset,
@@ -234,7 +234,7 @@ function tools.make(player, sharedobject, flow)
         ["accumulator"] = true
     }
     local flows = {["in"] = true, ["out"] = true}
-
+    
     if not player.admin then
         tools.error(player, "You're not admin!")
         return
@@ -245,7 +245,7 @@ function tools.make(player, sharedobject, flow)
         if link_in and link_out then
             if link_in == link_out then
                 tools.notify(
-                    "Last logged input belt is the same as last logged output belt. Specify a new belt with /make mode <in/out>")
+                "Last logged input belt is the same as last logged output belt. Specify a new belt with /make mode <in/out>")
                 return false
             else
                 tools.link_belts(player, link_in, link_out)
@@ -266,12 +266,12 @@ function tools.make(player, sharedobject, flow)
                 local link_in = global.oarc_players[player.name].link_in
                 if link_in.linked_belt_type == "input" then
                     tools.notify(
-                        "MODE already set to INPUT. '/make mode output' to link an OUTPUT belt. '/make link' to connect.")
+                    "MODE already set to INPUT. '/make mode output' to link an OUTPUT belt. '/make link' to connect.")
                     return link_in
                 else
                     link_in.linked_belt_type = "input"
                     tools.notify(
-                        "MODE set to INPUT. '/make mode output' to link an OUTPUT belt. '/make link' to connect.")
+                    "MODE set to INPUT. '/make mode output' to link an OUTPUT belt. '/make link' to connect.")
                     return link_in
                 end
             elseif flow == "out" then
@@ -279,12 +279,12 @@ function tools.make(player, sharedobject, flow)
                 local link_out = global.oarc_players[player.name].link_out
                 if link_out.linked_belt_type == "output" then
                     tools.notify(
-                        "MODE already set to OUTPUT. '/make mode input' to link an INPUT belt. '/make link' to connect.")
+                    "MODE already set to OUTPUT. '/make mode input' to link an INPUT belt. '/make link' to connect.")
                     return link_out
                 else
                     link_out.linked_belt_type = "output"
                     tools.notify(
-                        "MODE set to OUTPUT. '/make mode input' to link an INPUT belt. '/make link' to connect.")
+                    "MODE set to OUTPUT. '/make mode input' to link an INPUT belt. '/make link' to connect.")
                     return link_out
                 end
             end
@@ -299,7 +299,7 @@ function tools.make(player, sharedobject, flow)
             return true
         else
             tools.error(player,
-                        "Failed to place waterfill. Don't stand so close!")
+            "Failed to place waterfill. Don't stand so close!")
             return false
         end
     elseif sharedobject == "combinator" or sharedobject == "combinators" then
@@ -312,7 +312,7 @@ function tools.make(player, sharedobject, flow)
             position = {pos.x, pos.y + 1}
         }) then
             SharedChestsSpawnCombinators(player, {x = pos.x, y = pos.y - 1},
-                                         {x = pos.x, y = pos.y + 1})
+            {x = pos.x, y = pos.y + 1})
             return true
         end
     elseif shared_objects[sharedobject] then
@@ -338,7 +338,7 @@ function tools.make(player, sharedobject, flow)
                         return link_out
                     end
                 elseif sharedobject == "power" or sharedobject == "energy" or
-                    sharedobject == "accumulator" then
+                sharedobject == "accumulator" then
                     if flow == "in" then
                         if (player.surface.can_place_entity {
                             name = "electric-energy-interface",
@@ -373,11 +373,49 @@ function tools.make(player, sharedobject, flow)
     elseif sharedobject == "help" or sharedobject == "h" then
         tools.notify(player, "/make <entity/command> <'in' or 'out'>")
         tools.notify(player,
-                     "entities: 'belt', 'chest', 'power', 'combinators', 'water'")
+        "entities: 'belt', 'chest', 'power', 'combinators', 'water'")
         tools.notify(player, "commands: 'link', 'mode', 'help'")
     else
         tools.error(player, "Invalid magic entity.. try /make help")
         return
+    end
+end
+
+function dg(playername, radius, chance)
+    local playerpos = game.players[playername].position
+    local radius = radius
+    local zone_size = radius / 3
+    local chance = chance or 2
+    local bug_table = {
+        ["small-biter"] = false,
+        ["medium-biter"] = "small-biter",
+        ["big-biter"] = "medium biter",
+        ["behemoth-biter"] = "big biter",
+        ["small-spitter"] = false,
+        ["medium-spitter"] = "small-spitter",
+        ["big-spitter"] = "medium spitter",
+        ["behemoth-spitter"] = "big spitter",
+        ["medium-worm-turret"] = "small-worm-turret",
+        ["big-worm-turret"] = "medium-worm-turret",
+        ["behemoth-worm-turret"] = "big-worm-turret",
+        ["biter-spawner"] = false,
+        ["spitter-spawner"] = false
+    }
+    while radius > 0 do
+        for current, downgrade in pairs(bug_table) do
+            for i, bug in pairs(game.players[playername].surface.find_entities_filtered{name=current, force="enemy", position=playerpos, radius=radius}) do
+                if bug and bug.valid then
+                    local bug_pos = bug.position
+                    if current == "biter-spawner" or current == "spitter-spawner" then
+                        if math.random(1, chance) == 1 then bug.destroy() end
+                    else bug.destroy() end
+                    if downgrade then
+                        game.players[playername].surface.create_entity{name=downgrade, position=bug_pos, force="enemy"}
+                    end
+                end
+            end
+        end
+        radius = radius - zone_size
     end
 end
 
@@ -416,17 +454,17 @@ function tools.run_tests(player, cursor_stack)
             close = "[/color]"
         }
     }
-
+    
     for index, test in pairs(tests.funcs) do
         if test then
             local msg = tests.truthy.parent .. tests.parent[index] ..
-                            tests.truthy.close .. " " .. tests.truthy.name ..
-                            tests.name[index] .. tests.truthy.close .. " " ..
-                            tests.truthy.funcs .. tostring(test) ..
-                            tests.truthy.close
+            tests.truthy.close .. " " .. tests.truthy.name ..
+            tests.name[index] .. tests.truthy.close .. " " ..
+            tests.truthy.funcs .. tostring(test) ..
+            tests.truthy.close
             p(msg)
             msg = tests.parent[index] .. " " .. tests.name[index] .. " " ..
-                      tostring(test)
+            tostring(test)
             log(msg)
         end
     end
@@ -434,7 +472,7 @@ end
 
 function tools.safeTeleport(player, surface, target_pos)
     local safe_pos = surface.find_non_colliding_position("character",
-                                                         target_pos, 15, 1)
+    target_pos, 15, 1)
     if (not safe_pos) then
         player.teleport(target_pos, surface)
     else
@@ -476,10 +514,10 @@ function tools.replace(player, e1, e2)
         return
     end
     local p, cs, bp_ent_count, bp_tile_count = player.print,
-                                               player.cursor_stack, 0, 0
-
+    player.cursor_stack, 0, 0
+    
     tools.run_tests(player, cs)
-
+    
     if game.entity_prototypes[e1] or game.tile_prototypes[e1] then
         local bp, bp_ents, bp_tiles = {}, {}, {}
         if not player.is_cursor_blueprint() then
@@ -488,9 +526,9 @@ function tools.replace(player, e1, e2)
         else
             bp_ents = player.get_blueprint_entities()
             bp_tiles = player.cursor_stack.import_stack(tostring(
-                                                            player.cursor_stack
-                                                                .export_stack()))
-                           .get_blueprint_tiles()
+            player.cursor_stack
+            .export_stack()))
+            .get_blueprint_tiles()
         end
         if game.entity_prototypes[e1] then
             p(e1 .. " is an entity prototype.")
@@ -521,7 +559,7 @@ function tools.replace(player, e1, e2)
         -- end
         -- bp.clear_blueprint()
     end
-
+    
     p("entity replacements: " .. bp_ent_count)
     p("tile replacements: " .. bp_tile_count)
     -- else

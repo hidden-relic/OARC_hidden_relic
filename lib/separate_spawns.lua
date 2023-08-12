@@ -7,7 +7,7 @@ require("lib/oarc_utils")
 require("config")
 local crash_site = require("crash-site")
 local market = require("addons.market")
-local group = require("addons.groups")
+-- local group = require("addons.groups")
 --[[
   ___  _  _  ___  _____ 
  |_ _|| \| ||_ _||_   _|
@@ -753,12 +753,12 @@ function RemoveOrResetPlayer(player, remove_player, remove_force, remove_base,
             market.new(player)
         end
     end
-    if global.groups[player.name] then
-        global.groups[player.name] = nil
-        if player.character then
-            group.new(player)
-        end
-    end
+    -- if global.groups[player.name] then
+    --     global.groups[player.name] = nil
+    --     if player.character then
+    --         group.new(player)
+    --     end
+    -- end
     -- Clear globals
     CleanupPlayerGlobals(player.name) -- Except global.ocore.uniqueSpawns
 

@@ -81,6 +81,27 @@ function DischargeAccumulators(surface, position, force, power_needs)
     return power_drained / charging_station_multiplier
 end
 
+function pcharge(player)
+    if player == nil then player = game.player end
+    if not player.character then return end
+    local armor_inventory = player.get_inventory(defines.inventory
+                                                     .character_armor)
+    if not armor_inventory.valid then return end
+    local armor = armor_inventory[1]
+    if not armor.valid_for_read then return end
+    local grid = armor.grid
+    if not grid or not grid.valid then return end
+    local equip = grid.equipment
+    for _, piece in pairs(equip) do
+        if piece.valid and piece.generator_power == 0 then
+            piece.energy = piece.max_energy
+        end
+    end
+    for index, robot in pairs(game.player.surface.find_entities_filtered{name="construction-robot", position=game.player.position, radius=100}) do
+        robot.energy = robot.max_energy
+    end
+end
+
 function charge(player)
     if player == nil then player = game.player end
     if not player.character then return end

@@ -16,6 +16,8 @@ function InitOarcConfig()
 
     global.ocore = {}
     global.markets = {}
+    global.config = {}
+    global.config.limit_turret_upgrades = false
 
     if (game.active_mods["clean-tutorial-grid"]) then
         global.ocfg.locked_build_area_tile = "clean-tutorial-grid"
