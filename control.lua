@@ -366,7 +366,7 @@ script.on_event(defines.events.on_tick, function(event)
         RegrowthForceRemovalOnTick()
     end
 
-    if game.tick % 60 == 0 then tools.FlyingTime(game.tick) end
+    -- if game.tick % 60 == 0 then tools.FlyingTime(game.tick) end
 
     DelayedSpawnOnTick()
 
@@ -378,7 +378,7 @@ script.on_event(defines.events.on_tick, function(event)
     -- group.on_tick()
     flying_tags.update()
 
-    tools.stockUp()
+    -- tools.stockUp()
 
     if global.ocfg.enable_chest_sharing then SharedChestsOnTick() end
 
