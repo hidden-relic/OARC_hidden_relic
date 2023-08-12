@@ -14,7 +14,7 @@ local market = require("addons.market")
   | | | .` | | |   | |  
  |___||_|\_||___|  |_|  
                         
- --]]
+--]]
 
 -- Initializes the globals used to track the special spawn and player
 -- status information
@@ -102,7 +102,7 @@ end
  |  _/| |__  / _ \\ V / | _| |   /   \__ \|  _/| _|| (__  | | | _|  | || (__ 
  |_|  |____|/_/ \_\|_|  |___||_|_\   |___/|_|  |___|\___||___||_|  |___|\___|
                                                                              
- --]]
+--]]
 
 -- When a new player is created, present the spawn options
 -- Assign them to the main force so they can communicate with the team
@@ -149,7 +149,7 @@ end
  \__ \|  _// _ \\ \/\/ / | .` |   \__ \| _|   | |  | |_| ||  _/
  |___/|_| /_/ \_\\_/\_/  |_|\_|   |___/|___|  |_|   \___/ |_|  
                                                                
- --]]
+--]]
 
 -- Add a spawn to the shared spawn global
 -- Used for tracking which players are assigned to it, where it is and if
@@ -175,7 +175,7 @@ function GenerateStartingResources(surface, pos)
                 y = pos.y + t_data.y_offset
             }
             GenerateResourcePatch(surface, t_name, t_data.size, pos,
-              t_data.amount)
+                                  t_data.amount)
         end
     else
 
@@ -190,10 +190,10 @@ function GenerateStartingResources(surface, pos)
         -- Tweak in config.lua
         local angle_offset = rand_settings.angle_offset
         local num_resources = TableLength(
-          global.ocfg.spawn_config.resource_tiles)
+                                  global.ocfg.spawn_config.resource_tiles)
         local theta =
-        ((rand_settings.angle_final - rand_settings.angle_offset) /
-            num_resources);
+            ((rand_settings.angle_final - rand_settings.angle_offset) /
+                num_resources);
         local count = 0
 
         for _, k_name in pairs(shuffled_list) do
@@ -204,9 +204,9 @@ function GenerateStartingResources(surface, pos)
 
             local pos = {x = math.floor(tx), y = math.floor(ty)}
             GenerateResourcePatch(surface, k_name, global.ocfg.spawn_config
-              .resource_tiles[k_name].size, pos,
-              global.ocfg.spawn_config.resource_tiles[k_name]
-              .amount)
+                                      .resource_tiles[k_name].size, pos,
+                                  global.ocfg.spawn_config.resource_tiles[k_name]
+                                      .amount)
             count = count + 1
         end
     end
@@ -231,8 +231,8 @@ function SendPlayerToNewSpawnAndCreateIt(delayedSpawn)
 
     -- DOUBLE CHECK and make sure the area is super safe.
     ClearNearbyEnemies(delayedSpawn.pos,
-     global.ocfg.spawn_config.safe_area.safe_radius,
-     game.surfaces[GAME_SURFACE_NAME])
+                       global.ocfg.spawn_config.safe_area.safe_radius,
+                       game.surfaces[GAME_SURFACE_NAME])
 
     if (not delayedSpawn.vanilla) then
 
@@ -251,7 +251,7 @@ function SendPlayerToNewSpawnAndCreateIt(delayedSpawn)
 
         -- Create the spawn resources here
         GenerateStartingResources(game.surfaces[GAME_SURFACE_NAME],
-          delayedSpawn.pos)
+                                  delayedSpawn.pos)
 
     end
 
@@ -265,8 +265,8 @@ function SendPlayerToNewSpawnAndCreateIt(delayedSpawn)
 
     -- Chart the area.
     ChartArea(player.force, delayedSpawn.pos, math.ceil(
-      global.ocfg.spawn_config.gen_settings.land_area_tiles /
-      CHUNK_SIZE), player.surface)
+                  global.ocfg.spawn_config.gen_settings.land_area_tiles /
+                      CHUNK_SIZE), player.surface)
 
     if (player.gui.screen.wait_for_spawn_dialog ~= nil) then
         player.gui.screen.wait_for_spawn_dialog.destroy()
@@ -275,7 +275,7 @@ function SendPlayerToNewSpawnAndCreateIt(delayedSpawn)
     if (global.ocfg.enable_chest_sharing and not delayedSpawn.vanilla) then
 
         local x_dist = global.ocfg.spawn_config.resource_rand_pos_settings
-        .radius
+                           .radius
 
         -- Shared electricity IO pair of scripted electric-energy-interfaces
         SharedEnergySpawnInput(player, {
@@ -403,7 +403,7 @@ end
  | (__ | __ || |_| || .` || ' <    | (_ || _| | .` || _| |   / / _ \ | |   | || (_) || .` |
   \___||_||_| \___/ |_|\_||_|\_\    \___||___||_|\_||___||_|_\/_/ \_\|_|  |___|\___/ |_|\_|
                                                                                            
-  --]]
+--]]
 
 -- Clear the spawn areas.
 -- This should be run inside the chunk generate event and be given a list of all
@@ -415,8 +415,8 @@ function SetupAndClearSpawnAreas(surface, chunkArea)
 
         -- Create a bunch of useful area and position variables
         local landArea = GetAreaAroundPos(spawn.pos, global.ocfg.spawn_config
-          .gen_settings.land_area_tiles +
-          CHUNK_SIZE)
+                                              .gen_settings.land_area_tiles +
+                                              CHUNK_SIZE)
         -- local safeArea = GetAreaAroundPos(spawn.pos, global.ocfg.spawn_config.safe_area.safe_radius)
         -- local warningArea = GetAreaAroundPos(spawn.pos, global.ocfg.spawn_config.safe_area.warn_radius)
         -- local reducedArea = GetAreaAroundPos(spawn.pos, global.ocfg.spawn_config.safe_area.danger_radius)
@@ -426,9 +426,9 @@ function SetupAndClearSpawnAreas(surface, chunkArea)
         }
         local spawnPosOffset = {
             x = spawn.pos.x +
-            global.ocfg.spawn_config.gen_settings.land_area_tiles,
+                global.ocfg.spawn_config.gen_settings.land_area_tiles,
             y = spawn.pos.y +
-            global.ocfg.spawn_config.gen_settings.land_area_tiles
+                global.ocfg.spawn_config.gen_settings.land_area_tiles
         }
 
         -- Make chunks near a spawn safe by removing enemies
@@ -440,7 +440,7 @@ function SetupAndClearSpawnAreas(surface, chunkArea)
         elseif (getDistance(spawn.pos, chunkAreaCenter) <
             global.ocfg.spawn_config.safe_area.warn_radius) then
             ReduceAliensInArea(surface, chunkArea, global.ocfg.spawn_config
-             .safe_area.warn_reduction)
+                                   .safe_area.warn_reduction)
             -- DowngradeWormsInArea(surface, chunkArea, 100, 100, 100)
             RemoveWormsInArea(surface, chunkArea, false, true, true, true) -- remove all non-small worms.
 
@@ -448,7 +448,7 @@ function SetupAndClearSpawnAreas(surface, chunkArea)
         elseif (getDistance(spawn.pos, chunkAreaCenter) <
             global.ocfg.spawn_config.safe_area.danger_radius) then
             ReduceAliensInArea(surface, chunkArea, global.ocfg.spawn_config
-             .safe_area.danger_reduction)
+                                   .safe_area.danger_reduction)
             -- DowngradeWormsInArea(surface, chunkArea, 50, 100, 100)
             RemoveWormsInArea(surface, chunkArea, false, false, true, true) -- remove all huge/behemoth worms.
         end
@@ -460,14 +460,14 @@ function SetupAndClearSpawnAreas(surface, chunkArea)
 
                 -- Remove trees/resources inside the spawn area
                 RemoveInCircle(surface, chunkArea, "tree", spawn.pos,
-                 global.ocfg.spawn_config.gen_settings
-                 .land_area_tiles)
+                               global.ocfg.spawn_config.gen_settings
+                                   .land_area_tiles)
                 RemoveInCircle(surface, chunkArea, "resource", spawn.pos,
-                 global.ocfg.spawn_config.gen_settings
-                 .land_area_tiles + 5)
+                               global.ocfg.spawn_config.gen_settings
+                                   .land_area_tiles + 5)
                 RemoveInCircle(surface, chunkArea, "cliff", spawn.pos,
-                 global.ocfg.spawn_config.gen_settings
-                 .land_area_tiles + 5)
+                               global.ocfg.spawn_config.gen_settings
+                                   .land_area_tiles + 5)
 
                 local fill_tile = "landfill"
                 if (game.active_mods["oarc-restricted-build"]) then
@@ -476,19 +476,19 @@ function SetupAndClearSpawnAreas(surface, chunkArea)
 
                 if (global.ocfg.spawn_config.gen_settings.tree_circle) then
                     CreateCropCircle(surface, spawn.pos, chunkArea, global.ocfg
-                       .spawn_config.gen_settings
-                       .land_area_tiles, fill_tile)
+                                         .spawn_config.gen_settings
+                                         .land_area_tiles, fill_tile)
                 end
                 if (global.ocfg.spawn_config.gen_settings.tree_octagon) then
                     CreateCropOctagon(surface, spawn.pos, chunkArea,
-                      global.ocfg.spawn_config.gen_settings
-                      .land_area_tiles, fill_tile)
+                                      global.ocfg.spawn_config.gen_settings
+                                          .land_area_tiles, fill_tile)
                 end
                 if (global.ocfg.spawn_config.gen_settings.moat_choice_enabled) then
                     if (spawn.moat) then
                         CreateMoat(surface, spawn.pos, chunkArea, global.ocfg
-                         .spawn_config.gen_settings
-                         .land_area_tiles, "water", true)
+                                       .spawn_config.gen_settings
+                                       .land_area_tiles, "water", true)
                     end
                 end
             end
@@ -528,8 +528,8 @@ function DowngradeResourcesDistanceBasedOnChunkGenerate(surface, chunkArea)
     local distance = getDistance(chunkArea.left_top, closestSpawn.pos)
     -- Adjust multiplier to bring it in or out
     local modifier = (distance /
-       (global.ocfg.spawn_config.safe_area.danger_radius * 1)) ^
-    3
+                         (global.ocfg.spawn_config.safe_area.danger_radius * 1)) ^
+                         3
     if modifier < 0.1 then modifier = 0.1 end
     if modifier > 1 then return end
 
@@ -654,9 +654,9 @@ end
  | (__ | |__ | _|  / _ \ | .` || |_| ||  _/
   \___||____||___|/_/ \_\|_|\_| \___/ |_|  
                                            
-  --]]
+--]]
 
-  function ResetPlayerAndDestroyForce(player)
+function ResetPlayerAndDestroyForce(player)
     local player_old_force = player.force
 
     player.force = global.ocfg.main_force
@@ -664,7 +664,7 @@ end
     if ((#player_old_force.players == 0) and
         (player_old_force.name ~= global.ocfg.main_force)) then
         SendBroadcastMsg("Team " .. player_old_force.name ..
-           " has been destroyed! All buildings will slowly be destroyed now.")
+                             " has been destroyed! All buildings will slowly be destroyed now.")
         log("DestroyForce - FORCE DESTROYED: " .. player_old_force.name)
         game.merge_forces(player_old_force, global.ocore.destroyed_force)
     end
@@ -681,7 +681,7 @@ function ResetPlayerForBuddySpawn(player)
     if ((#player_old_force.players == 0) and
         (player_old_force.name ~= global.ocfg.main_force)) then
         SendBroadcastMsg("Team " .. player_old_force.name ..
-           " has been destroyed! All buildings will slowly be destroyed now.")
+                             " has been destroyed! All buildings will slowly be destroyed now.")
         log("DestroyForce - FORCE DESTROYED: " .. player_old_force.name)
         game.merge_forces(player_old_force, global.ocore.destroyed_force)
     end
@@ -697,7 +697,7 @@ function ResetPlayerAndAbandonForce(player)
     if ((#player_old_force.players == 0) and
         (player_old_force.name ~= global.ocfg.main_force)) then
         SendBroadcastMsg("Team " .. player_old_force.name ..
-           " has been abandoned!")
+                             " has been abandoned!")
         log("AbandonForce - FORCE ABANDONED: " .. player_old_force.name)
         game.merge_forces(player_old_force, global.ocore.abandoned_force)
     end
@@ -721,11 +721,11 @@ end
 
 -- Call this if a player leaves the game early (or a player wants an early game reset)
 function RemoveOrResetPlayer(player, remove_player, remove_force, remove_base,
-   immediate)
-if (not player) then
-    log("ERROR - CleanupPlayer on NIL Player!")
-    return
-end
+                             immediate)
+    if (not player) then
+        log("ERROR - CleanupPlayer on NIL Player!")
+        return
+    end
 
     -- If this player is staying in the game, lets make sure we don't delete them along with the map chunks being
     -- cleared.
@@ -736,35 +736,17 @@ end
         if global.markets[player.name].market_button then
             global.markets[player.name].market_button.destroy()
         end
-        if global.markets[player.name].upgrades_button then
-            global.markets[player.name].upgrades_button.destroy()
-        end
         if global.markets[player.name].stats_button then
             global.markets[player.name].stats_button.destroy()
         end
-        if global.markets[player.name].teleport_home_button then
-            global.markets[player.name].teleport_home_button.destroy()
-        end
         if global.markets[player.name].market_frame then
             global.markets[player.name].market_frame.destroy()
-        end
-        if global.markets[player.name].special_store_frame then
-            global.markets[player.name].special_store_frame.destroy()
         end
         if global.markets[player.name].stats_frame then
             global.markets[player.name].stats_frame.destroy()
         end
         if global.markets[player.name].sell_chest then
             global.markets[player.name].sell_chest.destroy()
-        end
-        if global.markets.autofill_turrets[player.name] then
-            global.markets.autofill_turrets[player.name] = nil
-        end
-        if global.markets.autolvl_turrets[player.name] then
-            global.markets.autolvl_turrets[player.name] = nil
-        end
-        if global.markets.coin_turrets[player.name] then
-            global.markets.coin_turrets[player.name] = nil
         end
         global.markets[player.name] = nil
         if player.character then
@@ -809,7 +791,7 @@ function UniqueSpawnCleanupRemove(playerName, cleanup, immediate)
             (getDistance(spawnPos, otherSpawnPos.pos) <
                 (global.ocfg.spawn_config.gen_settings.land_area_tiles * 3))) then
             log("Won't remove base as it's close to another spawn: " ..
-                spawnPlayerName)
+                    spawnPlayerName)
             nearOtherSpawn = true
         end
     end
@@ -826,17 +808,17 @@ function UniqueSpawnCleanupRemove(playerName, cleanup, immediate)
         if (immediate) then
             log("IMMEDIATE Removing base: " .. spawnPos.x .. "," .. spawnPos.y)
             RegrowthMarkAreaForRemoval(spawnPos, math.ceil(
-             global.ocfg.spawn_config.gen_settings
-             .land_area_tiles / CHUNK_SIZE))
+                                           global.ocfg.spawn_config.gen_settings
+                                               .land_area_tiles / CHUNK_SIZE))
             TriggerCleanup()
         else
             log("Removing permanent flags on base: " .. spawnPos.x .. "," ..
-                spawnPos.y)
+                    spawnPos.y)
             RegrowthMarkAreaNotPermanentOVERWRITE(spawnPos, math.ceil(
-              global.ocfg.spawn_config
-              .gen_settings
-              .land_area_tiles /
-              CHUNK_SIZE))
+                                                      global.ocfg.spawn_config
+                                                          .gen_settings
+                                                          .land_area_tiles /
+                                                          CHUNK_SIZE))
         end
     end
 
@@ -874,7 +856,7 @@ function CleanupPlayerGlobals(playerName)
             local newOwnerName = table.remove(teamMates) -- Remove 1 to use as new owner.
             TransferOwnershipOfSharedSpawn(playerName, newOwnerName)
             SendBroadcastMsg(playerName .. "has left so " .. newOwnerName ..
-               " now owns their base.")
+                                 " now owns their base.")
         else
             global.ocore.sharedSpawns[playerName] = nil
         end
@@ -902,7 +884,7 @@ function CleanupPlayerGlobals(playerName)
             if (delayedSpawn.vanilla) then
                 log("Returning a vanilla spawn back to available.")
                 table.insert(global.vanillaSpawns,
-                   {x = delayedSpawn.pos.x, y = delayedSpawn.pos.y})
+                             {x = delayedSpawn.pos.x, y = delayedSpawn.pos.y})
             end
 
             table.remove(global.ocore.delayedSpawns, idx)
@@ -921,13 +903,13 @@ end
 function TransferOwnershipOfSharedSpawn(prevOwnerName, newOwnerName)
     -- Transfer the shared spawn global
     global.ocore.sharedSpawns[newOwnerName] =
-    global.ocore.sharedSpawns[prevOwnerName]
+        global.ocore.sharedSpawns[prevOwnerName]
     global.ocore.sharedSpawns[newOwnerName].openAccess = false
     global.ocore.sharedSpawns[prevOwnerName] = nil
 
     -- Transfer the unique spawn global
     global.ocore.uniqueSpawns[newOwnerName] =
-    global.ocore.uniqueSpawns[prevOwnerName]
+        global.ocore.uniqueSpawns[prevOwnerName]
     global.ocore.uniqueSpawns[prevOwnerName] = nil
 
     game.players[newOwnerName].print(
@@ -940,7 +922,7 @@ end
  | __ || _| | |__ |  _/| _| |   /   \__ \  | |  | |_| || _| | _| 
  |_||_||___||____||_|  |___||_|_\   |___/  |_|   \___/ |_|  |_|  
                                                               
- --]]
+--]]
 
 -- Same as GetClosestPosFromTable but specific to global.ocore.uniqueSpawns
 function GetClosestUniqueSpawn(pos)
@@ -999,7 +981,7 @@ function GetOnlinePlayersAtSharedSpawn(ownerName)
             if (ownerName == player.name) then count = count + 1 end
 
             for _, playerName in pairs(global.ocore.sharedSpawns[ownerName]
-             .players) do
+                                           .players) do
 
                 if (playerName == player.name) then
                     count = count + 1
@@ -1056,14 +1038,14 @@ function QueuePlayerForDelayedSpawn(playerName, spawn, moatEnabled, vanillaSpawn
         }
 
         local delay_spawn_seconds = 2 *
-        (math.ceil(
-            global.ocfg.spawn_config
-            .gen_settings.land_area_tiles /
-            CHUNK_SIZE))
+                                        (math.ceil(
+                                            global.ocfg.spawn_config
+                                                .gen_settings.land_area_tiles /
+                                                CHUNK_SIZE))
 
         game.players[playerName].print(
             "Generating your spawn now, please wait for at least " ..
-            delay_spawn_seconds .. " seconds...")
+                delay_spawn_seconds .. " seconds...")
         game.players[playerName].surface.request_to_generate_chunks(spawn, 4)
         delayedTick = game.tick + delay_spawn_seconds * TICKS_PER_SECOND
         table.insert(global.ocore.delayedSpawns, {
@@ -1077,17 +1059,17 @@ function QueuePlayerForDelayedSpawn(playerName, spawn, moatEnabled, vanillaSpawn
         HideOarcGui(game.players[playerName])
         -- HideOarcStore(game.players[playerName])
         DisplayPleaseWaitForSpawnDialog(game.players[playerName],
-            delay_spawn_seconds)
+                                        delay_spawn_seconds)
 
         RegrowthMarkAreaSafeGivenTilePos(spawn, math.ceil(
-           global.ocfg.spawn_config
-           .gen_settings.land_area_tiles /
-           CHUNK_SIZE), true)
+                                             global.ocfg.spawn_config
+                                                 .gen_settings.land_area_tiles /
+                                                 CHUNK_SIZE), true)
 
     else
         log("THIS SHOULD NOT EVER HAPPEN! Spawn failed!")
         SendBroadcastMsg("ERROR!! Failed to create spawn point for: " ..
-           playerName)
+                             playerName)
     end
 end
 
@@ -1116,11 +1098,11 @@ end
 function SendPlayerToSpawn(player)
     if (DoesPlayerHaveCustomSpawn(player)) then
         SafeTeleport(player, game.surfaces[GAME_SURFACE_NAME],
-           global.ocore.playerSpawns[player.name])
+                     global.ocore.playerSpawns[player.name])
     else
         SafeTeleport(player, game.surfaces[GAME_SURFACE_NAME],
-           game.forces[global.ocfg.main_force]
-           .get_spawn_position(GAME_SURFACE_NAME))
+                     game.forces[global.ocfg.main_force]
+                         .get_spawn_position(GAME_SURFACE_NAME))
     end
     return true
 end
@@ -1132,7 +1114,7 @@ function SendPlayerToRandomSpawn(player)
 
     if (rndSpawn == 0) then
         player.teleport(game.forces[global.ocfg.main_force].get_spawn_position(
-            GAME_SURFACE_NAME), GAME_SURFACE_NAME)
+                            GAME_SURFACE_NAME), GAME_SURFACE_NAME)
     else
         counter = counter + 1
         for name, spawn in pairs(global.ocore.uniqueSpawns) do
@@ -1151,9 +1133,9 @@ end
  | _|| (_) ||   /| (__ | _|    \__ \|  _/| _|| (__  | | | _|  | || (__ 
  |_|  \___/ |_|_\ \___||___|   |___/|_|  |___|\___||___||_|  |___|\___|
                                                                        
- --]]
+--]]
 
- function CreateForce(force_name)
+function CreateForce(force_name)
     local newForce = nil
 
     -- Check if force already exists
@@ -1181,14 +1163,14 @@ end
 
         if global.ocfg.lock_goodies_rocket_launch and
             not global.ocore.satellite_sent then
-                for _, v in ipairs(LOCKED_TECHNOLOGIES) do
-                    DisableTech(newForce, v.t)
-                end
+            for _, v in ipairs(LOCKED_TECHNOLOGIES) do
+                DisableTech(newForce, v.t)
             end
-        else
-            log("TOO MANY FORCES!!! - CreateForce()")
-            return game.forces[global.ocfg.main_force]
         end
+    else
+        log("TOO MANY FORCES!!! - CreateForce()")
+        return game.forces[global.ocfg.main_force]
+    end
 
     -- Add productivity bonus for solo teams.
     if (ENABLE_FORCE_LAB_PROD_BONUS) then
@@ -1225,7 +1207,7 @@ end
   \ V // _ \ | .` | | | | |__ | |__  / _ \  \__ \|  _// _ \\ \/\/ / | .` |\__ \
    \_//_/ \_\|_|\_||___||____||____|/_/ \_\ |___/|_| /_/ \_\\_/\_/  |_|\_||___/
                                                                                
-   --]]
+--]]
 
 -- Function to generate some map_gen_settings.starting_points
 -- You should only use this at the start of the game really.
@@ -1253,16 +1235,16 @@ function CreateVanillaSpawns(count, spacing)
         for j = -sqrt_half, sqrt_half, 1 do
             if (i ~= 0 or j ~= 0) then -- EXCEPT don't put 0,0
 
-            local x_pos = (i * spacing)
-            x_pos = x_pos - (x_pos % CHUNK_SIZE) + (CHUNK_SIZE / 2)
-            local y_pos = (j * spacing)
-            y_pos = y_pos - (y_pos % CHUNK_SIZE) + (CHUNK_SIZE / 2)
+                local x_pos = (i * spacing)
+                x_pos = x_pos - (x_pos % CHUNK_SIZE) + (CHUNK_SIZE / 2)
+                local y_pos = (j * spacing)
+                y_pos = y_pos - (y_pos % CHUNK_SIZE) + (CHUNK_SIZE / 2)
 
-            table.insert(points, {x = x_pos, y = y_pos})
-            table.insert(global.vanillaSpawns, {x = x_pos, y = y_pos})
+                table.insert(points, {x = x_pos, y = y_pos})
+                table.insert(global.vanillaSpawns, {x = x_pos, y = y_pos})
+            end
         end
     end
-end
 
     -- Do something with the return value.
     return points
@@ -1291,20 +1273,20 @@ function FindUnusedVanillaSpawn(surface, target_distance)
         -- Check if chunks nearby are not generated.
         local chunk_pos = GetChunkPosFromTilePos(v)
         if IsChunkAreaUngenerated(chunk_pos,
-          CHECK_SPAWN_UNGENERATED_CHUNKS_RADIUS, surface) then
+                                  CHECK_SPAWN_UNGENERATED_CHUNKS_RADIUS, surface) then
 
             -- Is this our first valid find?
             if ((best_key == nil) or (best_distance == nil)) then
                 best_key = k
                 best_distance = math.abs(
-                    math.sqrt((v.x ^ 2) + (v.y ^ 2)) -
-                    target_distance)
+                                    math.sqrt((v.x ^ 2) + (v.y ^ 2)) -
+                                        target_distance)
 
                 -- Check if it is closer to target_distance than previous option.
             else
                 local new_distance = math.abs(
-                   math.sqrt((v.x ^ 2) + (v.y ^ 2)) -
-                   target_distance)
+                                         math.sqrt((v.x ^ 2) + (v.y ^ 2)) -
+                                             target_distance)
                 if (new_distance < best_distance) then
                     best_key = k
                     best_distance = new_distance
@@ -1314,7 +1296,7 @@ function FindUnusedVanillaSpawn(surface, target_distance)
             -- If it's not a valid spawn anymore, let's remove it.
         else
             log("Removing vanilla spawn due to chunks generated: x=" .. v.x ..
-                ",y=" .. v.y)
+                    ",y=" .. v.y)
             table.remove(global.vanillaSpawns, k)
         end
     end
@@ -1335,10 +1317,10 @@ function ValidateVanillaSpawns(surface)
         -- Check if chunks nearby are not generated.
         local chunk_pos = GetChunkPosFromTilePos(v)
         if not IsChunkAreaUngenerated(chunk_pos,
-          CHECK_SPAWN_UNGENERATED_CHUNKS_RADIUS + 15,
-          surface) then
+                                      CHECK_SPAWN_UNGENERATED_CHUNKS_RADIUS + 15,
+                                      surface) then
             log("Removing vanilla spawn due to chunks generated: x=" .. v.x ..
-                ",y=" .. v.y)
+                    ",y=" .. v.y)
             table.remove(global.vanillaSpawns, k)
         end
     end

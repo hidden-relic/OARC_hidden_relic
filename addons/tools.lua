@@ -95,7 +95,7 @@ function matChest()
     local target = player.selected
     if target and target.valid then
         if target.type == "container" or target.type == "logistic-container" then
-            global.material_chest[player.name] = target
+            material_chest = target
         end
     end
 end
@@ -123,25 +123,9 @@ function tools.stockUp()
                     if chest_inv.can_insert("rail") then
                         chest_inv.insert {name = "rail", count = 1}
                     end
-                    if chest_inv.can_insert("cliff-explosives") then
-                        chest_inv.insert {name = "cliff-explosives", count = 10}
-                    end
-                    for _, ghost in pairs(list) do
-                        if ghost.ghost_name == "curved-rail" or ghost.ghost_name == "straight-rail" then
-                            if chest_inv.can_insert("rail") then
-                                chest_inv.insert {name = "rail", count = 1}
-                            end
-                        else
-                            if chest_inv.can_insert(ghost.ghost_name) then
-                                chest_inv.insert {name = ghost.ghost_name, count = 1}
-                            end
-                        end
-                    end
-                    list = chest.surface.find_entities_filtered{force=chest.force, to_be_upgraded=true}
-                    for _, entity in pairs(list) do
-                        if chest_inv.can_insert(entity.get_upgrade_target().name) then
-                            chest_inv.insert{name=entity.get_upgrade_target().name, count = 1}
-                        end
+                else
+                    if chest_inv.can_insert(ghost.ghost_name) then
+                        chest_inv.insert {name = ghost.ghost_name, count = 1}
                     end
                 end
             end
@@ -378,20 +362,12 @@ function tools.make(player, sharedobject, flow)
                             return true
                         end
                     end
-                else
-                    return false
                 end
             else
-                tools.error(player, "Looking for 'in/out'")
-                return
+                return false
             end
-        elseif sharedobject == "help" or sharedobject == "h" then
-            tools.notify(player, "/make <entity/command> <'in' or 'out'>")
-            tools.notify(player,
-               "entities: 'belt', 'chest', 'power', 'combinators', 'water'")
-            tools.notify(player, "commands: 'link', 'mode', 'help'")
         else
-            tools.error(player, "Invalid magic entity.. try /make help")
+            tools.error(player, "Looking for 'in/out'")
             return
         end
     elseif sharedobject == "help" or sharedobject == "h" then
@@ -403,6 +379,7 @@ function tools.make(player, sharedobject, flow)
         tools.error(player, "Invalid magic entity.. try /make help")
         return
     end
+end
 
 function dg(playername, radius, chance)
     local playerpos = game.players[playername].position
@@ -514,6 +491,17 @@ function tools.getItem(player, item_name, count)
             end
         end
     end
+    if not item_name then
+        tools.error("You are not admin my friend")
+        return
+    end
+    if items[item_name] then
+        local count = count or items[item_name].stack_size
+        player.insert {name = item_name, count = count}
+    else
+        return
+    end
+end
 
 function tools.round(num, dp)
     local mult = 10 ^ (dp or 0)
@@ -542,80 +530,28 @@ function tools.replace(player, e1, e2)
             .export_stack()))
             .get_blueprint_tiles()
         end
-    end
-
-    function tools.getItem(player, item_name, count)
-        local items = game.item_prototypes
-        local player = player
-        if not item_name then
-            if game.player.selected then
-                item_name = game.player.selected.name
-                if item_name == "curved-rail" or item_name == "straight-rail" then
-                    item_name = "rail"
+        if game.entity_prototypes[e1] then
+            p(e1 .. " is an entity prototype.")
+            for each, ent in pairs(bp_ents) do
+                if ent.name == e1 then
+                    ent.name = e2
+                    bp_ent_count = bp_ent_count + 1
+                end
+            end
+        elseif game.tile_prototypes[e1] then
+            p(e1 .. " is a tile prototype.")
+            for each, tile in pairs(bp_tiles) do
+                if tile.name == e1 then
+                    tile.name = e2
+                    bp_tile_count = bp_tile_count + 1
                 end
             end
         end
-        if not item_name then
-            tools.error("You are not admin my friend")
-            return
-        end
-        if items[item_name] then
-            local count = count or items[item_name].stack_size
-            player.insert {name = item_name, count = count}
-        else
-            return
-        end
-    end
-
-    function tools.round(num, dp)
-        local mult = 10 ^ (dp or 0)
-        return math.floor(num * mult + 0.5) / mult
-    end
-
-    function tools.replace(player, e1, e2)
-        if not player.admin then
-            player.print("[ERROR] You're not admin!")
-            return
-        end
-        local p, cs, bp_ent_count, bp_tile_count = player.print,
-        player.cursor_stack, 0, 0
-
-        tools.run_tests(player, cs)
-
-        if game.entity_prototypes[e1] or game.tile_prototypes[e1] then
-            local bp, bp_ents, bp_tiles = {}, {}, {}
-            if not player.is_cursor_blueprint() then
-                bp_ents = cs.get_blueprint_entities()
-                bp_tiles = cs.get_blueprint_tiles()
-            else
-                bp_ents = player.get_blueprint_entities()
-                bp_tiles = player.cursor_stack.import_stack(tostring(
-                    player.cursor_stack
-                    .export_stack()))
-                .get_blueprint_tiles()
-            end
-            if game.entity_prototypes[e1] then
-                p(e1 .. " is an entity prototype.")
-                for each, ent in pairs(bp_ents) do
-                    if ent.name == e1 then
-                        ent.name = e2
-                        bp_ent_count = bp_ent_count + 1
-                    end
-                end
-            elseif game.tile_prototypes[e1] then
-                p(e1 .. " is a tile prototype.")
-                for each, tile in pairs(bp_tiles) do
-                    if tile.name == e1 then
-                        tile.name = e2
-                        bp_tile_count = bp_tile_count + 1
-                    end
-                end
-            end
-            cs.clear()
-            cs.set_stack {name = "blueprint"}
-            bp = cs
-            bp.set_blueprint_entities(bp_ents)
-            bp.set_blueprint_tiles(bp_tiles)
+        cs.clear()
+        cs.set_stack {name = "blueprint"}
+        bp = cs
+        bp.set_blueprint_entities(bp_ents)
+        bp.set_blueprint_tiles(bp_tiles)
         -- bp.clear()
         -- bp.
         -- if not player.is_cursor_blueprint() then
