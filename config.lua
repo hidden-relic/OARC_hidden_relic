@@ -200,6 +200,7 @@ PLAYER_RESPAWN_START_ITEMS = {
 -- area. The larger you make this, the further away players will spawn from
 -- generated map area (even if it is not visible on the map!).
 CHECK_SPAWN_UNGENERATED_CHUNKS_RADIUS = 15
+CHECK_SPAWN_UNGENERATED_CHUNKS_SHARED_RADIUS = 4
 
 -- Near Distance in chunks
 -- When a player selects "near" spawn, they will be in or as close to this range as possible.
@@ -387,8 +388,8 @@ MAIN_FORCE = "Main Force"
 
 -- Enable if players can allow others to join their base.
 -- And specify how many including the host are allowed.
-ENABLE_SHARED_SPAWNS = false
-MAX_PLAYERS_AT_SHARED_SPAWN = 5
+ENABLE_SHARED_SPAWNS = true
+MAX_PLAYERS_AT_SHARED_SPAWN = 4
 
 -- Share local team chat with all teams
 -- This makes it so you don't have to use /s

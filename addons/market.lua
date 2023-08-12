@@ -17,6 +17,9 @@ local M = {}
 --     return o                -- return o
 -- end
 
+M.teleport_home_cost = 10
+M.teleport_home_timeout = 5
+
 function M.init()
     local markets = {jackpot=0, autolvl_turrets={}}
     local pre_item_values = prodscore.generate_price_list()
@@ -89,7 +92,7 @@ M.special_func_table = {
     ["special_oil-refinery"] = function(player) return RequestSpawnSpecialChunk(player, SpawnOilRefineryChunk, "oil-refinery") end,
     ["special_assembling-machine-3"] = function(player) return RequestSpawnSpecialChunk(player, SpawnAssemblyChunk, "assembling-machine-3") end,
     ["special_centrifuge"] = function(player) return RequestSpawnSpecialChunk(player, SpawnCentrifugeChunk, "centrifuge") end,
-    ["special_assembling-machine-1"] = function(player) return SendPlayerToSpawn(player) end,
+    -- ["special_assembling-machine-1"] = function(player) return SendPlayerToSpawn(player) end,
     ["special_offshore-pump"] = function(player)
         if ConvertWoodenChestToWaterFill(player) then
             global.markets[player.name].stats.waterfill_cost = math.floor(global.markets[player.name].stats.waterfill_cost * 1.01)
@@ -103,7 +106,7 @@ M.special_cost_table = {
     ["special_oil-refinery"] = 1.1,
     ["special_assembling-machine-3"] = 1.1,
     ["special_centrifuge"] = 1.1,
-    ["special_assembling-machine-1"] = 1.1,
+    -- ["special_assembling-machine-1"] = 1.1,
     ["special_offshore-pump"] = 1.1
 }
 
@@ -519,19 +522,87 @@ function M.new(player)
             market.stats.items_sold[item].value =
             market.stats.items_sold[item].value + value
         end
-        local history = market.stats.history
-        if #history > 0 then
-            if history[1].item ~= item then
+        if click == 4 then
+            if not shift and not ctrl then
+                i = 10
+            elseif shift and ctrl then
+                i = 10
+            elseif shift and not ctrl then
+                i = 50
+            elseif ctrl and not shift then
+                i = 500
+            end
+        end
+        if i then
+            if math.floor(market.balance / value) < i then
+                player.print("You don't have the coin to buy " .. i)
+                return
+            end
+            local insertable = player.get_main_inventory()
+            .get_insertable_count(item)
+            if insertable == 0 then
+                player.print("You don't have the inventory space")
+                return
+            end
+            local inserted = 0
+            if i <= insertable then
+                inserted = i
+            else
+                inserted = insertable
+            end
+            M.withdraw(player, value * inserted)
+            player.insert {name = item, count = inserted}
+            global.markets.jackpot = global.markets.jackpot + (value * inserted) * 0.25
+
+            if not market.stats.items_purchased[item] then
+                market.stats.items_purchased[item] = {
+                    count = inserted,
+                    value = value
+                }
+            else
+                market.stats.items_purchased[item].count = market.stats
+                .items_purchased[item]
+                .count + inserted
+                market.stats.items_purchased[item].value = market.stats
+                .items_purchased[item]
+                .value + value
+            end
+            local history = market.stats.history
+            if #history > 0 then
+                if history[1].item ~= item then
+                    table.insert(history, 1, {
+                        item = item,
+                        prefix = "[img=item/" .. item .. "] [color=green]+" ..
+                        tools.add_commas(tools.remove_commas(inserted)) .. "[/color]",
+                        suffix = "[img=item/coin][color=red]-" .. tools.add_commas(tools.remove_commas(value)) ..
+                        inserted .. "[/color]",
+                        suffix = "[img=item/coin][color=red]-" .. value ..
+                        "[/color]",
+                        purchased = inserted
+                    })
+                    if #market.stats.history > 16 then
+                        table.remove(market.stats.history)
+                    end
+                    return
+                end
+                if history[1].item == item and history[1].purchased then
+                    history[1].purchased = history[1].purchased + inserted
+                    history[1].prefix =
+                    "[img=item/" .. item .. "] [color=green]+" ..
+                    tools.add_commas(tools.remove_commas(history[1].purchased)) .. "[/color]"
+                    history[1].suffix = "[img=item/coin][color=red]-" .. tools.add_commas(tools.remove_commas(value * history[1].purchased)) .. "[/color]"
+                    if #market.stats.history > 16 then
+                        table.remove(market.stats.history)
+                    end
+                    return
+                end
+            else
                 table.insert(history, 1, {
                     item = item,
                     prefix = "[img=item/" .. item .. "] [color=red]-1[/color]",
                     suffix = "[img=item/coin][color=green]+" .. tools.add_commas(tools.remove_commas(value)) .. "[/color]",
                     sold = 1
                 })
-                if #market.stats.history > 16 then
-                    table.remove(market.stats.history)
-                end
-                return
             end
             if history[1].item == item and history[1].sold then
                 history[1].sold = history[1].sold + 1

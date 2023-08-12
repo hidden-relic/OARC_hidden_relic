@@ -1303,39 +1303,35 @@ end
 
 -- Find random coordinates within a given distance away
 -- maxTries is the recursion limit basically.
-function FindUngeneratedCoordinates(minDistChunks, maxDistChunks, surface)
-    local position = {x = 0, y = 0}
+function FindUngeneratedCoordinates(minDistChunks, maxDistChunks, surface, position)
+    local position = position or {x = 0, y = 0}
     local chunkPos = {x = 0, y = 0}
 
-    local maxTries = 100
+    local maxTries = 10000
     local tryCounter = 0
 
     local minDistSqr = minDistChunks ^ 2
     local maxDistSqr = maxDistChunks ^ 2
 
     while (true) do
-        chunkPos.x = math.random(0, maxDistChunks) * RandomNegPos()
-        chunkPos.y = math.random(0, maxDistChunks) * RandomNegPos()
+        chunkPos.x = math.random((position.x/32)-maxDistChunks, (position.x/32)+maxDistChunks)
+        chunkPos.y = math.random((position.y/32)-maxDistChunks, (position.y/32)+maxDistChunks)
 
-        local distSqrd = chunkPos.x ^ 2 + chunkPos.y ^ 2
+        local distSqrd = ((chunkPos.x-(position.x/32)) ^ 2) + ((chunkPos.y-(position.y/32)) ^ 2)
 
-        -- Enforce a max number of tries
+
         tryCounter = tryCounter + 1
         if (tryCounter > maxTries) then
             log("FindUngeneratedCoordinates - Max Tries Hit!")
             break
-
-            -- Check that the distance is within the min,max specified
         elseif ((distSqrd < minDistSqr) or (distSqrd > maxDistSqr)) then
-            -- Keep searching!
-
-            -- Check there are no generated chunks in a 10x10 area.
+            log(serpent.line(chunkPos).." out of range. ")
         elseif IsChunkAreaUngenerated(chunkPos,
-                                      CHECK_SPAWN_UNGENERATED_CHUNKS_RADIUS,
+                                      CHECK_SPAWN_UNGENERATED_CHUNKS_SHARED_RADIUS,
                                       surface) then
             position.x = (chunkPos.x * CHUNK_SIZE) + (CHUNK_SIZE / 2)
             position.y = (chunkPos.y * CHUNK_SIZE) + (CHUNK_SIZE / 2)
-            break -- SUCCESS
+            break
         end
     end
 

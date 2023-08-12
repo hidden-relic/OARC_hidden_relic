@@ -35,6 +35,7 @@ local tools = require("addons/tools")
 local find_patch = require("addons/find_patch")
 local deathmarkers = require("addons/death-marker")
 local flying_tags = require("flying_tags")
+local bonuses = require("addons/bonuses")
 -- Other soft-mod type features.
 require("lib/frontier_silo")
 require("lib/tag")
@@ -73,8 +74,8 @@ require("compat/factoriomaps")
 GAME_SURFACE_NAME = "oarc"
 
 commands.add_command("trigger-map-cleanup",
-                     "Force immediate removal of all expired chunks (unused chunk removal mod)",
-                     RegrowthForceRemoveChunksCmd)
+ "Force immediate removal of all expired chunks (unused chunk removal mod)",
+ RegrowthForceRemoveChunksCmd)
 
 --------------------------------------------------------------------------------
 -- ALL EVENT HANLDERS ARE HERE IN ONE PLACE!
@@ -128,8 +129,8 @@ script.on_init(function(event)
 
     -- Display starting point text as a display of dominance.
     RenderPermanentGroundText(game.surfaces[GAME_SURFACE_NAME],
-                              {x = -32, y = -30}, 37, "Spawn",
-                              {0.9, 0.3, 0.3, 0.8})
+      {x = -32, y = -30}, 37, "Spawn",
+      {0.9, 0.3, 0.3, 0.8})
 
     -- ###### FAGC ######
 
@@ -140,14 +141,14 @@ end)
 
 script.on_event(defines.events.on_player_banned, function(e)
     local text = "ban;" .. e.player_name .. ";" .. (e.by_player or "") .. ";" ..
-                     (e.reason or "") .. "\n"
+    (e.reason or "") .. "\n"
     game.write_file("fagc-actions.txt", text, true, 0)
 end)
 
 script.on_event(defines.events.on_player_unbanned, function(e)
     local text =
-        "unban;" .. e.player_name .. ";" .. (e.by_player or "") .. ";" ..
-            (e.reason or "") .. "\n"
+    "unban;" .. e.player_name .. ";" .. (e.by_player or "") .. ";" ..
+    (e.reason or "") .. "\n"
     game.write_file("fagc-actions.txt", text, true, 0)
 end)
 
@@ -157,7 +158,7 @@ script.on_load(function() Compat.handle_factoriomaps() end)
 
 ----------------------------------------
 script.on_event(defines.events.on_rocket_launched,
-                function(event) RocketLaunchEvent(event) end)
+    function(event) RocketLaunchEvent(event) end)
 
 ----------------------------------------
 -- Surface Generation
@@ -186,18 +187,25 @@ script.on_event(defines.events.on_gui_click, function(event)
     local player = game.players[event.player_index]
 
     if global.markets and global.markets[player.name] then
-        if global.markets[player.name].market_button and event.element ==
-            global.markets[player.name].market_button then
+        if global.markets[player.name].market_button and event.element == global.markets[player.name].market_button then
             market.toggle_market_gui(player)
         end
-        if global.markets[player.name].stats_button and event.element ==
-            global.markets[player.name].stats_button then
+        if global.markets[player.name].upgrades_button and event.element == global.markets[player.name].upgrades_button then
+            market.toggle_upgrades_gui(player)
+        end
+        if global.markets[player.name].stats_button and event.element == global.markets[player.name].stats_button then
             market.toggle_stats_gui(player)
         end
-        if global.markets[player.name].item_buttons and
-            global.markets[player.name].item_buttons[event.element.name] then
-            local button =
-                global.markets[player.name].item_buttons[event.element.name]
+        if global.markets[player.name].teleport_home_button and event.element == global.markets[player.name].teleport_home_button then
+            if global.markets[player.name].balance >= market.teleport_home_cost then
+                SendPlayerToSpawn(player)
+                market.withdraw(player, market.teleport_home_cost)
+                local t = {"whoosh", "zoooom", "weeee", "zap", "bam", "boom", "gone", "amazing", "omg", "honey, i'm home!", "knock knock", "barfs", "whoa", "vomits", "should've taken that left turn at Albuquerque", "this seems...familiar"}
+                tools.floating_text(player.surface, player.position, t[math.random(1, #t)], {r=math.random(0, 255), g=math.random(0, 255), b=math.random(0, 255)})
+            end
+        end
+        if global.markets[player.name].item_buttons and global.markets[player.name].item_buttons[event.element.name] then
+            local button = global.markets[player.name].item_buttons[event.element.name]
             local click = event.button
             local shift = event.shift
             local ctrl = event.control
@@ -205,7 +213,7 @@ script.on_event(defines.events.on_gui_click, function(event)
         end
         if global.markets[player.name].upgrade_buttons and
             global.markets[player.name].upgrade_buttons[event.element.name] then
-            local button =
+                local button =
                 global.markets[player.name].upgrade_buttons[event.element.name]
             market.upgrade(player, button.name)
         end
@@ -234,20 +242,19 @@ script.on_event(defines.events.on_gui_click, function(event)
                     market.withdraw(player, market.special_table[button.name].cost)
                 end
             end
-        end
 
-        if global.ocfg.enable_tags then TagGuiClick(event) end
+            if global.ocfg.enable_tags then TagGuiClick(event) end
 
-        WelcomeTextGuiClick(event)
-        SpawnOptsGuiClick(event)
-        SpawnCtrlGuiClick(event)
-        SharedSpwnOptsGuiClick(event)
-        BuddySpawnOptsGuiClick(event)
-        BuddySpawnWaitMenuClick(event)
-        BuddySpawnRequestMenuClick(event)
-        SharedSpawnJoinWaitMenuClick(event)
+            WelcomeTextGuiClick(event)
+            SpawnOptsGuiClick(event)
+            SpawnCtrlGuiClick(event)
+            SharedSpwnOptsGuiClick(event)
+            BuddySpawnOptsGuiClick(event)
+            BuddySpawnWaitMenuClick(event)
+            BuddySpawnRequestMenuClick(event)
+            SharedSpawnJoinWaitMenuClick(event)
 
-        ClickOarcGuiButton(event)
+            ClickOarcGuiButton(event)
 
         -- if global.ocfg.enable_coin_shop then ClickOarcStoreButton(event) end
 
@@ -271,15 +278,25 @@ end)
 -- Player Events
 ----------------------------------------
 
+script.on_event(defines.events.on_player_changed_position,
+    function(event) bonuses.on_player_changed_position(event) end)
+
+script.on_event(defines.events.on_player_crafted_item, function(event)
+    bonuses.on_player_crafted_item(event) end)
+
+script.on_event(defines.events.on_player_died, function(event) bonuses.on_player_died(event) end)
+
+script.on_event(defines.events.on_player_main_inventory_changed, function(event) bonuses.on_player_main_inventory_changed(event) end) 
+
 script.on_event(defines.events.on_pre_player_died,
-                function(event) deathmarkers.playerDied(event) end)
+    function(event) deathmarkers.playerDied(event) end)
 script.on_event(defines.events.on_pre_player_mined_item,
-                function(event) deathmarkers.onMined(event) end)
+    function(event) deathmarkers.onMined(event) end)
 script.on_event(defines.events.on_player_joined_game, function(event)
     PlayerJoinedMessages(event)
 
     ServerWriteFile("player_events", game.players[event.player_index].name ..
-                        " joined the game." .. "\n")
+        " joined the game." .. "\n")
     local player = game.players[event.player_index]
     if (global.oarc_players[player.name] == nil) then
         global.oarc_players[player.name] = {}
@@ -306,8 +323,8 @@ script.on_event(defines.events.on_player_created, function(event)
     if player.admin and DEBUG_MODE then
         local newSpawn = {x = 0, y = 0}
         newSpawn = FindUngeneratedCoordinates(global.ocfg.far_dist_start,
-                                              global.ocfg.far_dist_end,
-                                              player.surface)
+          global.ocfg.far_dist_end,
+          player.surface)
         if ((newSpawn.x == 0) and (newSpawn.y == 0)) then
             newSpawn = FindMapEdge(GetRandomVector(), player.surface)
         end
@@ -315,7 +332,7 @@ script.on_event(defines.events.on_player_created, function(event)
         ChangePlayerSpawn(player, newSpawn)
 
         QueuePlayerForDelayedSpawn(player.name, newSpawn, false,
-                                   global.ocfg.enable_vanilla_spawns)
+           global.ocfg.enable_vanilla_spawns)
         player.force = game.create_force(player.name)
         return
     end
@@ -340,7 +357,7 @@ end)
 
 script.on_event(defines.events.on_player_left_game, function(event)
     ServerWriteFile("player_events", game.players[event.player_index].name ..
-                        " left the game." .. "\n")
+        " left the game." .. "\n")
     local player = game.players[event.player_index]
 
     -- If players leave early, say goodbye.
@@ -349,9 +366,9 @@ script.on_event(defines.events.on_player_left_game, function(event)
             (global.ocfg.minimum_online_time * TICKS_PER_MINUTE))) then
         log("Player left early: " .. player.name)
         SendBroadcastMsg(player.name ..
-                             "'s base was marked for immediate clean up because they left within " ..
-                             global.ocfg.minimum_online_time ..
-                             " minutes of joining.")
+         "'s base was marked for immediate clean up because they left within " ..
+         global.ocfg.minimum_online_time ..
+         " minutes of joining.")
         RemoveOrResetPlayer(player, true, true, true, true)
     end
 end)
@@ -402,6 +419,8 @@ end)
 -- Various on "built" events
 ----------------------------------------
 script.on_event(defines.events.on_built_entity, function(event)
+    bonuses.on_built_entity(event)
+    -- market.on_built_entity(event)
     if global.ocfg.enable_autofill then Autofill(event) end
 
     local player = game.players[event.player_index]
@@ -419,6 +438,10 @@ script.on_event(defines.events.on_built_entity, function(event)
 end)
 
 script.on_event(defines.events.on_robot_built_entity, function(event)
+
+    -- if event.created_entity.last_user then
+    --     game.print({"", event.created_entity.last_user.name, "'s robot built a ", event.created_entity.localised_name})
+    -- end
 
     if global.ocfg.enable_regrowth then
         if (event.created_entity.surface.name ~= GAME_SURFACE_NAME) then
@@ -460,12 +483,12 @@ end)
 script.on_event(defines.events.on_console_chat, function(event)
     if (event.player_index) then
         ServerWriteFile("server_chat", game.players[event.player_index].name ..
-                            ": " .. event.message .. "\n")
+            ": " .. event.message .. "\n")
     end
     if (global.ocfg.enable_shared_chat) then
         if (event.player_index ~= nil) then
             ShareChatBetweenForces(game.players[event.player_index],
-                                   event.message)
+               event.message)
         end
     end
 end)
@@ -493,13 +516,13 @@ script.on_event(defines.events.on_research_finished, function(event)
     if global.ocfg.lock_goodies_rocket_launch and
         (not global.ocore.satellite_sent or
             not global.ocore.satellite_sent[event.research.force.name]) then
-        for _, v in ipairs(LOCKED_RECIPES) do
-            RemoveRecipe(event.research.force, v.r)
+            for _, v in ipairs(LOCKED_RECIPES) do
+                RemoveRecipe(event.research.force, v.r)
+            end
         end
-    end
 
-    if global.ocfg.enable_loaders then EnableLoaders(event) end
-end)
+        if global.ocfg.enable_loaders then EnableLoaders(event) end
+    end)
 
 ----------------------------------------
 -- On Entity Spawned and On Biter Base Built
@@ -541,7 +564,7 @@ end)
 -- For capturing text entry.
 ----------------------------------------
 script.on_event(defines.events.on_gui_text_changed,
-                function(event) NotepadOnGuiTextChange(event) end)
+    function(event) NotepadOnGuiTextChange(event) end)
 
 ----------------------------------------
 -- On Gui Closed
@@ -552,6 +575,8 @@ script.on_event(defines.events.on_gui_closed, function(event)
     if event.element then
         if event.element == global.markets[player.name].market_frame then
             market.close_market_gui(player)
+        elseif event.element == global.markets[player.name].special_store_frame then
+            market.close_upgrades_gui(player)
         elseif event.element == global.markets[player.name].stats_frame then
             market.close_stats_gui(player)
         end
@@ -572,16 +597,18 @@ script.on_event(defines.events.on_entity_damaged, function(event)
     local health = math.floor(entity.health)
     local health_percentage = entity.get_health_ratio()
     local text_color = {r = 1 - health_percentage, g = health_percentage, b = 0}
-    if cause and cause.name == "gun-turret" and cause.last_user and global.markets.autolvl_turrets[cause.last_user.name] then
-        player = cause.last_user
-        player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + damage * 0.0000001)
+    local p = entity.position
+    local size = entity.get_radius() or 1
+    local surface = entity.surface
+
+    if cause and cause.type == "character" and damage then
+        local player = cause.player
+        player.character_health_bonus = player.character_health_bonus + (damage*0.001)
     end
 
     -- Gets the location of the text
-    local size = entity.get_radius()
     if size < 1 then size = 1 end
     local r = (math.random() - 0.5) * size * 0.75
-    local p = entity.position
     local position = {x = p.x + r, y = p.y - size}
 
     local message
@@ -595,7 +622,56 @@ script.on_event(defines.events.on_entity_damaged, function(event)
     if message then
         tools.floating_text(entity.surface, position, message, text_color)
     end
+    if cause and cause.name == "gun-turret" and cause.last_user and global.markets.autolvl_turrets[cause.last_user.name] then
+        player = cause.last_user
+        player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + damage * 0.0000001)
+    end
+    if cause and cause.name == "gun-turret" and cause.last_user and global.markets.critical_turrets[cause.last_user.name] then
+        local player = cause.last_user
+        local critical_lvl = global.markets[cause.last_user.name].upgrades["critical-turret"].lvl
+        local roll = math.random(1, math.floor(101-critical_lvl))
+        if roll == 1 and entity.valid then
+            local critical_dmg = entity.damage(damage, player.force)
+            -- if player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + critical_dmg * 0.000001)
+            text_color={r=0, g=0, b=1}
+            if size < 1 then size = 1 end
+            local r = (math.random() - 0.5) * size * 0.75
+            local position = {x = p.x + r, y = p.y - size}
+            local message = {'damage-popup.player-damage', 'X2'}
+            if global.crit_log == true then game.print("x2 "..critical_dmg) end
 
+            if critical_lvl >= 30 then
+                roll = math.random(1, 5)
+                if roll == 1 and entity.valid then
+                    health = math.floor(entity.health)
+                    health_percentage = entity.get_health_ratio()
+                    text_color = {r = 255, g = 215, b = 0}
+                    critical_dmg = entity.damage(damage, player.force)
+                    -- player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + critical_dmg * 0.00001)
+                    r = (math.random() - 0.5) * size * 0.75
+                    position = {x = p.x + r, y = p.y - size}
+                    message = {'damage-popup.player-damage', 'X3'}
+                    if global.crit_log == true then game.print("x3 "..critical_dmg) end
+
+                    if critical_lvl >= 60 then
+                        roll = math.random(1, 3)
+                        if roll == 1 and entity.valid then
+                            health = math.floor(entity.health)
+                            health_percentage = entity.get_health_ratio()
+                            text_color = {r = 153, g = 50, b = 204}
+                            critical_dmg = entity.damage(damage, player.force)
+                            -- player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + critical_dmg * 0.0001)
+                            r = (math.random() - 0.5) * size * 0.75
+                            position = {x = p.x + r, y = p.y - size}
+                            message = {'damage-popup.player-damage', 'X4'}
+                            if global.crit_log == true then game.print("x4 "..critical_dmg) end
+                        end
+                    end
+                end
+            end
+            tools.floating_text(surface, position, message, text_color)
+        end
+    end
 end)
 
 script.on_event(defines.events.on_entity_died, function(event)
