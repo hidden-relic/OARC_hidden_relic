@@ -144,7 +144,7 @@ ENABLE_POWER_ARMOR_QUICK_START = false
 ENABLE_MODULAR_ARMOR_QUICK_START = true
 
 
-TECHNOLOGY_PRICE_MULTIPLIER = 1
+TECHNOLOGY_PRICE_MULTIPLIER = 2.5
 
 ------------------------------------------------------------------------------------------------------------------------
 -- MAP CONFIGURATION OPTIONS
