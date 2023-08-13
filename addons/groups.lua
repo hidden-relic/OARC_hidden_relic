@@ -166,7 +166,7 @@ function Group.go_to_position(position)
         type = defines.command.go_to_location,
         destination = position
     }
-                        end
+end
 function Group.go_to_entity(entity)
     if entity.valid then
         return {
@@ -178,7 +178,7 @@ end
 function Group.attack_entity(entity)
     if entity.valid then
         return {
-                                                    type = defines.command.attack,
+            type = defines.command.attack,
             target = entity
         }
     end
@@ -219,8 +219,8 @@ function Group.follow_player(player)
                     commands = {
                         Group.go_to_entity(character),
                         enemies
-                                            }
-                                        }
+                    }
+                }
             else
                 group.set_command(Group.go_to_entity(character))
             end
@@ -247,43 +247,45 @@ function Group.patrol_spawn(player)
                 commands = {
                     Group.go_to_position(pos),
                     enemies
-                                    }
-                                }
+                }
+            }
         else
             group.set_command(Group.go_to_position(pos))
-                            end
-                        end
-                    end
+        end
+    end
+end
 
 function Group.set_patrol_state(player, state)
     local player = player
     local state = state
     global.groups[player.name].state = state
-                end
+end
 
 function Group.get_patrol_state(player)
     local player = player
     local state = global.groups[player.name].state
     return state
-            end
+end
 
 function Group.on_tick()
     if (game.tick % cooldown["right"] == 0) and (game.tick > cooldown["left"]) and global.groups then
         for index, entry in pairs(global.groups) do
             if not game.players[index] then return end
             local player = game.players[index]
-            if (game.tick % cooldown[Group.get_patrol_state(player)] == 0) then
-                Group.get_count(player)
-                
-                if not global.groups[player.name].pet_group then return end
-                if not global.groups[player.name].pet_group.valid then return end
-                if not global.groups[player.name].pet_group.members then return end
-                if global.groups[player.name].pet_group.command == nil then
-                    if Group.get_patrol_state(player) == "left" then Group.patrol_spawn(player)
-                    elseif Group.get_patrol_state(player) == "right" then Group.follow_player(player)
-        end
-    end
-end
+            if player.online_time > cooldown["left"] then
+                if (game.tick % cooldown[Group.get_patrol_state(player)] == 0) then
+                    Group.get_count(player)
+                    
+                    if not global.groups[player.name].pet_group then return end
+                    if not global.groups[player.name].pet_group.valid then return end
+                    if not global.groups[player.name].pet_group.members then return end
+                    if global.groups[player.name].pet_group.command == nil then
+                        if Group.get_patrol_state(player) == "left" then Group.patrol_spawn(player)
+                        elseif Group.get_patrol_state(player) == "right" then Group.follow_player(player)
+                        end
+                    end
+                end
+            end
         end
     end
 end
