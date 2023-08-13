@@ -294,7 +294,7 @@ function tools.make(player, sharedobject, flow)
         end
     elseif sharedobject == "water" then
         local pos = GetWoodenChestFromCursor(player)
-        if pos and (getDistance(pos, player.position) > 2) then
+        if pos and (get_distance(pos, player.position) > 2) then
             player.surface.set_tiles({[1] = {name = "water", position = pos}})
             return true
         else
@@ -566,7 +566,7 @@ function tools.replace(player, e1, e2)
     --     player.print("Not a valid blueprint")
 end
 
-function tools.getDistance(pos1, pos2)
+function tools.get_distance(pos1, pos2)
     local pos1 = {x = pos1.x or pos1[1], y = pos1.y or pos1[2]}
     local pos2 = {x = pos2.x or pos2[1], y = pos2.y or pos2[2]}
     local a = math.abs(pos1.x - pos2.x)
@@ -575,11 +575,11 @@ function tools.getDistance(pos1, pos2)
     return c
 end
 
-function tools.getClosest(pos, list)
+function tools.get_closest(pos, list)
     local x, y = pos.x or pos[1], pos.y or pos[2]
     local closest = tools.MAX_INT32
     for _, posenum in pairs(list) do
-        local distance = tools.getDistance(pos, posenum)
+        local distance = tools.get_distance(pos, posenum)
         if distance < closest then
             x, y = posenum.x, posenum.y
             closest = distance

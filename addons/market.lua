@@ -36,14 +36,14 @@ function M.init()
 end
 -- 
 M.followers_table = {
-    ["small-biter"] = {cost = 1000, count = 1},
+    ["small-biter"] = {cost = 500, count = 1},
     ["medium-biter"] = {cost = 2000, count = 1},
-    ["big-biter"] = {cost = 4000, count = 1},
-    ["behemoth-biter"] = {cost = 10000, count = 1},
-    ["small-spitter"] = {cost = 1500, count = 1},
+    ["big-biter"] = {cost = 10000, count = 1},
+    ["behemoth-biter"] = {cost = 60000, count = 1},
+    ["small-spitter"] = {cost = 500, count = 1},
     ["medium-spitter"] = {cost = 3000, count = 1},
-    ["big-spitter"] = {cost = 6000, count = 1},
-    ["behemoth-spitter"] = {cost = 12000, count = 1}
+    ["big-spitter"] = {cost = 12000, count = 1},
+    ["behemoth-spitter"] = {cost = 75000, count = 1}
 }
 
 M.followers_func_table = {
@@ -58,11 +58,11 @@ M.followers_func_table = {
 }
 
 M.shared_table = {
-    ["special_logistic-chest-storage"] = {cost = 2000, tooltip = "Turn the nearest empty wooden chest into a shared INPUT chest"},
-    ["special_logistic-chest-requester"] = {cost = 2000, tooltip = "Turn the nearest empty wooden chest into a shared OUTPUT chest"},
-    ["special_constant-combinator"] = {cost = 2000, tooltip = "Turn the nearest empty wooden chest into a pair of combinators that are tied to the shared storage"},
-    ["special_accumulator"] = {cost = 2000, tooltip = "Turn the nearest empty wooden chest into a shared INPUT accumulator"},
-    ["special_electric-energy-interface"] = {cost = 2000, tooltip = "Turn the nearest empty wooden chest into a shared OUTPUT accumulator"},
+    ["special_logistic-chest-storage"] = {cost = 20000, tooltip = "Turn the nearest empty wooden chest into a shared INPUT chest"},
+    ["special_logistic-chest-requester"] = {cost = 20000, tooltip = "Turn the nearest empty wooden chest into a shared OUTPUT chest"},
+    ["special_constant-combinator"] = {cost = 20000, tooltip = "Turn the nearest empty wooden chest into a pair of combinators that are tied to the shared storage"},
+    ["special_accumulator"] = {cost = 20000, tooltip = "Turn the nearest empty wooden chest into a shared INPUT accumulator"},
+    ["special_electric-energy-interface"] = {cost = 20000, tooltip = "Turn the nearest empty wooden chest into a shared OUTPUT accumulator"},
     ["special_deconstruction-planner"] = {cost = 0, tooltip = "Deconstruct a nearby shared entity"}
 }
 
@@ -246,7 +246,6 @@ function M.new(player)
             t = {10, 8, 6, 5, 4, 3, 2, 1, 0.5, 0.25},
             tooltip = "Shorten the time it takes to sell an item"
         },
-        
         ["character-health"] = {
             name = "Character Health",
             lvl = 1,
@@ -256,7 +255,6 @@ function M.new(player)
             t = {},
             tooltip = "+25 to character health"
         },
-        
         ["gun"] = {
             name = "Weaponry",
             lvl = 1,
@@ -267,7 +265,6 @@ function M.new(player)
             t = {},
             tooltip = "+10% Bullet Damage\n+10% Gun Turret Attack\n %10% Bullet Speed\n[img=item/firearm-magazine] [img=item/piercing-rounds-magazine] [img=item/uranium-rounds-magazine] [img=item/gun-turret]"
         },
-        
         ["tank-flame"] = {
             name = "Hot & Heavy",
             lvl = 1,
@@ -278,7 +275,6 @@ function M.new(player)
             t = {},
             tooltip = "+10% Tank Shell Damage\n+10%Tank Shell Speed\n+10% Flamethrower Damage\n+10% Flamethrower Turret Attack\n [img=item/flamethrower-ammo] [img=item/flamethrower-turret] [img=item/cannon-shell]"
         },
-        
         ["rocket"] = {
             name = "Rocketry",
             lvl = 1,
@@ -289,7 +285,6 @@ function M.new(player)
             t = {},
             tooltip = "+10% Rocket Damage\n+10% Rocket Speed\n[img=item/rocket] [img=item/explosive-rocket]"
         },
-        
         ["laser"] = {
             name = "Lasers",
             lvl = 1,
@@ -300,7 +295,6 @@ function M.new(player)
             t = {},
             tooltip = "+10% Laser Damage\n+10% Laser Speed\n+10% Laser Turret Attack\n+10% Electric+Beam Attack\n[img=item/laser-turret] [img=item/personal-laser-defense-equipment] [img=entity/destroyer] [img=entity/distractor] [img=item/discharge-defense-equipment]"
         },
-        
         ["autolvl-turret"] = {
             name = "Gun Turret Combat Training",
             lvl = 0,
@@ -311,27 +305,6 @@ function M.new(player)
             t = {},
             tooltip = "Enable Combat Training on your gun turrets.\nThe more damage they deal, the more damage they do.\nAffects entire team"
             },
-            -- ["coin-turret"] = {
-            --     name = "Gun Turret Coin Addon",
-            --     lvl = 0,
-            --     max_lvl = 1,
-            --     cost = 100000,
-            --     sprite = "item/gun-turret",
-            --     hovered_sprite = "utility/hint_arrow_up",
-            --     t = {},
-            --     tooltip = "Enable Coin earnings on your gun turrets.\nMust be built by you, not your robots\nONLY 1 GUN TURRET UPGRADE PER GAME"  
-            -- },
-            -- ["autofill-turret"] = {
-            --     name = "Gun Turret Autofill",
-            --     lvl = 0,
-            --     max_lvl = 1,
-            --     cost = 100000,
-            --     sprite = "item/gun-turret",
-            --     hovered_sprite = "item/firearm-magazine",
-            --     t = {},
-            --     tooltip = "Enable Autofill on your gun turrets.\nTakes ammo from shared\nONLY 1 GUN TURRET UPGRADE PER GAME"
-            -- },
-            
             ["mining-drill-productivity-bonus"] = {
                 name = "Mining Drill Productivity",
                 lvl = 1,
@@ -492,17 +465,12 @@ function M.new(player)
         end
     end
     
-    -- local function buy_text(item, count)
-    --     local prefix = "[img=item/"..item.."] [color=green]+"..count.."[/color]"
-    --     local suffix = "[img=item/coin][color=red]-"..global.markets.item_values[item]*count.."[/color]"
-    --     return {prefix, suffix}
-    -- end
-    
-    -- local function sell_text(item, count)
-    --     local prefix = "[img=item/"..item.."] [color=red]-"..count.."[/color]"
-    --     local suffix = "[img=item/coin][color=green]+"..global.markets.item_values[item]*count.."[/color]"
-    --     return {prefix, suffix}
-    -- end
+    function M.check_followers_switch(player)
+        local player = player
+        local market = global.markets[player.name]
+        local state = market.followers_switch.switch_state
+        group.set_patrol_state(player, state)
+    end
     
     function M.sell(player, item)
         local player = player
@@ -738,6 +706,13 @@ function M.new(player)
             type = "flow",
             direction = "vertical"
         }
+        market.followers_switch = market.followers_flow.add {
+            type = "switch",
+            left_label_caption = "[color=blue]Defend Base[/color]",
+            left_label_tooltip = "Your pets will patrol the area immediately around your spawn",
+            right_label_caption = "[color=blue]Defend You[/color]",
+            right_label_tooltip = "Your pets will stay near you to protect the player",
+        }
         market.followers_label = market.followers_flow.add {
             type = "label",
             caption = "[color=orange]Pets[/color]"
@@ -757,6 +732,7 @@ function M.new(player)
                 tools.add_commas(pet.cost)
             }
         end
+        
         
         -- -- market shared
         
@@ -999,6 +975,7 @@ function M.new(player)
             caption = market.upgrades["group-limit"].lvl
         }
     end
+    
     
     
     function M.toggle_market_gui(player)

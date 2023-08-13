@@ -177,6 +177,19 @@ end)
 ----------------------------------------
 -- Gui Click
 ----------------------------------------
+script.on_event(defines.events.on_gui_switch_state_changed, function(event)
+    
+    if not (event and event.element and event.element.valid) then return end
+    local player = game.players[event.player_index]
+    
+    if global.markets and global.markets[player.name] then
+        if global.markets[player.name].followers_switch and event.element ==
+        global.markets[player.name].followers_switch then
+            market.check_followers_switch(player)
+        end
+    end
+end)
+
 script.on_event(defines.events.on_gui_click, function(event)
 
     -- Don't interfere with other mod related stuff.

@@ -48,9 +48,15 @@ function Group.new(player)
             ["medium-spitter"] = 0,
             ["big-spitter"] = 0,
             ["behemoth-spitter"] = 0
-        }
+        },
+        state = "left",
     }
 end
+
+local cooldown = {
+    ["left"] = 60*60*10,
+    ["right"] = 60*60*1
+}
 
 function Group.create(player)
     local player = player
@@ -153,49 +159,178 @@ function Group.add(player, pet)
     end
 end
 
-function Group.on_tick()
-    if (game.tick % 300 == 0) and global.groups then
-        for index, entry in pairs(global.groups) do
-            if not game.players[index] then return end
-            total = Group.get_count(game.players[index])
-            if not global.groups[game.players[index].name].pet_group.command then
-                if global.groups[game.players[index].name].pet_group.members then
-                    if total > 0 then
-                        target_enemy = game.players[index].surface.find_nearest_enemy{position=global.ocore.playerSpawns[game.players[index].name], max_distance=32*10, game.players[index].force}
-                        if not target_enemy then
-                            target_enemy = game.players[index].surface.find_nearest_enemy{position=game.players[index].position, max_distance=32*10, game.players[index].force}
+-- command functions
+
+function Group.go_to_position(position)
+    return {
+        type = defines.command.go_to_location,
+        destination = position
+    }
                         end
-                        if target_enemy then
-                            -- game.players[index].print({"", total, " pets attacking ", target_enemy.localised_name, " @ [gps=", target_enemy.position.x, ",", target_enemy.position.y, ",oarc]"})
-                            if game.players[index].character and game.players[index].character.valid then
-                                global.groups[game.players[index].name].pet_group.set_command{
-                                    type=defines.command.compound,
-                                    structure_type=defines.compound_command.logical_or,
-                                    commands={
-                                        {
-                                            type=defines.command.compound,
-                                            structure_type=defines.compound_command.return_last,
-                                            commands={
-                                                {
+function Group.go_to_entity(entity)
+    if entity.valid then
+        return {
+            type = defines.command.go_to_location,
+            destination_entity = entity
+        }
+    end
+end
+function Group.attack_entity(entity)
+    if entity.valid then
+        return {
                                                     type = defines.command.attack,
-                                                    target = target_enemy
-                                                },
-                                                -- {
-                                                --     type = defines.command.wander,
-                                                --     ticks_to_wait = 60
-                                                -- }
+            target = entity
+        }
+    end
+end
+function Group.find_enemies(position)
+    local enemies = game.surfaces["oarc"].find_entities_filtered{type="unit", force="enemy", position=position, radius=32*5, limit=100}
+    if #enemies > 0 then
+        local command = {}
+        for i, enemy in pairs(enemies) do
+            command[i] = Group.attack_entity(enemy)
+        end
+        return {
+            type = defines.command.compound,
+            structure_type = defines.compound_command.return_last,
+            commands = command
+        }
+    end
+end
+local function random_coords(area)
+    local area = area
+    local x = math.random(area[1].x, area[2].x)
+    local y = math.random(area[1].y, area[2].y)
+    return {x=x, y=y}
+end
+
+function Group.follow_player(player)
+    local player = player
+    local character = player.character
+    if character and character.valid then
+        local group = global.groups[player.name].pet_group
+        local patrol_distance = 32*5
+        if group.valid then
+            local enemies = Group.find_enemies(player.position)
+            if enemies then
+                group.set_command{
+                    type = defines.command.compound,
+                    structure_type = defines.compound_command.return_last,
+                    commands = {
+                        Group.go_to_entity(character),
+                        enemies
                                             }
                                         }
-                                    }
-                                }
-                                -- game.players[index].print({"", "State: ", serpent.line(global.groups[game.players[index].name].pet_group.state), "\nCommand: ", serpent.line(global.groups[game.players[index].name].pet_group.command)})
-                            end
-                        end
-                    end
-                end
+            else
+                group.set_command(Group.go_to_entity(character))
             end
         end
     end
 end
+
+function Group.patrol_spawn(player)
+    local player = player
+    local group = global.groups[player.name].pet_group
+    local spawn = global.ocore.playerSpawns[player.name]
+    local patrol_distance = 32*10
+    local area = {{x=spawn.x-patrol_distance, y=spawn.y-patrol_distance}, {x=spawn.x+patrol_distance, y=spawn.y+patrol_distance}}
+    local pos = random_coords(area)
+    while tools.get_distance(spawn, pos) > patrol_distance do
+        pos = random_coords(area)
+    end
+    if group.valid then
+        local enemies = Group.find_enemies(pos)
+        if enemies then
+            group.set_command{
+                type = defines.command.compound,
+                structure_type = defines.compound_command.return_last,
+                commands = {
+                    Group.go_to_position(pos),
+                    enemies
+                                    }
+                                }
+        else
+            group.set_command(Group.go_to_position(pos))
+                            end
+                        end
+                    end
+
+function Group.set_patrol_state(player, state)
+    local player = player
+    local state = state
+    global.groups[player.name].state = state
+                end
+
+function Group.get_patrol_state(player)
+    local player = player
+    local state = global.groups[player.name].state
+    return state
+            end
+
+function Group.on_tick()
+    if (game.tick % cooldown["right"] == 0) and (game.tick > cooldown["left"]) and global.groups then
+        for index, entry in pairs(global.groups) do
+            if not game.players[index] then return end
+            local player = game.players[index]
+            if (game.tick % cooldown[Group.get_patrol_state(player)] == 0) then
+                Group.get_count(player)
+                
+                if not global.groups[player.name].pet_group then return end
+                if not global.groups[player.name].pet_group.valid then return end
+                if not global.groups[player.name].pet_group.members then return end
+                if global.groups[player.name].pet_group.command == nil then
+                    if Group.get_patrol_state(player) == "left" then Group.patrol_spawn(player)
+                    elseif Group.get_patrol_state(player) == "right" then Group.follow_player(player)
+        end
+    end
+end
+        end
+    end
+end
+
+-- function Group.on_tick()
+--     if (game.tick % 300 == 0) and global.groups then
+--         for index, entry in pairs(global.groups) do
+--             if not game.players[index] then return end
+--             total = Group.get_count(game.players[index])
+--             if not global.groups[game.players[index].name].pet_group.command then
+--                 if global.groups[game.players[index].name].pet_group.members then
+--                     if total > 0 then
+--                         target_enemy = game.players[index].surface.find_nearest_enemy{position=global.ocore.playerSpawns[game.players[index].name], max_distance=32*10, game.players[index].force}
+--                         if not target_enemy then
+--                             target_enemy = game.players[index].surface.find_nearest_enemy{position=game.players[index].position, max_distance=32*10, game.players[index].force}
+--                         end
+--                         if target_enemy then
+--                             -- game.players[index].print({"", total, " pets attacking ", target_enemy.localised_name, " @ [gps=", target_enemy.position.x, ",", target_enemy.position.y, ",oarc]"})
+--                             if game.players[index].character and game.players[index].character.valid then
+--                                 global.groups[game.players[index].name].pet_group.set_command{
+--                                     type=defines.command.compound,
+--                                     structure_type=defines.compound_command.logical_or,
+--                                     commands={
+--                                         {
+--                                             type=defines.command.compound,
+--                                             structure_type=defines.compound_command.return_last,
+--                                             commands={
+--                                                 {
+--                                                     type = defines.command.attack,
+--                                                     target = target_enemy
+--                                                 },
+--                                                 -- {
+--                                                 --     type = defines.command.wander,
+--                                                 --     ticks_to_wait = 60
+--                                                 -- }
+--                                             }
+--                                         }
+--                                     }
+--                                 }
+--                                 -- game.players[index].print({"", "State: ", serpent.line(global.groups[game.players[index].name].pet_group.state), "\nCommand: ", serpent.line(global.groups[game.players[index].name].pet_group.command)})
+--                             end
+--                         end
+--                     end
+--                 end
+--             end
+--         end
+--     end
+-- end
 
 return Group
