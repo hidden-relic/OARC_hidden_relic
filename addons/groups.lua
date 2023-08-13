@@ -132,6 +132,8 @@ function Group.add(player, pet)
                 table.insert(group.tags, new_tag)
                 
                 group.pet_group.add_member(new_pet)
+                new_pet.ai_settings.allow_destroy_when_commands_fail = false
+                new_pet.ai_settings.allow_try_return_to_spawner = false
                 flying_tag.create(new_tag)
                 player.print({
                     "groups.pet_added",
@@ -156,46 +158,38 @@ function Group.on_tick()
         for index, entry in pairs(global.groups) do
             if not game.players[index] then return end
             total = Group.get_count(game.players[index])
-            if global.groups[game.players[index].name].pet_group.members then
-                if total > 0 then
-                    target_enemy = game.players[index].surface.find_nearest_enemy{position=global.ocore.playerSpawns[game.players[index].name], max_distance=1000, game.players[index].force}
-                    if target_enemy then
-                        -- game.players[index].print({"", total, " pets attacking ", target_enemy.localised_name, " @ [gps=", target_enemy.position.x, ",", target_enemy.position.y, ",oarc]"})
-                        if game.players[index].character and game.players[index].character.valid then
-                            global.groups[game.players[index].name].pet_group.set_command{
-                                type=defines.command.compound,
-                                structure_type=defines.compound_command.logical_or,
-                                commands={
-                                    {
-                                        type=defines.command.compound,
-                                        structure_type=defines.compound_command.return_last,
-                                        commands={
-                                            {
-                                                type = defines.command.attack,
-                                                target = target_enemy
-                                            },
-                                            {
-                                                type = defines.command.wander,
-                                                ticks_to_wait = 60
-                                            }
-                                        }
-                                    },
-                                    {
-                                        type=defines.command.compound,
-                                        structure_type=defines.compound_command.return_last,
-                                        commands={
-                                            {
-                                                type = defines.command.attack,
-                                                target = target_enemy
-                                            },
-                                            {
-                                                type = defines.command.wander,
-                                                ticks_to_wait = 60
+            if not global.groups[game.players[index].name].pet_group.command then
+                if global.groups[game.players[index].name].pet_group.members then
+                    if total > 0 then
+                        target_enemy = game.players[index].surface.find_nearest_enemy{position=global.ocore.playerSpawns[game.players[index].name], max_distance=32*10, game.players[index].force}
+                        if not target_enemy then
+                            target_enemy = game.players[index].surface.find_nearest_enemy{position=game.players[index].position, max_distance=32*10, game.players[index].force}
+                        end
+                        if target_enemy then
+                            -- game.players[index].print({"", total, " pets attacking ", target_enemy.localised_name, " @ [gps=", target_enemy.position.x, ",", target_enemy.position.y, ",oarc]"})
+                            if game.players[index].character and game.players[index].character.valid then
+                                global.groups[game.players[index].name].pet_group.set_command{
+                                    type=defines.command.compound,
+                                    structure_type=defines.compound_command.logical_or,
+                                    commands={
+                                        {
+                                            type=defines.command.compound,
+                                            structure_type=defines.compound_command.return_last,
+                                            commands={
+                                                {
+                                                    type = defines.command.attack,
+                                                    target = target_enemy
+                                                },
+                                                -- {
+                                                --     type = defines.command.wander,
+                                                --     ticks_to_wait = 60
+                                                -- }
                                             }
                                         }
                                     }
                                 }
-                            }
+                                -- game.players[index].print({"", "State: ", serpent.line(global.groups[game.players[index].name].pet_group.state), "\nCommand: ", serpent.line(global.groups[game.players[index].name].pet_group.command)})
+                            end
                         end
                     end
                 end

@@ -31,7 +31,7 @@ require("lib/oarc_utils")
 
 local market = require("addons/market")
 local tools = require("addons/tools")
--- local group = require("addons/groups")
+local group = require("addons/groups")
 local find_patch = require("addons/find_patch")
 local deathmarkers = require("addons/death-marker")
 local flying_tags = require("flying_tags")
@@ -98,7 +98,7 @@ script.on_init(function(event)
     InitSpawnGlobalsAndForces()
 
     global.markets = market.init()
-    -- global.groups = {}
+    global.groups = {}
     -- Frontier Silo Area Generation
     if (global.ocfg.frontier_rocket_silo and
         not global.ocfg.enable_magic_factories) then
@@ -209,13 +209,13 @@ script.on_event(defines.events.on_gui_click, function(event)
                 global.markets[player.name].upgrade_buttons[event.element.name]
             market.upgrade(player, button.name)
         end
-        -- if global.markets[player.name].follower_buttons and global.markets[player.name].follower_buttons[event.element.name] then
-        --     local button =
-        --         global.markets[player.name].follower_buttons[event.element.name]
-        --     if group.add(player, button.name) then
-        --         market.withdraw(player, market.followers_table[button.name].cost)
-        --     end
-        -- end
+        if global.markets[player.name].follower_buttons and global.markets[player.name].follower_buttons[event.element.name] then
+            local button =
+                global.markets[player.name].follower_buttons[event.element.name]
+            if group.add(player, button.name) then
+                market.withdraw(player, market.followers_table[button.name].cost)
+            end
+        end
         if global.markets[player.name].shared_buttons and global.markets[player.name].shared_buttons[event.element.name] then
             local button =
                 global.markets[player.name].shared_buttons[event.element.name]
@@ -298,8 +298,8 @@ script.on_event(defines.events.on_player_created, function(event)
     if not global.markets then global.markets = {} end
     market.new(player)
 
-    -- if not global.groups then global.groups = {} end
-    -- group.new(player)
+    if not global.groups then global.groups = {} end
+    group.new(player)
 
     if global.ocfg.enable_long_reach then GivePlayerLongReach(player) end
 
@@ -375,7 +375,7 @@ script.on_event(defines.events.on_tick, function(event)
     ReportPlayerBuffsOnTick()
 
     market.on_tick()
-    -- group.on_tick()
+    group.on_tick()
     flying_tags.update()
 
     -- tools.stockUp()

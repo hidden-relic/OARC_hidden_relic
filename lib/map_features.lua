@@ -1209,6 +1209,14 @@ function CoinsFromEnemiesOnPostEntityDied(event)
         if (coin_chance) then
             if event.cause.type == "character" then
                 DropCoins(coin_chance, event.cause.player)
+            elseif event.cause.type == "unit" then
+                if event.cause.unit_group then
+                    for playername, _ in pairs(global.groups) do
+                        if event.cause.unit_group == global.groups[playername].pet_group then
+                            DropCoins(coin_chance, game.players[playername])
+                        end
+                    end
+                end
             elseif event.cause.type == "car" or event.cause.type == "spider-vehicle" then
                 if not event.cause.get_driver() then return end
                 DropCoins(coin_chance, event.cause.get_driver().player)

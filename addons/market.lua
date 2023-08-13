@@ -4,7 +4,7 @@ local prodscore = require('production-score')
 local flib_table = require('flib.table')
 
 -- PET GROUPS BUGGED
--- local group = require("addons.groups")
+local group = require("addons.groups")
 
 local flying_tag = require("flying_tags")
 
@@ -34,29 +34,28 @@ function M.init()
     end
     return markets
 end
+-- 
+M.followers_table = {
+    ["small-biter"] = {cost = 1000, count = 1},
+    ["medium-biter"] = {cost = 2000, count = 1},
+    ["big-biter"] = {cost = 4000, count = 1},
+    ["behemoth-biter"] = {cost = 10000, count = 1},
+    ["small-spitter"] = {cost = 1500, count = 1},
+    ["medium-spitter"] = {cost = 3000, count = 1},
+    ["big-spitter"] = {cost = 6000, count = 1},
+    ["behemoth-spitter"] = {cost = 12000, count = 1}
+}
 
--- PET FOLLOWERS BUGGED, DISAPPEAR RANDOMLY
--- M.followers_table = {
---     ["small-biter"] = {cost = 1000, count = 1},
---     ["medium-biter"] = {cost = 2000, count = 1},
---     ["big-biter"] = {cost = 4000, count = 1},
---     ["behemoth-biter"] = {cost = 10000, count = 1},
---     ["small-spitter"] = {cost = 1500, count = 1},
---     ["medium-spitter"] = {cost = 3000, count = 1},
---     ["big-spitter"] = {cost = 6000, count = 1},
---     ["behemoth-spitter"] = {cost = 12000, count = 1}
--- }
-
--- M.followers_func_table = {
---     ["small-biter"] = function(player) group.add(player, "small-biter") return end,
---     ["medium-biter"] = function(player) group.add(player, "medium-biter") return end,
---     ["big-biter"] = function(player) group.add(player, "big-biter") return end,
---     ["behemoth-biter"] = function(player) group.add(player, "behemoth-biter") return end,
---     ["small-spitter"] = function(player) group.add(player, "small-spitter") return end,
---     ["medium-spitter"] = function(player) group.add(player, "medium-spitter") return end,
---     ["big-spitter"] = function(player) group.add(player, "big-spitter") return end,
---     ["behemoth-spitter"] = function(player) group.add(player, "behemoth-spitter") return end
--- }
+M.followers_func_table = {
+    ["small-biter"] = function(player) group.add(player, "small-biter") return end,
+    ["medium-biter"] = function(player) group.add(player, "medium-biter") return end,
+    ["big-biter"] = function(player) group.add(player, "big-biter") return end,
+    ["behemoth-biter"] = function(player) group.add(player, "behemoth-biter") return end,
+    ["small-spitter"] = function(player) group.add(player, "small-spitter") return end,
+    ["medium-spitter"] = function(player) group.add(player, "medium-spitter") return end,
+    ["big-spitter"] = function(player) group.add(player, "big-spitter") return end,
+    ["behemoth-spitter"] = function(player) group.add(player, "behemoth-spitter") return end
+}
 
 M.shared_table = {
     ["special_logistic-chest-storage"] = {cost = 2000, tooltip = "Turn the nearest empty wooden chest into a shared INPUT chest"},
@@ -125,7 +124,7 @@ M.upgrade_cost_table = {
     ["laser"] = 0.2,
     ["mining-drill-productivity-bonus"] = 0.2,
     ["maximum-following-robot-count"] = 0.2,
-    -- ["group-limit"] = 0.25,
+    ["group-limit"] = 0.25,
     -- ["autofill-turret"] = 0,
     ["autolvl-turret"] = 0,
     -- ["coin-turret"] = 0,
@@ -174,11 +173,11 @@ M.upgrade_func_table = {
             effect.modifier
         end
     end,
-    -- ["group-limit"] = function(player)
-    --     local upgrades = global.markets[player.name].upgrades
-    --     local player_group = global.groups[player.name]
-    --     player_group.limit = player_group.limit + 1
-    -- end,
+    ["group-limit"] = function(player)
+        local upgrades = global.markets[player.name].upgrades
+        local player_group = global.groups[player.name]
+        player_group.limit = player_group.limit + 1
+    end,
     ["autolvl-turret"] = function(player)
         global.markets.autolvl_turrets[player.name] = true
         M.update(player)
@@ -353,15 +352,15 @@ function M.new(player)
                 tooltip = "+5 Robots [img=entity/distractor] [img=entity/destroyer] [img=entity/defender]"
             },
             
-            -- ["group-limit"] = {
-            --     name = "Pet Limit",
-            --     lvl = 1,
-            --     max_lvl = 50,
-            --     cost = 10000,
-            --     sprite = "entity/small-biter",
-            --     t = {},
-            --     tooltip = "+1 Pet [img=entity/small-biter] [img=entity/medium-biter] [img=entity/big-biter] [img=entity/behemoth-biter]"
-            -- },
+            ["group-limit"] = {
+                name = "Pet Limit",
+                lvl = 1,
+                max_lvl = 50,
+                cost = 10000,
+                sprite = "entity/small-biter",
+                t = {},
+                tooltip = "+1 Pet [img=entity/small-biter] [img=entity/medium-biter] [img=entity/big-biter] [img=entity/behemoth-biter]"
+            },
         }
         M.create_market_button(player)
         M.create_stats_button(player)
@@ -712,7 +711,7 @@ function M.new(player)
         }
         market.upgrades_table = market.upgrades_flow.add {
             type = "table",
-            column_count = 3
+            column_count = 5
         }
         market.upgrade_buttons = {}
         for name, upgrade in pairs(market.upgrades) do
@@ -731,33 +730,33 @@ function M.new(player)
         
         -- -- market followers
         
-        -- market.followers_frame = market.special_store_flow.add {
-        --     type = "frame",
-        --     direction = "horizontal"
-        -- }
-        -- market.followers_flow = market.followers_frame.add {
-        --     type = "flow",
-        --     direction = "vertical"
-        -- }
-        -- market.followers_label = market.followers_flow.add {
-        --     type = "label",
-        --     caption = "[color=orange]Pets[/color]"
-        -- }
-        -- market.followers_table = market.followers_flow.add {
-        --     type = "table",
-        --     column_count = 8
-        -- }
-        -- market.follower_buttons = {}
-        -- for name, pet in pairs(M.followers_table) do
-        --     market.follower_buttons[name] = market.followers_table.add {
-        --         name = name,
-        --         type = "sprite-button",
-        --         sprite = "entity/"..name,
-        --         number = 0,
-        --         tooltip = "[img=entity/" .. name .. "]\n[item=coin] " ..
-        --         tools.add_commas(pet.cost)
-        --     }
-        -- end
+        market.followers_frame = market.special_store_flow.add {
+            type = "frame",
+            direction = "horizontal"
+        }
+        market.followers_flow = market.followers_frame.add {
+            type = "flow",
+            direction = "vertical"
+        }
+        market.followers_label = market.followers_flow.add {
+            type = "label",
+            caption = "[color=orange]Pets[/color]"
+        }
+        market.followers_table = market.followers_flow.add {
+            type = "table",
+            column_count = 4
+        }
+        market.follower_buttons = {}
+        for name, pet in pairs(M.followers_table) do
+            market.follower_buttons[name] = market.followers_table.add {
+                name = name,
+                type = "sprite-button",
+                sprite = "entity/"..name,
+                number = 0,
+                tooltip = "[img=entity/" .. name .. "]\n[item=coin] " ..
+                tools.add_commas(pet.cost)
+            }
+        end
         
         -- -- market shared
         
@@ -775,7 +774,7 @@ function M.new(player)
         }
         market.shared_table = market.shared_flow.add {
             type = "table",
-            column_count = 3
+            column_count = 6
         }
         market.shared_buttons = {}
         for name, shared in pairs(M.shared_table) do
@@ -805,7 +804,7 @@ function M.new(player)
         }
         market.special_table = market.special_flow.add {
             type = "table",
-            column_count = 3
+            column_count = 6
         }
         market.special_buttons = {}
         for name, special in pairs(M.special_table) do
@@ -990,15 +989,15 @@ function M.new(player)
             caption = player.force.maximum_following_robot_count
         }
         
-        -- table.insert(market.stats_labels, market.info_table.add {
-        --     type = "label",
-        --     caption = "[color=green]Pet Limit:[/color]"
-        -- })
-        -- market.stats_labels["group-limit"] = 
-        -- market.info_table.add {
-        --     type = "label",
-        --     caption = market.upgrades["group-limit"].lvl
-        -- }
+        table.insert(market.stats_labels, market.info_table.add {
+            type = "label",
+            caption = "[color=green]Pet Limit:[/color]"
+        })
+        market.stats_labels["group-limit"] = 
+        market.info_table.add {
+            type = "label",
+            caption = market.upgrades["group-limit"].lvl
+        }
     end
     
     
@@ -1149,7 +1148,7 @@ function M.new(player)
         market.stats_labels["laser"].caption = player.force.get_gun_speed_modifier("laser")
         market.stats_labels["mining-drill-productivity-bonus"].caption = player.force.mining_drill_productivity_bonus
         market.stats_labels["maximum-following-robot-count"].caption = player.force.maximum_following_robot_count
-        -- market.stats_labels["group-limit"].caption = market.upgrades["group-limit"].lvl
+        market.stats_labels["group-limit"].caption = market.upgrades["group-limit"].lvl
         
         market.market_button.number = balance
         market.market_button.tooltip = "[item=coin] " .. tools.add_commas(balance)
@@ -1179,17 +1178,17 @@ function M.new(player)
             math.ceil(market.upgrades[index].cost)) .. "\n" ..
             market.upgrades[index].tooltip
         end
-        -- for index, button in pairs(market.follower_buttons) do
-        --     if market.balance < M.followers_table[index].cost or group.get_count(player) >= global.groups[player.name].limit then
-        --         button.enabled = false
-        --     else
-        --         button.enabled = true
-        --     end
-        --     button.number = global.groups[player.name].counts[index] or 0
-        --     button.tooltip = "[entity=" .. index .. "]\n[item=coin] " ..
-        --     tools.add_commas(
-        --     math.ceil(M.followers_table[index].cost))
-        -- end
+        for index, button in pairs(market.follower_buttons) do
+            if market.balance < M.followers_table[index].cost or group.get_count(player) >= global.groups[player.name].limit then
+                button.enabled = false
+            else
+                button.enabled = true
+            end
+            button.number = global.groups[player.name].counts[index] or 0
+            button.tooltip = "[entity=" .. index .. "]\n[item=coin] " ..
+            tools.add_commas(
+            math.ceil(M.followers_table[index].cost))
+        end
         for index, button in pairs(market.shared_buttons) do
             if market.balance < M.shared_table[index].cost then
                 button.enabled = false
