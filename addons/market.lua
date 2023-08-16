@@ -3,13 +3,14 @@ local tools = require("addons.tools")
 local prodscore = require('production-score')
 local flib_table = require('flib.table')
 
--- PET GROUPS BUGGED
 local group = require("addons.groups")
 
 local flying_tag = require("flying_tags")
 
 local M = {}
 
+local config = {}
+config.enable_groups = false
 -- function M:new(o)
 --     o = o or {}             -- this sets o to itself (if arg o is passed in) if not, create empty table called o
 --     setmetatable(o, self)   -- set o's metatable to M's metatable
@@ -34,28 +35,31 @@ function M.init()
     end
     return markets
 end
--- 
-M.followers_table = {
-    ["small-biter"] = {cost = 500, count = 1},
-    ["medium-biter"] = {cost = 2000, count = 1},
-    ["big-biter"] = {cost = 10000, count = 1},
-    ["behemoth-biter"] = {cost = 60000, count = 1},
-    ["small-spitter"] = {cost = 500, count = 1},
-    ["medium-spitter"] = {cost = 3000, count = 1},
-    ["big-spitter"] = {cost = 12000, count = 1},
-    ["behemoth-spitter"] = {cost = 75000, count = 1}
-}
+--
 
-M.followers_func_table = {
-    ["small-biter"] = function(player) group.add(player, "small-biter") return end,
-    ["medium-biter"] = function(player) group.add(player, "medium-biter") return end,
-    ["big-biter"] = function(player) group.add(player, "big-biter") return end,
-    ["behemoth-biter"] = function(player) group.add(player, "behemoth-biter") return end,
-    ["small-spitter"] = function(player) group.add(player, "small-spitter") return end,
-    ["medium-spitter"] = function(player) group.add(player, "medium-spitter") return end,
-    ["big-spitter"] = function(player) group.add(player, "big-spitter") return end,
-    ["behemoth-spitter"] = function(player) group.add(player, "behemoth-spitter") return end
-}
+if config.enable_groups == true then
+    M.followers_table = {
+        ["small-biter"] = {cost = 500, count = 1},
+        ["medium-biter"] = {cost = 2000, count = 1},
+        ["big-biter"] = {cost = 10000, count = 1},
+        ["behemoth-biter"] = {cost = 60000, count = 1},
+        ["small-spitter"] = {cost = 500, count = 1},
+        ["medium-spitter"] = {cost = 3000, count = 1},
+        ["big-spitter"] = {cost = 12000, count = 1},
+        ["behemoth-spitter"] = {cost = 75000, count = 1}
+    }
+    
+    M.followers_func_table = {
+        ["small-biter"] = function(player) group.add(player, "small-biter") return end,
+        ["medium-biter"] = function(player) group.add(player, "medium-biter") return end,
+        ["big-biter"] = function(player) group.add(player, "big-biter") return end,
+        ["behemoth-biter"] = function(player) group.add(player, "behemoth-biter") return end,
+        ["small-spitter"] = function(player) group.add(player, "small-spitter") return end,
+        ["medium-spitter"] = function(player) group.add(player, "medium-spitter") return end,
+        ["big-spitter"] = function(player) group.add(player, "big-spitter") return end,
+        ["behemoth-spitter"] = function(player) group.add(player, "behemoth-spitter") return end
+    }
+end
 
 M.shared_table = {
     ["special_logistic-chest-storage"] = {cost = 20000, tooltip = "Turn the nearest empty wooden chest into a shared INPUT chest"},
@@ -324,8 +328,9 @@ function M.new(player)
                 t = {{type = "maximum-following-robots-count", modifier = 5}},
                 tooltip = "+5 Robots [img=entity/distractor] [img=entity/destroyer] [img=entity/defender]"
             },
-            
-            ["group-limit"] = {
+        }
+        if config.enable_groups == true then
+            market.upgrades["group-limit"] = {
                 name = "Pet Limit",
                 lvl = 1,
                 max_lvl = 50,
@@ -333,8 +338,8 @@ function M.new(player)
                 sprite = "entity/small-biter",
                 t = {},
                 tooltip = "+1 Pet [img=entity/small-biter] [img=entity/medium-biter] [img=entity/big-biter] [img=entity/behemoth-biter]"
-            },
-        }
+            }
+        end
         M.create_market_button(player)
         M.create_stats_button(player)
         M.create_market_gui(player)
@@ -697,42 +702,42 @@ function M.new(player)
         end
         
         -- -- market followers
-        
-        market.followers_frame = market.special_store_flow.add {
-            type = "frame",
-            direction = "horizontal"
-        }
-        market.followers_flow = market.followers_frame.add {
-            type = "flow",
-            direction = "vertical"
-        }
-        market.followers_switch = market.followers_flow.add {
-            type = "switch",
-            left_label_caption = "[color=blue]Defend Base[/color]",
-            left_label_tooltip = "Your pets will patrol the area immediately around your spawn",
-            right_label_caption = "[color=blue]Defend You[/color]",
-            right_label_tooltip = "Your pets will stay near you to protect the player",
-        }
-        market.followers_label = market.followers_flow.add {
-            type = "label",
-            caption = "[color=orange]Pets[/color]"
-        }
-        market.followers_table = market.followers_flow.add {
-            type = "table",
-            column_count = 4
-        }
-        market.follower_buttons = {}
-        for name, pet in pairs(M.followers_table) do
-            market.follower_buttons[name] = market.followers_table.add {
-                name = name,
-                type = "sprite-button",
-                sprite = "entity/"..name,
-                number = 0,
-                tooltip = "[img=entity/" .. name .. "]\n[item=coin] " ..
-                tools.add_commas(pet.cost)
+        if config.enable_groups == true then
+            market.followers_frame = market.special_store_flow.add {
+                type = "frame",
+                direction = "horizontal"
             }
+            market.followers_flow = market.followers_frame.add {
+                type = "flow",
+                direction = "vertical"
+            }
+            market.followers_switch = market.followers_flow.add {
+                type = "switch",
+                left_label_caption = "[color=blue]Defend Base[/color]",
+                left_label_tooltip = "Your pets will patrol the area immediately around your spawn",
+                right_label_caption = "[color=blue]Defend You[/color]",
+                right_label_tooltip = "Your pets will stay near you to protect the player",
+            }
+            market.followers_label = market.followers_flow.add {
+                type = "label",
+                caption = "[color=orange]Pets[/color]"
+            }
+            market.followers_table = market.followers_flow.add {
+                type = "table",
+                column_count = 4
+            }
+            market.follower_buttons = {}
+            for name, pet in pairs(M.followers_table) do
+                market.follower_buttons[name] = market.followers_table.add {
+                    name = name,
+                    type = "sprite-button",
+                    sprite = "entity/"..name,
+                    number = 0,
+                    tooltip = "[img=entity/" .. name .. "]\n[item=coin] " ..
+                    tools.add_commas(pet.cost)
+                }
+            end
         end
-        
         
         -- -- market shared
         
@@ -965,15 +970,17 @@ function M.new(player)
             caption = player.force.maximum_following_robot_count
         }
         
+        if config.enable_groups == true then
         table.insert(market.stats_labels, market.info_table.add {
             type = "label",
             caption = "[color=green]Pet Limit:[/color]"
         })
-        market.stats_labels["group-limit"] = 
-        market.info_table.add {
-            type = "label",
-            caption = market.upgrades["group-limit"].lvl
-        }
+            market.stats_labels["group-limit"] = 
+            market.info_table.add {
+                type = "label",
+                caption = market.upgrades["group-limit"].lvl
+            }
+        end
     end
     
     
@@ -1125,7 +1132,9 @@ function M.new(player)
         market.stats_labels["laser"].caption = player.force.get_gun_speed_modifier("laser")
         market.stats_labels["mining-drill-productivity-bonus"].caption = player.force.mining_drill_productivity_bonus
         market.stats_labels["maximum-following-robot-count"].caption = player.force.maximum_following_robot_count
-        market.stats_labels["group-limit"].caption = market.upgrades["group-limit"].lvl
+        if config.enable_groups == true then
+            market.stats_labels["group-limit"].caption = market.upgrades["group-limit"].lvl
+        end
         
         market.market_button.number = balance
         market.market_button.tooltip = "[item=coin] " .. tools.add_commas(balance)
@@ -1155,16 +1164,18 @@ function M.new(player)
             math.ceil(market.upgrades[index].cost)) .. "\n" ..
             market.upgrades[index].tooltip
         end
-        for index, button in pairs(market.follower_buttons) do
-            if market.balance < M.followers_table[index].cost or group.get_count(player) >= global.groups[player.name].limit then
-                button.enabled = false
-            else
-                button.enabled = true
+        if config.enable_groups == true then
+            for index, button in pairs(market.follower_buttons) do
+                if market.balance < M.followers_table[index].cost or group.get_count(player) >= global.groups[player.name].limit then
+                    button.enabled = false
+                else
+                    button.enabled = true
+                end
+                button.number = global.groups[player.name].counts[index] or 0
+                button.tooltip = "[entity=" .. index .. "]\n[item=coin] " ..
+                tools.add_commas(
+                math.ceil(M.followers_table[index].cost))
             end
-            button.number = global.groups[player.name].counts[index] or 0
-            button.tooltip = "[entity=" .. index .. "]\n[item=coin] " ..
-            tools.add_commas(
-            math.ceil(M.followers_table[index].cost))
         end
         for index, button in pairs(market.shared_buttons) do
             if market.balance < M.shared_table[index].cost then
@@ -1306,7 +1317,7 @@ function M.new(player)
             end
         end
     end
-
+    
     -- AUTOFILL HAS BUGS, ONLY INSERTS 1 AMMO AND LAGS MP
     -- function M.autofill(player)
     --     for i, turret in pairs(player.surface.find_entities_filtered{name="gun-turret", force=player.force, last_user=player}) do
@@ -1397,4 +1408,4 @@ function M.new(player)
         end
     end
     
-return M
+    return M
