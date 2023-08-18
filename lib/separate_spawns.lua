@@ -133,7 +133,7 @@ function SeparateSpawnsPlayerCreated(player_index, clear_inv)
 
     HideOarcGui(player)
     -- HideOarcStore(player)
-    DisplayWelcomeTextGui(player)
+    player.opened = DisplayWelcomeTextGui(player)
 end
 
 -- Check if the player has a different spawn point than the default one

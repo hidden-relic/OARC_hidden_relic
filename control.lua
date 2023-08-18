@@ -338,9 +338,9 @@ script.on_event(defines.events.on_player_created, function(event)
         player.force = game.create_force(player.name)
         return
     end
-    SeparateSpawnsPlayerCreated(event.player_index, true)
     
     InitOarcGuiTabs(player)
+    SeparateSpawnsPlayerCreated(event.player_index, true)
     
     -- if global.ocfg.enable_coin_shop then InitOarcStoreGuiTabs(player) end
     deathmarkers.init(event)

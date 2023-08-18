@@ -661,17 +661,14 @@ function M.new(player)
                 }
             end
         end
+
+        market.container_flow.add {
+            type = "line",
+            direction = "vertical"
+        }
         
         -- market special (right side)
         
-        -- market.special_store_frame = market.container_flow.add {
-        --     type = "frame",
-        --     direction="vertical"
-        -- }
-        -- market.special_store_flow = market.special_store_frame.add {
-        --     type = "flow",
-        --     direction = "vertical"
-        -- }
         market.special_store_flow = market.container_flow.add {
             type = "flow",
             direction = "vertical"
@@ -709,6 +706,9 @@ function M.new(player)
                 tools.add_commas(upgrade.cost) .. "\n" .. upgrade.tooltip
             }
         end
+        market.special_store_flow.add {
+            type = "line"
+        }
         
         -- -- market followers
         if config.enable_groups == true then
@@ -746,6 +746,9 @@ function M.new(player)
                     tools.add_commas(pet.cost)
                 }
             end
+            market.special_store_flow.add {
+                type = "line"
+            }
         end
         
         -- -- market shared
@@ -777,6 +780,9 @@ function M.new(player)
                 tools.add_commas(shared.cost) .. "\n" .. shared.tooltip
             }
         end
+        market.special_store_flow.add {
+            type = "line"
+        }
         
         -- -- market special
         
