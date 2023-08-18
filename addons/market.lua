@@ -11,6 +11,15 @@ local M = {}
 
 local config = {}
 config.enable_groups = false
+config.upgrades_column_count = 3
+config.shared_column_count = 3
+config.special_column_count = 3
+if config.enable_groups then
+    config.upgrades_column_count = 5
+    config.followers_column_count = 4
+    config.shared_column_count = 6
+    config.special_column_count = 6
+end
 -- function M:new(o)
 --     o = o or {}             -- this sets o to itself (if arg o is passed in) if not, create empty table called o
 --     setmetatable(o, self)   -- set o's metatable to M's metatable
@@ -684,7 +693,7 @@ function M.new(player)
         }
         market.upgrades_table = market.upgrades_flow.add {
             type = "table",
-            column_count = 5
+            column_count = config.upgrades_column_count
         }
         market.upgrade_buttons = {}
         for name, upgrade in pairs(market.upgrades) do
@@ -724,7 +733,7 @@ function M.new(player)
             }
             market.followers_table = market.followers_flow.add {
                 type = "table",
-                column_count = 4
+                column_count = config.followers_column_count
             }
             market.follower_buttons = {}
             for name, pet in pairs(M.followers_table) do
@@ -755,7 +764,7 @@ function M.new(player)
         }
         market.shared_table = market.shared_flow.add {
             type = "table",
-            column_count = 6
+            column_count = config.shared_column_count
         }
         market.shared_buttons = {}
         for name, shared in pairs(M.shared_table) do
@@ -785,7 +794,7 @@ function M.new(player)
         }
         market.special_table = market.special_flow.add {
             type = "table",
-            column_count = 6
+            column_count = config.special_column_count
         }
         market.special_buttons = {}
         for name, special in pairs(M.special_table) do
@@ -971,10 +980,10 @@ function M.new(player)
         }
         
         if config.enable_groups == true then
-        table.insert(market.stats_labels, market.info_table.add {
-            type = "label",
-            caption = "[color=green]Pet Limit:[/color]"
-        })
+            table.insert(market.stats_labels, market.info_table.add {
+                type = "label",
+                caption = "[color=green]Pet Limit:[/color]"
+            })
             market.stats_labels["group-limit"] = 
             market.info_table.add {
                 type = "label",
