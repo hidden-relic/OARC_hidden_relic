@@ -133,7 +133,7 @@ M.upgrade_cost_table = {
     ["character-health"] = 0.5,
     ["gun"] = 0.2,
     ["tank-flame"] = 0.2,
-    ["rocket"] = 0.2,
+    ["rocketry"] = 0.2,
     ["laser"] = 0.2,
     ["mining-drill-productivity-bonus"] = 0.2,
     ["maximum-following-robot-count"] = 0.2,
@@ -159,7 +159,7 @@ M.upgrade_func_table = {
         player.force.set_turret_attack_modifier("flamethrower-turret", player.force.get_turret_attack_modifier("flamethrower-turret")+0.1)
         player.force.set_gun_speed_modifier("cannon-shell", player.force.get_gun_speed_modifier("cannon-shell")+0.01)
     end,
-    ["rocket"] = function(player)
+    ["rocketry"] = function(player)
         player.force.set_ammo_damage_modifier("rocket", player.force.get_ammo_damage_modifier("rocket")+0.1)
         player.force.set_gun_speed_modifier("rocket", player.force.get_gun_speed_modifier("rocket")+0.01)
     end,
@@ -288,7 +288,7 @@ function M.new(player)
             t = {},
             tooltip = "+10% Tank Shell Damage\n+10%Tank Shell Speed\n+10% Flamethrower Damage\n+10% Flamethrower Turret Attack\n [img=item/flamethrower-ammo] [img=item/flamethrower-turret] [img=item/cannon-shell]"
         },
-        ["rocket"] = {
+        ["rocketry"] = {
             name = "Rocketry",
             lvl = 1,
             max_lvl = 100,
@@ -949,7 +949,7 @@ function M.new(player)
             type = "label",
             caption = "[color=green]Rocketry:[/color]"
         })
-        market.stats_labels["rocket"] = 
+        market.stats_labels["rocketry"] = 
         market.info_table.add {
             type = "label",
             caption = player.force.get_gun_speed_modifier("rocket")
@@ -1143,7 +1143,7 @@ function M.new(player)
         market.stats_labels["character-health"].caption = player.character_health_bonus
         market.stats_labels["gun"].caption = player.force.get_ammo_damage_modifier("bullet")
         market.stats_labels["tank-flame"].caption = player.force.get_turret_attack_modifier("flamethrower-turret")
-        market.stats_labels["rocket"].caption = player.force.get_gun_speed_modifier("rocket")
+        market.stats_labels["rocketry"].caption = player.force.get_gun_speed_modifier("rocket")
         market.stats_labels["laser"].caption = player.force.get_gun_speed_modifier("laser")
         market.stats_labels["mining-drill-productivity-bonus"].caption = player.force.mining_drill_productivity_bonus
         market.stats_labels["maximum-following-robot-count"].caption = player.force.maximum_following_robot_count
