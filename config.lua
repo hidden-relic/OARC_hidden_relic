@@ -199,16 +199,16 @@ PLAYER_RESPAWN_START_ITEMS = {
 -- chunks. It ensures the spawn area isn't too near generated/explored/existing
 -- area. The larger you make this, the further away players will spawn from
 -- generated map area (even if it is not visible on the map!).
-CHECK_SPAWN_UNGENERATED_CHUNKS_RADIUS = 15
+CHECK_SPAWN_UNGENERATED_CHUNKS_RADIUS = 10
 
 -- Near Distance in chunks
 -- When a player selects "near" spawn, they will be in or as close to this range as possible.
 NEAR_MIN_DIST = 50
-NEAR_MAX_DIST = 150
+NEAR_MAX_DIST = 100
 
 -- Far Distance in chunks
 -- When a player selects "far" spawn, they will be at least this distance away.
-FAR_MIN_DIST = 200
+FAR_MIN_DIST = 150
 FAR_MAX_DIST = 300
 
 

@@ -1146,6 +1146,8 @@ function CreateForce(force_name)
         -- Create a new force
     elseif (TableLength(game.forces) < MAX_FORCES) then
         newForce = game.create_force(force_name)
+        newForce.max_successful_attempts_per_tick_per_construction_queue = 20
+        newForce.max_failed_attempts_per_tick_per_construction_queue = 20
         if global.ocfg.enable_shared_team_vision then
             newForce.share_chart = true
         end
