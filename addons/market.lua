@@ -129,7 +129,7 @@ M.special_table = {
 }
 
 M.upgrade_cost_table = {
-    ["sell-speed"] = 2,
+    ["sell-speed"] = 1.12,
     ["character-health"] = 0.5,
     ["gun"] = 0.2,
     ["tank-flame"] = 0.2,
@@ -219,8 +219,12 @@ function M.increase(player, upgrade)
     if upgrade.lvl < upgrade.max_lvl then
         upgrade.lvl = upgrade.lvl + 1
         local current_cost = upgrade.cost
-        upgrade.cost = upgrade.cost +
-        (upgrade.cost * M.upgrade_cost_table[name])
+        if name == "sell-speed" then
+            upgrade.cost = math.floor(upgrade.cost^(M.upgrade_cost_table[name]^0.9^upgrade.lvl))
+        else    
+            upgrade.cost = upgrade.cost +
+            (upgrade.cost * M.upgrade_cost_table[name])
+        end
         M.withdraw(player, current_cost)
         global.markets.jackpot = tools.round(global.markets.jackpot + current_cost*0.25, 0)
         local up_func = M.upgrade_func_table[name]
@@ -253,7 +257,7 @@ function M.new(player)
         ["sell-speed"] = {
             name = "Sell Speed",
             lvl = 1,
-            max_lvl = 10,
+            max_lvl = 50,
             cost = 10000,
             sprite = "utility/character_running_speed_modifier_constant",
             -- potential future speeds for ups optimization
@@ -274,8 +278,8 @@ function M.new(player)
             -- 4-2 (0.5)
             -- 5-2 (0.4)
             -- 5-1 (0.2)
-            t = {10, 8, 6, 5, 4, 3, 2, 1, 0.5, 0.25},
-            tooltip = "Shorten the time it takes to sell an item"
+            t = {},
+            tooltip = "Increase the amount of items you sell every 10 seconds\nnumber of items = level^1.1"
         },
         ["character-health"] = {
             name = "Character Health",
@@ -679,7 +683,7 @@ function M.new(player)
                 }
             end
         end
-
+        
         market.container_flow.add {
             type = "line",
             direction = "vertical"
@@ -930,7 +934,7 @@ function M.new(player)
         market.stats_labels["sell-speed"] =
         market.info_table.add {
             type = "label",
-            caption = tools.round(upgrades["sell-speed"].t[upgrades["sell-speed"].lvl], 2).." seconds"
+            caption = math.floor(upgrades["sell-speed"].lvl^1.1).." i/10 secs [color=blue](1 i/"..tools.round(10/math.floor(upgrades["sell-speed"].lvl^1.1), 2).."s)[/color]"
         }
         
         table.insert(market.stats_labels, market.info_table.add {
@@ -1157,7 +1161,7 @@ function M.new(player)
         stats.item_most_sold_total
         market.stats_labels.item_most_sold_coin.caption = stats.item_most_sold_coin
         
-        market.stats_labels["sell-speed"].caption = tools.round(market.upgrades["sell-speed"].t[market.upgrades["sell-speed"].lvl], 2).." seconds"
+        market.stats_labels["sell-speed"].caption = math.floor(market.upgrades["sell-speed"].lvl^1.1).." i/10 secs [color=blue](1 i/"..tools.round(10/math.floor(market.upgrades["sell-speed"].lvl^1.1), 2).."s)[/color]"
         market.stats_labels["character-health"].caption = player.character_health_bonus
         market.stats_labels["gun"].caption = player.force.get_ammo_damage_modifier("bullet")
         market.stats_labels["tank-flame"].caption = player.force.get_turret_attack_modifier("flamethrower-turret")
@@ -1282,22 +1286,15 @@ function M.new(player)
     function M.check_for_sale(player)
         local player = player
         local market = global.markets[player.name]
-        if not market.ticks_to_sell then
+        for i = 1, math.floor(market.upgrades["sell-speed"].lvl^1.1) do
             if not M.get_nth_item_from_chest(player) then return end
-            market.item_for_sale = M.get_nth_item_from_chest(player)
+            local item_for_sale = M.get_nth_item_from_chest(player)
             get_chest_inv(market.sell_chest).remove({
-                name = market.item_for_sale,
+                name = item_for_sale,
                 count = 1
             })
-            market.ticks_to_sell = game.tick +
-            (60 *
-            market.upgrades["sell-speed"].t[market.upgrades["sell-speed"]
-            .lvl])
-        end
-        if game.tick >= market.ticks_to_sell then
-            M.sell(player, market.item_for_sale)
-            market.ticks_to_sell = nil
-            market.item_for_sale = nil
+            M.sell(player, item_for_sale)
+            get_chest_inv(market.sell_chest).sort_and_merge()
         end
     end
     
@@ -1421,7 +1418,7 @@ function M.new(player)
         --         M.autofill(game.players[entry.name])
         --     end
         -- end
-        if (game.tick % 10 == 1) then
+        if (game.tick % 600 == 1) then
             for _, player in pairs(game.players) do
                 player = tools.get_player(player)
                 if global.markets then

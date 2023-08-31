@@ -416,7 +416,6 @@ function SpawnOptsGuiClick(event)
         
         DisplayBuddySpawnOptions(player)
     end
-    DisplaySpeechBubble(player, "The sun feels different...", 10)
 end
 
 

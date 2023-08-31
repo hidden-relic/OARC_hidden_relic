@@ -297,8 +297,10 @@ end)
 
 script.on_event(defines.events.on_pre_player_died,
 function(event) deathmarkers.playerDied(event) end)
+
 script.on_event(defines.events.on_pre_player_mined_item,
 function(event) deathmarkers.onMined(event) end)
+
 script.on_event(defines.events.on_player_joined_game, function(event)
     PlayerJoinedMessages(event)
     
@@ -351,7 +353,6 @@ script.on_event(defines.events.on_player_created, function(event)
     
     -- if global.ocfg.enable_coin_shop then InitOarcStoreGuiTabs(player) end
     deathmarkers.init(event)
-    player.print("The sun seems different..")
 end)
 
 script.on_event(defines.events.on_player_respawned, function(event)

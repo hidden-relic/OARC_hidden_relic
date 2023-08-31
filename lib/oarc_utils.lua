@@ -1283,6 +1283,7 @@ function CreateGameSurface()
         -- 0.55 is morning (surface.morning) this is when solar begins powering back up
         -- 0.75 is dawn (surface.dawn) this is when solar is completely powered
         s.ticks_per_day = TICKS_PER_DAY
+        s.solar_power_multiplier = 10
         s.min_brightness = 0.15
         s.daytime = 0
         s.dusk = 0.25

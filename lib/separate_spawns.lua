@@ -258,6 +258,7 @@ function SendPlayerToNewSpawnAndCreateIt(delayedSpawn)
     -- Send the player to that position
     local player = game.players[delayedSpawn.playerName]
     SafeTeleport(player, game.surfaces[GAME_SURFACE_NAME], delayedSpawn.pos)
+    DisplaySpeechBubble(player, "The sun feels different...", 10)
     GivePlayerStarterItems(player)
 
     -- Render some welcoming text...
