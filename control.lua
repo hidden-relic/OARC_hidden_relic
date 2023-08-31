@@ -158,6 +158,13 @@ end)
 script.on_load(function() Compat.handle_factoriomaps() end)
 
 ----------------------------------------
+
+script.on_event(defines.events.on_force_created, function(event)
+    event.force.max_successful_attempts_per_tick_per_construction_queue = 20
+    event.force.max_failed_attempts_per_tick_per_construction_queue = 20
+end)
+
+----------------------------------------
 script.on_event(defines.events.on_rocket_launched,
 function(event) RocketLaunchEvent(event) end)
 
@@ -290,8 +297,10 @@ end)
 
 script.on_event(defines.events.on_pre_player_died,
 function(event) deathmarkers.playerDied(event) end)
+
 script.on_event(defines.events.on_pre_player_mined_item,
 function(event) deathmarkers.onMined(event) end)
+
 script.on_event(defines.events.on_player_joined_game, function(event)
     PlayerJoinedMessages(event)
     
@@ -392,6 +401,14 @@ script.on_event(defines.events.on_tick, function(event)
     UpdatePlayerBuffsOnTick(game.tick)
     
     ReportPlayerBuffsOnTick()
+    
+    -- if game.tick % game.surfaces[GAME_SURFACE_NAME].ticks_per_day == 1 then
+    --     modify_night_color()
+    -- end
+    
+    if game.tick % 216000 == 0 then
+        tools.statistics_log()
+    end
     
     market.on_tick()
     if global.ocfg.enable_groups == true then

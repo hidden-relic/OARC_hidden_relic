@@ -129,13 +129,13 @@ M.special_table = {
 }
 
 M.upgrade_cost_table = {
-    ["sell-speed"] = 2,
+    ["sell-speed"] = 1.12,
     ["character-health"] = 0.5,
     ["gun"] = 0.2,
     ["tank-flame"] = 0.2,
     ["rocketry"] = 0.2,
     ["laser"] = 0.2,
-    ["mining-drill-productivity-bonus"] = 0.2,
+    ["mining-drill-productivity-bonus"] = 0.25,
     ["maximum-following-robot-count"] = 0.2,
     ["group-limit"] = 0.25,
     -- ["autofill-turret"] = 0,
@@ -219,10 +219,14 @@ function M.increase(player, upgrade)
     if upgrade.lvl < upgrade.max_lvl then
         upgrade.lvl = upgrade.lvl + 1
         local current_cost = upgrade.cost
-        upgrade.cost = upgrade.cost +
-        (upgrade.cost * M.upgrade_cost_table[name])
+        if name == "sell-speed" then
+            upgrade.cost = math.floor(upgrade.cost^(M.upgrade_cost_table[name]^0.9^upgrade.lvl))
+        else    
+            upgrade.cost = upgrade.cost +
+            (upgrade.cost * M.upgrade_cost_table[name])
+        end
         M.withdraw(player, current_cost)
-        global.markets.jackpot = global.markets.jackpot + current_cost*0.25
+        global.markets.jackpot = tools.round(global.markets.jackpot + current_cost*0.25, 0)
         local up_func = M.upgrade_func_table[name]
         up_func(player)
     else
@@ -253,11 +257,29 @@ function M.new(player)
         ["sell-speed"] = {
             name = "Sell Speed",
             lvl = 1,
-            max_lvl = 10,
+            max_lvl = 50,
             cost = 10000,
             sprite = "utility/character_running_speed_modifier_constant",
-            t = {10, 8, 6, 5, 4, 3, 2, 1, 0.5, 0.25},
-            tooltip = "Shorten the time it takes to sell an item"
+            -- potential future speeds for ups optimization
+            -- 1-10 (10)
+            -- 1-9 (9)
+            -- 1-8 (8)
+            -- 1-7 (7)
+            -- 1-6 (6)
+            -- 2-8 (4)
+            -- 2-7 (3.5)
+            -- 2-6 (3)
+            -- 2-5 (2.5)
+            -- 3-6 (2)
+            -- 3-5 (1.66)
+            -- 3-4 (1.25)
+            -- 4-4 (1)
+            -- 4-3 (0.75)
+            -- 4-2 (0.5)
+            -- 5-2 (0.4)
+            -- 5-1 (0.2)
+            t = {},
+            tooltip = "Increase the amount of items you sell every 10 seconds\nnumber of items = level^1.1"
         },
         ["character-health"] = {
             name = "Character Health",
@@ -322,10 +344,10 @@ function M.new(player)
                 name = "Mining Drill Productivity",
                 lvl = 1,
                 max_lvl = 100,
-                cost = 10000,
+                cost = 1000000,
                 sprite = "technology/mining-productivity-1",
-                t = {{type = "mining-drill-productivity-bonus", modifier = 0.1}},
-                tooltip = "+10% Productivity [img=technology/mining-productivity-1]"
+                t = {{type = "mining-drill-productivity-bonus", modifier = 0.05}},
+                tooltip = "+5% Productivity [img=technology/mining-productivity-1]"
             },
             
             ["maximum-following-robot-count"] = {
@@ -359,7 +381,7 @@ function M.new(player)
         local player = player
         local market = global.markets[player.name]
         market.balance = market.balance + v
-        market.stats.total_coin_earned = market.stats.total_coin_earned + v
+        market.stats.total_coin_earned = tools.round(market.stats.total_coin_earned + v)
         M.update(player)
     end
     
@@ -370,7 +392,7 @@ function M.new(player)
             player.print("Insufficient Funds")
         else
             market.balance = market.balance - v
-            market.stats.total_coin_spent = market.stats.total_coin_spent + v
+            market.stats.total_coin_spent = tools.round(market.stats.total_coin_spent + v)
             M.update(player)
         end
     end
@@ -422,12 +444,12 @@ function M.new(player)
             end
             M.withdraw(player, value * inserted)
             player.insert {name = item, count = inserted}
-            global.markets.jackpot = global.markets.jackpot + (value * inserted) * 0.25
+            global.markets.jackpot = tools.round(global.markets.jackpot + (value * inserted) * 0.25)
             
             if not market.stats.items_purchased[item] then
                 market.stats.items_purchased[item] = {
                     count = inserted,
-                    value = value
+                    value = tools.round(value)
                 }
             else
                 market.stats.items_purchased[item].count = market.stats
@@ -446,7 +468,7 @@ function M.new(player)
                         tools.add_commas(tools.remove_commas(inserted)) .. "[/color]",
                         suffix = "[img=item/coin][color=red]-" .. tools.add_commas(tools.remove_commas(value)) ..
                         inserted .. "[/color]",
-                        suffix = "[img=item/coin][color=red]-" .. value ..
+                        suffix = "[img=item/coin][color=red]-" .. tools.round(value) ..
                         "[/color]",
                         purchased = inserted
                     })
@@ -460,7 +482,7 @@ function M.new(player)
                     history[1].prefix =
                     "[img=item/" .. item .. "] [color=green]+" ..
                     tools.add_commas(tools.remove_commas(history[1].purchased)) .. "[/color]"
-                    history[1].suffix = "[img=item/coin][color=red]-" .. tools.add_commas(tools.remove_commas(value * history[1].purchased)) .. "[/color]"
+                    history[1].suffix = "[img=item/coin][color=red]-" .. tools.add_commas(tools.remove_commas(tools.round(value * history[1].purchased))) .. "[/color]"
                     if #market.stats.history > 16 then
                         table.remove(market.stats.history)
                     end
@@ -471,7 +493,7 @@ function M.new(player)
                     item = item,
                     prefix = "[img=item/" .. item .. "] [color=green]+" .. tools.add_commas(tools.remove_commas(inserted)) ..
                     "[/color]",
-                    suffix = "[img=item/coin][color=red]-" .. tools.add_commas(tools.remove_commas(value)) .. "[/color]",
+                    suffix = "[img=item/coin][color=red]-" .. tools.add_commas(tools.remove_commas(tools.round(value))) .. "[/color]",
                     purchased = inserted
                 })
             end
@@ -506,7 +528,7 @@ function M.new(player)
                 table.insert(history, 1, {
                     item = item,
                     prefix = "[img=item/" .. item .. "] [color=red]-1[/color]",
-                    suffix = "[img=item/coin][color=green]+" .. tools.add_commas(tools.remove_commas(value)) .. "[/color]",
+                    suffix = "[img=item/coin][color=green]+" .. tools.add_commas(tools.remove_commas(tools.round(value))) .. "[/color]",
                     sold = 1
                 })
                 if #market.stats.history > 16 then
@@ -518,7 +540,7 @@ function M.new(player)
                 history[1].sold = history[1].sold + 1
                 history[1].prefix = "[img=item/" .. item .. "] [color=red]-" ..
                 tools.add_commas(tools.remove_commas(history[1].sold)) .. "[/color]"
-                history[1].suffix = "[img=item/coin][color=green]+" .. tools.add_commas(tools.remove_commas(value * history[1].sold)) .. "[/color]"
+                history[1].suffix = "[img=item/coin][color=green]+" .. tools.add_commas(tools.remove_commas(tools.round(value * history[1].sold))) .. "[/color]"
                 if #market.stats.history > 16 then
                     table.remove(market.stats.history)
                 end
@@ -528,7 +550,7 @@ function M.new(player)
             table.insert(history, 1, {
                 item = item,
                 prefix = "[img=item/" .. item .. "] [color=red]-1[/color]",
-                suffix = "[img=item/coin][color=green]+" .. tools.add_commas(tools.remove_commas(value)) .. "[/color]",
+                suffix = "[img=item/coin][color=green]+" .. tools.add_commas(tools.remove_commas(tools.round(value))) .. "[/color]",
                 sold = 1
             })
         end
@@ -661,7 +683,7 @@ function M.new(player)
                 }
             end
         end
-
+        
         market.container_flow.add {
             type = "line",
             direction = "vertical"
@@ -912,7 +934,7 @@ function M.new(player)
         market.stats_labels["sell-speed"] =
         market.info_table.add {
             type = "label",
-            caption = tools.round(upgrades["sell-speed"].t[upgrades["sell-speed"].lvl], 2).." seconds"
+            caption = math.floor(upgrades["sell-speed"].lvl^1.1).." i/10 secs [color=blue](1 i/"..tools.round(10/math.floor(upgrades["sell-speed"].lvl^1.1), 2).."s)[/color]"
         }
         
         table.insert(market.stats_labels, market.info_table.add {
@@ -1078,7 +1100,7 @@ function M.new(player)
                 high_count = string.gsub(highest_count, ",", "")
                 if purchase.value > tonumber(high_value) then
                     highest_value_item = name
-                    highest_value = tools.add_commas(purchase.value)
+                    highest_value = tools.add_commas(tools.round(purchase.value))
                 end
                 if purchase.count > tonumber(high_count) then
                     highest_count_item = name
@@ -1103,7 +1125,7 @@ function M.new(player)
                 high_count = string.gsub(highest_count, ",", "")
                 if sale.value > tonumber(high_value) then
                     highest_value_item = name
-                    highest_value = tools.add_commas(sale.value)
+                    highest_value = tools.add_commas(tools.round(sale.value))
                 end
                 if sale.count > tonumber(high_count) then
                     highest_count_item = name
@@ -1128,9 +1150,9 @@ function M.new(player)
             end
         end
         market.stats_labels.total_coin_earned.caption =
-        "[img=item/coin] [color=green]" .. tools.add_commas(stats.total_coin_earned) .. "[/color]"
+        "[img=item/coin] [color=green]" .. tools.add_commas(tools.round(stats.total_coin_earned)) .. "[/color]"
         market.stats_labels.total_coin_spent.caption =
-        "[img=item/coin] [color=green]" .. tools.add_commas(stats.total_coin_spent) .. "[/color]"
+        "[img=item/coin] [color=green]" .. tools.add_commas(tools.round(stats.total_coin_spent)) .. "[/color]"
         market.stats_labels.item_most_purchased_total.caption =
         stats.item_most_purchased_total
         market.stats_labels.item_most_purchased_coin.caption =
@@ -1139,7 +1161,7 @@ function M.new(player)
         stats.item_most_sold_total
         market.stats_labels.item_most_sold_coin.caption = stats.item_most_sold_coin
         
-        market.stats_labels["sell-speed"].caption = tools.round(market.upgrades["sell-speed"].t[market.upgrades["sell-speed"].lvl], 2).." seconds"
+        market.stats_labels["sell-speed"].caption = math.floor(market.upgrades["sell-speed"].lvl^1.1).." i/10 secs [color=blue](1 i/"..tools.round(10/math.floor(market.upgrades["sell-speed"].lvl^1.1), 2).."s)[/color]"
         market.stats_labels["character-health"].caption = player.character_health_bonus
         market.stats_labels["gun"].caption = player.force.get_ammo_damage_modifier("bullet")
         market.stats_labels["tank-flame"].caption = player.force.get_turret_attack_modifier("flamethrower-turret")
@@ -1264,22 +1286,15 @@ function M.new(player)
     function M.check_for_sale(player)
         local player = player
         local market = global.markets[player.name]
-        if not market.ticks_to_sell then
+        for i = 1, math.floor(market.upgrades["sell-speed"].lvl^1.1) do
             if not M.get_nth_item_from_chest(player) then return end
-            market.item_for_sale = M.get_nth_item_from_chest(player)
+            local item_for_sale = M.get_nth_item_from_chest(player)
             get_chest_inv(market.sell_chest).remove({
-                name = market.item_for_sale,
+                name = item_for_sale,
                 count = 1
             })
-            market.ticks_to_sell = game.tick +
-            (60 *
-            market.upgrades["sell-speed"].t[market.upgrades["sell-speed"]
-            .lvl])
-        end
-        if game.tick >= market.ticks_to_sell then
-            M.sell(player, market.item_for_sale)
-            market.ticks_to_sell = nil
-            market.item_for_sale = nil
+            M.sell(player, item_for_sale)
+            get_chest_inv(market.sell_chest).sort_and_merge()
         end
     end
     
@@ -1403,7 +1418,7 @@ function M.new(player)
         --         M.autofill(game.players[entry.name])
         --     end
         -- end
-        if (game.tick % 10 == 1) then
+        if (game.tick % 600 == 1) then
             for _, player in pairs(game.players) do
                 player = tools.get_player(player)
                 if global.markets then

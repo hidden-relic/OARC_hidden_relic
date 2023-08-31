@@ -17,6 +17,82 @@ function tools.remove_commas(amount)
     return string.gsub(amount, ",", "")
 end
 
+local function sort_table_highest_value(t)
+    local r = {}
+    for _, val in pairs(t) do
+        table.insert(r, val)
+    end
+    table.sort(r, function(a, b)
+        return a > b
+    end)
+    return r
+end
+
+local function get_item_last_hour(force, item)
+    return force.item_production_statistics.get_flow_count{
+        name=item,
+        input=false,
+        precision_index = defines.flow_precision_index.one_hour
+    }
+end
+
+local function get_total_last_hour(force)
+    local t = {
+        ["automation-science-pack"] = 0,
+        ["logistic-science-pack"] = 0,
+        ["chemical-science-pack"] = 0,
+        ["production-science-pack"] = 0,
+        ["utility-science-pack"] = 0,
+        ["space-science-pack"] = 0,
+        ["military-science-pack"] = 0
+    }
+    for science, _ in pairs(t) do
+        t[science] = get_item_last_hour(force, science)
+    end
+    local r = sort_table_highest_value(t)
+    local total = 0
+    for i = 1, 5, 1 do
+        total = total + r[i]
+    end
+    return total
+end
+
+local function get_avg_last_hour(force) 
+    local total = get_total_last_hour(force)
+    return total/5
+end
+
+function tools.statistics_log()
+    if not global.highest_spm then
+        global.highest_spm = {
+            amount = 0,
+            force = "",
+            hour = 0
+        }
+    end
+    global.highest_spm.hour = global.highest_spm.hour + 1
+    local old_highest = global.highest_spm.amount
+    for _, force in pairs(game.forces) do
+        local spm = get_avg_last_hour(force)
+        if spm > global.highest_spm.amount then
+            global.highest_spm.amount = spm
+            global.highest_spm.force = force.name
+        end
+    end
+    if global.highest_spm.amount > old_highest then
+        local playernames = {}
+        local players = game.forces[global.highest_spm.force].players
+        for _, player in pairs(players) do
+            table.insert(playernames, player.name)
+        end
+        game.write_file("statistics/SPM.txt",
+        "Hour "..global.highest_spm.hour..
+        ":\nForce name: "..global.highest_spm.force..
+        "\nSPM: "..global.highest_spm.amount..
+        "\nPlayers on force: "..table.concat(playernames, ", ").."\n")
+    end
+end
+
 function tools.sortByValue(t)
     local keys = {}
     
