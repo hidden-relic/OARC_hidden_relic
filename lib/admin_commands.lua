@@ -6,7 +6,7 @@ require("lib/oarc_utils")
 local Colors = require("util/Colors")
 local find_patch = require("addons/find_patch")
 -- local spy = require("addons/spy")
-local tools = require("addons.tools")
+local tools = require("addons/tools")
 -- name :: string: Name of the command.
 -- tick :: uint: Tick the command was used.
 -- player_index :: uint (optional): The player who used the command. It will be missing if run from the server console.
