@@ -754,6 +754,8 @@ function RemoveOrResetPlayer(player, remove_player, remove_force, remove_base,
             market.new(player)
         end
     end
+    DestroyOarcGuiButton(player)
+    CreateOarcGuiButton(player)
     -- if global.groups[player.name] then
     --     global.groups[player.name] = nil
     --     if player.character then

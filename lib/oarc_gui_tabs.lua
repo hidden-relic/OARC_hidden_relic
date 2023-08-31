@@ -79,6 +79,12 @@ function CreateOarcGuiButton(player)
     end
 end
 
+function DestroyOarcGuiButton(player)
+    if mod_gui.get_button_flow(player).oarc_button then
+        mod_gui.get_button_flow(player).oarc_button.destroy()
+    end
+end
+
 function DoesOarcGuiExist(player)
     return (mod_gui.get_frame_flow(player)[OARC_GUI] ~= nil)
 end

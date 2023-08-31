@@ -1,4 +1,6 @@
-local function on_pre_player_died (e)
+local M = {}
+
+function M.on_pre_player_died (e)
 	if e.cause and e.cause.type == "character" then --PvP death
 		print("JLOGGER: DIED: PLAYER: " .. game.get_player(e.player_index).name .. " " .. (game.get_player(e.cause.player.index).name or "no-cause"))
 	elseif (e.cause) then
@@ -9,7 +11,7 @@ local function on_pre_player_died (e)
 end
 
 -- Determines and logs a leave reason for a player leaving, logs it to script-output/ext/awflogging.out
-local function on_player_left_game(e)
+function M.on_player_left_game(e)
 	local player = game.get_player(e.player_index)
 	local reason
 	if e.reason == defines.disconnect_reason.quit then
@@ -45,7 +47,7 @@ local function on_player_left_game(e)
 		}
 	) .. "\n", true, 0)
 end
-local function on_player_joined_game(e)
+function M.on_player_joined_game(e)
 	local player = game.get_player(e.player_index)
 	game.write_file("ext/awflogging.out", game.table_to_json(
 		{
@@ -60,12 +62,12 @@ local function get_infinite_research_name(name)
   	return string.match(name, "^(.-)%-%d+$") or name
 end
 
-local function on_research_finished(event)
+function M.on_research_finished(event)
 	local research_name = get_infinite_research_name(event.research.name)
 	print ("JLOGGER: RESEARCH FINISHED: " .. research_name .. " " .. (event.research.level or "no-level"))
 end
 
-local function on_built_entity(event)
+function M.on_built_entity(event)
 	-- get the corresponding data
 	local player = game.get_player(event.player_index)
 	local data = global.playerstats[player.name]
@@ -78,11 +80,11 @@ local function on_built_entity(event)
 	end
 end
 
-local function on_init ()
+function M.on_init ()
 	global.playerstats = {}
 end
 
-local function logStats()
+function M.logStats()
 	-- log built entities and playtime of players
 	for _, p in pairs(game.players)
 	do
@@ -102,34 +104,32 @@ local function logStats()
 	end
 end
 
-local function on_rocket_launched(e)
+function M.on_rocket_launched(e)
 	print ("JLOGGER: ROCKET: " .. "ROCKET LAUNCHED")
 end
-local function checkEvolution(e)
+function M.checkEvolution()
 	print("JLOGGER: EVOLUTION: " .. string.format("%.4f", game.forces["enemy"].evolution_factor))
 end
-local function on_trigger_fired_artillery(e)
+function M.on_trigger_fired_artillery(e)
 	print ("JLOGGER: ARTILLERY: " .. e.entity.name .. (e.source.name or "no source"))
 end
 
-local logging = {}
-logging.events = {
-	[defines.events.on_rocket_launched] = on_rocket_launched,
-	[defines.events.on_research_finished] = on_research_finished,
-	[defines.events.on_player_joined_game] = on_player_joined_game,
-	[defines.events.on_player_left_game] = on_player_left_game,
-	[defines.events.on_pre_player_died] = on_pre_player_died,
-	[defines.events.on_built_entity] = on_built_entity,
-	[defines.events.on_trigger_fired_artillery] = on_trigger_fired_artillery,
-}
+-- local logging = {}
+-- logging.events = {
+-- 	[defines.events.on_rocket_launched] = on_rocket_launched,
+-- 	[defines.events.on_research_finished] = on_research_finished,
+-- 	[defines.events.on_player_joined_game] = on_player_joined_game,
+-- 	[defines.events.on_player_left_game] = on_player_left_game,
+-- 	[defines.events.on_pre_player_died] = on_pre_player_died,
+-- 	[defines.events.on_built_entity] = on_built_entity,
+-- 	[defines.events.on_trigger_fired_artillery] = on_trigger_fired_artillery,
+-- }
 
-logging.on_nth_tick = {
-	[60*60*15] = function() -- every 15 minutes
-		logStats()
-	end,
-	[60*60] = checkEvolution,
-}
+-- logging.on_nth_tick = {
+-- 	[60*60*15] = function() -- every 15 minutes
+-- 		logStats()
+-- 	end,
+-- 	[60*60] = checkEvolution,
+-- }
 
-logging.on_init = on_init
-
-return logging
+return M

@@ -816,16 +816,14 @@ commands.add_command("tp", "teleport", function(command)
     tools.safeTeleport(player, player.surface, target_pos)
 end)
 
--- commands.add_command("replace",
---                      "attempts to replace entities in the held blueprint",
---                      function(command)
---     local player = game.players[command.player_index]
---     local args = string.split(command.parameter, " ")
-
---     args[1], args[2] = args[1] or false, args[2] or false
---     if not args[1] or not args[2] then
---         player.print("No source and/or replacement entity given.")
---         return
---     end
---     tools.replace(player, args[1], args[2])
--- end)
+commands.add_command("protect", "protect an entity", function(command)
+    local player = game.players[command.player_index]
+    if not player.admin then
+        tools.error(player, "You are not admin my friend")
+        return
+    end
+    if player.selected and player.selected.valid then
+        tools.protect_entity(player.selected)
+        player.print(player.selected.name.." protected.")
+    end
+end)
