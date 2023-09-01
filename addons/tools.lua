@@ -1,4 +1,4 @@
-require('stdlib/string')
+-- require('stdlib/string')
 local Color = require('util/Colors')
 
 local tools = {}
@@ -592,7 +592,7 @@ function tools.replace(player, e1, e2)
     local p, cs, bp_ent_count, bp_tile_count = player.print,
     player.cursor_stack, 0, 0
     
-    tools.run_tests(player, cs)
+    -- tools.run_tests(player, cs)
     
     if game.entity_prototypes[e1] or game.tile_prototypes[e1] then
         local bp, bp_ents, bp_tiles = {}, {}, {}

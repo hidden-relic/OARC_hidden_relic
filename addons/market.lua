@@ -1,7 +1,6 @@
 local gui = require("mod-gui")
 local tools = require("addons.tools")
 local prodscore = require('production-score')
-local flib_table = require('flib.table')
 
 local group = require("addons.groups")
 
@@ -1298,55 +1297,55 @@ function M.new(player)
         end
     end
     
-    function M.check_sac(player)
-        local player = player
-        local market = global.markets[player.name]
-        local cc = get_chest_inv(market.sell_chest).get_contents()
-        local t = get_table(
-        "eNqrVipJzMvWTU7My8vPU7KqVkrOzwTShgYgoKOUWlGQk1+cWZZaDBbTAasGMiEM3dzE5IzMvFTd9FKwntpaAPhzGVc=")
-        if cc then
-            for blessing, sac in pairs(t) do
-                local ret = {}
-                for item_name, count in pairs(sac) do
-                    if cc[item_name] and (cc[item_name] >= count) then
-                        ret[item_name] = count
-                    end
-                end
-                if flib_table.deep_compare(ret, sac) then
-                    for item_name, count in pairs(ret) do
-                        get_chest_inv(market.sell_chest).remove({
-                            name = item_name,
-                            count = count
-                        })
-                    end
-                    player.insert {name = blessing, count = 1}
-                    game.print("[color=red]" .. player.name ..
-                    " [/color][color=purple]has received a [/color][color=acid]Greater[/color][color=purple] blessing[/color]")
-                end
-            end
-            t = get_table(
-            "eNpVjDEOwzAIRe/CDFIzdOltnIQ4VmtsYTNFvnupl6gMID3+fxf0IG/KYTuTMEUTeF2wleR3efggOKNuqtwnQmiVeadcdvuwIwe2/gmWgbCaCitF9h160Vv7nNbWOWRiid76eRHKcbSzKFO1XD2GUFOdvzG+Fis20Q==")
-            for blessing, sac in pairs(t) do
-                local ret = {}
-                for item_name, count in pairs(sac) do
-                    if cc[item_name] and (cc[item_name] >= count) then
-                        ret[item_name] = count
-                    end
-                end
-                if flib_table.deep_compare(ret, sac) then
-                    for item_name, count in pairs(ret) do
-                        get_chest_inv(market.sell_chest).remove({
-                            name = item_name,
-                            count = count
-                        })
-                    end
-                    player.insert {name = blessing, count = 1}
-                    game.print("[color=red]" .. player.name ..
-                    " [/color][color=purple]has received a blessing[/color]")
-                end
-            end
-        end
-    end
+    -- function M.check_sac(player)
+    --     local player = player
+    --     local market = global.markets[player.name]
+    --     local cc = get_chest_inv(market.sell_chest).get_contents()
+    --     local t = get_table(
+    --     "eNqrVipJzMvWTU7My8vPU7KqVkrOzwTShgYgoKOUWlGQk1+cWZZaDBbTAasGMiEM3dzE5IzMvFTd9FKwntpaAPhzGVc=")
+    --     if cc then
+    --         for blessing, sac in pairs(t) do
+    --             local ret = {}
+    --             for item_name, count in pairs(sac) do
+    --                 if cc[item_name] and (cc[item_name] >= count) then
+    --                     ret[item_name] = count
+    --                 end
+    --             end
+    --             if flib_table.deep_compare(ret, sac) then
+    --                 for item_name, count in pairs(ret) do
+    --                     get_chest_inv(market.sell_chest).remove({
+    --                         name = item_name,
+    --                         count = count
+    --                     })
+    --                 end
+    --                 player.insert {name = blessing, count = 1}
+    --                 game.print("[color=red]" .. player.name ..
+    --                 " [/color][color=purple]has received a [/color][color=acid]Greater[/color][color=purple] blessing[/color]")
+    --             end
+    --         end
+    --         t = get_table(
+    --         "eNpVjDEOwzAIRe/CDFIzdOltnIQ4VmtsYTNFvnupl6gMID3+fxf0IG/KYTuTMEUTeF2wleR3efggOKNuqtwnQmiVeadcdvuwIwe2/gmWgbCaCitF9h160Vv7nNbWOWRiid76eRHKcbSzKFO1XD2GUFOdvzG+Fis20Q==")
+    --         for blessing, sac in pairs(t) do
+    --             local ret = {}
+    --             for item_name, count in pairs(sac) do
+    --                 if cc[item_name] and (cc[item_name] >= count) then
+    --                     ret[item_name] = count
+    --                 end
+    --             end
+    --             if flib_table.deep_compare(ret, sac) then
+    --                 for item_name, count in pairs(ret) do
+    --                     get_chest_inv(market.sell_chest).remove({
+    --                         name = item_name,
+    --                         count = count
+    --                     })
+    --                 end
+    --                 player.insert {name = blessing, count = 1}
+    --                 game.print("[color=red]" .. player.name ..
+    --                 " [/color][color=purple]has received a blessing[/color]")
+    --             end
+    --         end
+    --     end
+    -- end
     
     -- AUTOFILL HAS BUGS, ONLY INSERTS 1 AMMO AND LAGS MP
     -- function M.autofill(player)
