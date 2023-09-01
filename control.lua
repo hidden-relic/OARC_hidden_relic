@@ -35,7 +35,7 @@ local group = require("addons/groups")
 local find_patch = require("addons/find_patch")
 local deathmarkers = require("addons/death-marker")
 local flying_tags = require("flying_tags")
-local logger = require("scripts/logging")
+-- local logger = require("scripts/logging")
 -- Other soft-mod type features.
 require("lib/frontier_silo")
 require("lib/tag")
@@ -139,7 +139,7 @@ script.on_init(function(event)
     -- clear the logging file every restart to keep it minimal size
     game.write_file("fagc-actions.txt", "", false, 0)
 
-    logger.on_init()
+    -- logger.on_init()
     
 end)
 
@@ -171,7 +171,7 @@ end)
 script.on_event(defines.events.on_rocket_launched,
 function(event) 
     RocketLaunchEvent(event)
-    logger.on_rocket_launched(event)
+    -- logger.on_rocket_launched(event)
 end)
 
 ----------------------------------------
@@ -304,7 +304,7 @@ end)
 script.on_event(defines.events.on_pre_player_died,
 function(event)
     deathmarkers.playerDied(event)
-    logger.on_pre_player_died(event)
+    -- logger.on_pre_player_died(event)
 end)
 
 script.on_event(defines.events.on_pre_player_mined_item,
@@ -321,7 +321,7 @@ script.on_event(defines.events.on_player_joined_game, function(event)
     end
     
     deathmarkers.init(event)
-    logger.on_player_joined_game(event)
+    -- logger.on_player_joined_game(event)
 end)
 
 script.on_event(defines.events.on_player_created, function(event)
@@ -392,11 +392,11 @@ script.on_event(defines.events.on_player_left_game, function(event)
         " minutes of joining.")
         RemoveOrResetPlayer(player, true, true, true, true)
     end
-    logger.on_player_left_game(event)
+    -- logger.on_player_left_game(event)
 end)
 
 script.on_event(defines.events.on_trigger_fired_artillery, function(event)
-logger.on_trigger_fired_artillery(event)
+-- logger.on_trigger_fired_artillery(event)
 end)
 
 ----------------------------------------
@@ -453,10 +453,10 @@ script.on_event(defines.events.on_tick, function(event)
     end
 
     if game.tick % 60*60*15 == 1 then
-        logger.logStats()
+        -- logger.logStats()
     end
     if game.tick % 60*60 == 1 then
-        logger.checkEvolution()
+        -- logger.checkEvolution()
     end
 end)
 
@@ -482,7 +482,7 @@ script.on_event(defines.events.on_built_entity, function(event)
     if global.ocfg.enable_anti_grief then SetItemBlueprintTimeToLive(event) end
     
     if global.ocfg.frontier_rocket_silo then BuildSiloAttempt(event) end
-    logger.on_built_entity(event)
+    -- logger.on_built_entity(event)
 end)
 
 script.on_event(defines.events.on_robot_built_entity, function(event)
@@ -566,7 +566,7 @@ script.on_event(defines.events.on_research_finished, function(event)
     end
     
     if global.ocfg.enable_loaders then EnableLoaders(event) end
-    logger.on_research_finished(event)
+    -- logger.on_research_finished(event)
 end)
 
 ----------------------------------------
