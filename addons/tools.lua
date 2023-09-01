@@ -1,4 +1,4 @@
-require('stdlib/string')
+-- require('stdlib/string')
 local Color = require('util/Colors')
 
 local tools = {}
