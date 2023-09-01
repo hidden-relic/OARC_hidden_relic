@@ -591,7 +591,9 @@ commands.add_command("buddy",
         player.print(
             "Supply 2 player names?? Do they want a moat....there are choices here.\n/buddy player1 player2 near/far true/false for moat")
     end
-    local args = string.split(command.parameter, " ")
+    local params = command.parameter
+    local args = {}
+    for arg in params:gmatch("%w+") do table.insert(args, arg) end
     player = tools.get_player(args[1])
     local requester = tools.get_player(args[2])
     if player and requester then
@@ -734,8 +736,9 @@ commands.add_command("make", "magic", function(command)
         tools.error(player, "You're gonna need more than that..try /help make")
         return
     end
-    local args = string.split(command.parameter, " ")
-
+    local params = command.parameter
+    local args = {}
+    for arg in params:gmatch("%w+") do table.insert(args, arg) end
     if not args[1] then args[1] = false end
     if not args[2] then args[2] = false end
     tools.make(player, args[1], args[2])
@@ -746,7 +749,9 @@ commands.add_command("get",
                      function(command)
     local player, item_name, count = game.players[command.player_index], "", ""
     if command.parameter then
-        local args = string.split(command.parameter, " ")
+        local params = command.parameter
+        local args = {}
+        for arg in params:gmatch("%w+") do table.insert(args, arg) end
         item_name, count = args[1], args[2]
     end
     if not player.admin then
