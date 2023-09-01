@@ -593,7 +593,7 @@ commands.add_command("buddy",
     end
     local params = command.parameter
     local args = {}
-    for arg in params:gmatch("%w+") do table.insert(args, arg) end
+    for arg in params:gmatch("%S+") do table.insert(args, arg) end
     player = tools.get_player(args[1])
     local requester = tools.get_player(args[2])
     if player and requester then
@@ -738,7 +738,7 @@ commands.add_command("make", "magic", function(command)
     end
     local params = command.parameter
     local args = {}
-    for arg in params:gmatch("%w+") do table.insert(args, arg) end
+    for arg in params:gmatch("%S+") do table.insert(args, arg) end
     if not args[1] then args[1] = false end
     if not args[2] then args[2] = false end
     tools.make(player, args[1], args[2])
@@ -751,7 +751,7 @@ commands.add_command("get",
     if command.parameter then
         local params = command.parameter
         local args = {}
-        for arg in params:gmatch("%w+") do table.insert(args, arg) end
+        for arg in params:gmatch("%S+") do table.insert(args, arg) end
         item_name, count = args[1], args[2]
     end
     if not player.admin then
