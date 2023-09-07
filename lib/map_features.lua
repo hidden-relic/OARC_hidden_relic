@@ -268,6 +268,11 @@ function MagicalFactorySpawnAll()
                 y = c_area.right_bottom.y - 2
             }
         }, "black")
+
+        SpawnMediumEnemyTurret({x = c_area.left_top.x + 2, y = c_area.left_top.y + 2})
+        SpawnMediumEnemyTurret({x = c_area.right_bottom.x - 2, y = c_area.left_top.y + 2})
+        SpawnMediumEnemyTurret({x = c_area.left_top.x + 2, y = c_area.right_bottom.y - 2})
+        SpawnMediumEnemyTurret({x = c_area.right_bottom.x - 2, y = c_area.left_top.y - 2})
         
         -- Make it safe from regrowth
         if global.ocfg.enable_regrowth then
@@ -276,7 +281,7 @@ function MagicalFactorySpawnAll()
     end
 end
 
-function SpawnEnemyTurret(pos)
+function SpawnHardEnemyTurret(pos)
     
     local turret = game.surfaces[GAME_SURFACE_NAME].create_entity {
         name = "gun-turret",
@@ -286,12 +291,48 @@ function SpawnEnemyTurret(pos)
     local new_tag = {
         entity = turret,
         offset = {x = 0, y = 2},
-        text = {"", "Enemy ", turret.localised_name},
+        text = {"", "[Hard] Enemy ", turret.localised_name},
         color = {r=1, g=0, b=0}
     }
     flying_tag.create(new_tag)
     local turret_inv = turret.get_inventory(defines.inventory.turret_ammo)
     turret_inv.insert({name = "uranium-rounds-magazine", count = 200})
+    
+end
+function SpawnMediumEnemyTurret(pos)
+    
+    local turret = game.surfaces[GAME_SURFACE_NAME].create_entity {
+        name = "gun-turret",
+        position = pos,
+        force = "enemy"
+    }
+    local new_tag = {
+        entity = turret,
+        offset = {x = 0, y = 2},
+        text = {"", "[Medium] Enemy ", turret.localised_name},
+        color = {r=0, g=0, b=1}
+    }
+    flying_tag.create(new_tag)
+    local turret_inv = turret.get_inventory(defines.inventory.turret_ammo)
+    turret_inv.insert({name = "piercing-rounds-magazine", count = 200})
+    
+end
+function SpawnEasyEnemyTurret(pos)
+    
+    local turret = game.surfaces[GAME_SURFACE_NAME].create_entity {
+        name = "gun-turret",
+        position = pos,
+        force = "enemy"
+    }
+    local new_tag = {
+        entity = turret,
+        offset = {x = 0, y = 2},
+        text = {"", "[Easy] Enemy ", turret.localised_name},
+        color = {r=0, g=0.5, b=0.5}
+    }
+    flying_tag.create(new_tag)
+    local turret_inv = turret.get_inventory(defines.inventory.turret_ammo)
+    turret_inv.insert({name = "firearm-magazine", count = 200})
     
 end
 

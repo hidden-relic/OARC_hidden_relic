@@ -6,5 +6,18 @@
         "getPlayerBonuses",
         "rendering",
         "commands"
+    ],
+    "factorio.versions": [
+        {
+            "name": "fact",
+            "factorioPath": "c:\\Users\\16038\\Documents\\Factorio_x64_1.1.87\\Factorio_1.1.87\\bin\\x64\\factorio.exe",
+            "active": true
+        }
+    ],
+    "Lua.workspace.library": [
+        "c:\\Users\\16038\\Documents\\Factorio_x64_1.1.87\\Factorio_1.1.87\\data"
+    ],
+    "Lua.workspace.userThirdParty": [
+        "c:\\Users\\16038\\AppData\\Roaming\\Code\\User\\workspaceStorage\\b52fd9763127c8e6a1f0f135326c1adb\\justarandomgeek.factoriomod-debug\\sumneko-3rd"
     ]
 }

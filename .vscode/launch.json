@@ -4,14 +4,15 @@
 	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
 	"version": "0.2.0",
 	"configurations": [
+	
 
 		
 		{
 			"type": "factoriomod",
 			"request": "launch",
 			"name": "Factorio Mod Debug",
-			"factorioPath": "C:/Program Files/factorio/bin/x64/factorio.exe",
-			"factorioArgs": ["--instrument-mod debugadapter_1.1.11"],
+			"factorioPath": "C:/Users/16038/Documents/Factorio_x64_1.1.87/Factorio_1.1.87/bin/x64/factorio.exe",
+			"factorioArgs": [" --load-scenario OARC_hidden_relic --instrument-mod debugadapter_1.1.11"],
 			"profileSlowStart": 1,
 			"useInstrumentMode": true
 		},
@@ -19,7 +20,7 @@
 			"type": "factoriomod",
 			"request": "launch",
 			"name": "Factorio Mod Debug (Profile)",
-			"factorioPath": "C:/Program Files/factorio/bin/x64/factorio.exe",
+			"factorioPath": "C:/Users/16038/Documents/Factorio_x64_1.1.87/Factorio_1.1.87/bin/x64/factorio.exe",
 			"hookMode": "profile",
 			"factorioArgs": ["--instrument-mod debugadapter_1.1.11"],
 			"profileSlowStart": 1,

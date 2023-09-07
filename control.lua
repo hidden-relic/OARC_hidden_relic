@@ -35,7 +35,7 @@ local group = require("addons/groups")
 local find_patch = require("addons/find_patch")
 local deathmarkers = require("addons/death-marker")
 local flying_tags = require("flying_tags")
--- local logger = require("scripts/logging")
+local logger = require("scripts/logging")
 -- Other soft-mod type features.
 require("lib/frontier_silo")
 require("lib/tag")
@@ -138,8 +138,8 @@ script.on_init(function(event)
     
     -- clear the logging file every restart to keep it minimal size
     game.write_file("fagc-actions.txt", "", false, 0)
-
-    -- logger.on_init()
+    
+    logger.on_init()
     
 end)
 
@@ -170,8 +170,8 @@ end)
 ----------------------------------------
 script.on_event(defines.events.on_rocket_launched,
 function(event) 
+    logger.on_rocket_launched(event)
     RocketLaunchEvent(event)
-    -- logger.on_rocket_launched(event)
 end)
 
 ----------------------------------------
@@ -189,6 +189,12 @@ script.on_event(defines.events.on_chunk_generated, function(event)
     CreateHoldingPen(event.surface, event.area)
 end)
 
+----------------------------------------
+-- Decon logger
+----------------------------------------
+-- script.on_event(defines.events.on_marked_for_deconstruction, function(event)
+-- DeconCheck(event)
+-- end)
 ----------------------------------------
 -- Gui Click
 ----------------------------------------
@@ -250,7 +256,7 @@ script.on_event(defines.events.on_gui_click, function(event)
             local button =
             global.markets[player.name].shared_buttons[event.element.name]
             if market.shared_func_table[button.name](player) then
-                market.withdraw(player, market.shared_table[button.name].cost)
+                market.upgrade_shared(player, button.name)
             end
         end
         if global.markets[player.name].special_buttons and global.markets[player.name].special_buttons[event.element.name] then
@@ -303,14 +309,15 @@ end)
 
 script.on_event(defines.events.on_pre_player_died,
 function(event)
+    logger.on_pre_player_died(event)
     deathmarkers.playerDied(event)
-    -- logger.on_pre_player_died(event)
 end)
 
 script.on_event(defines.events.on_pre_player_mined_item,
 function(event) deathmarkers.onMined(event) end)
 
 script.on_event(defines.events.on_player_joined_game, function(event)
+    logger.on_player_joined_game(event)
     PlayerJoinedMessages(event)
     
     ServerWriteFile("player_events", game.players[event.player_index].name ..
@@ -321,7 +328,6 @@ script.on_event(defines.events.on_player_joined_game, function(event)
     end
     
     deathmarkers.init(event)
-    -- logger.on_player_joined_game(event)
 end)
 
 script.on_event(defines.events.on_player_created, function(event)
@@ -377,6 +383,7 @@ script.on_event(defines.events.on_player_respawned, function(event)
 end)
 
 script.on_event(defines.events.on_player_left_game, function(event)
+    logger.on_player_left_game(event)
     ServerWriteFile("player_events", game.players[event.player_index].name ..
     " left the game." .. "\n")
     local player = game.players[event.player_index]
@@ -392,11 +399,10 @@ script.on_event(defines.events.on_player_left_game, function(event)
         " minutes of joining.")
         RemoveOrResetPlayer(player, true, true, true, true)
     end
-    -- logger.on_player_left_game(event)
 end)
 
 script.on_event(defines.events.on_trigger_fired_artillery, function(event)
--- logger.on_trigger_fired_artillery(event)
+    logger.on_trigger_fired_artillery(event)
 end)
 
 ----------------------------------------
@@ -448,15 +454,15 @@ script.on_event(defines.events.on_tick, function(event)
         end
     end
     
-    if game.tick % 600 == 1 then
+    if game.tick % 60 == 1 then
         RechargePlayersOnTick()
     end
-
+    
     if game.tick % 60*60*15 == 1 then
-        -- logger.logStats()
+        logger.logStats()
     end
     if game.tick % 60*60 == 1 then
-        -- logger.checkEvolution()
+        logger.checkEvolution()
     end
 end)
 
@@ -468,6 +474,7 @@ end)
 -- Various on "built" events
 ----------------------------------------
 script.on_event(defines.events.on_built_entity, function(event)
+    logger.on_built_entity(event)
     if global.ocfg.enable_autofill then Autofill(event) end
     
     local player = game.players[event.player_index]
@@ -482,7 +489,6 @@ script.on_event(defines.events.on_built_entity, function(event)
     if global.ocfg.enable_anti_grief then SetItemBlueprintTimeToLive(event) end
     
     if global.ocfg.frontier_rocket_silo then BuildSiloAttempt(event) end
-    -- logger.on_built_entity(event)
 end)
 
 script.on_event(defines.events.on_robot_built_entity, function(event)
@@ -551,6 +557,7 @@ end)
 -- This is where you can permanently remove researched techs
 ----------------------------------------
 script.on_event(defines.events.on_research_finished, function(event)
+    logger.on_research_finished(event)
     
     -- Never allows players to build rocket-silos in "frontier" mode.
     if global.ocfg.frontier_rocket_silo and not global.ocfg.frontier_allow_build then
@@ -566,7 +573,6 @@ script.on_event(defines.events.on_research_finished, function(event)
     end
     
     if global.ocfg.enable_loaders then EnableLoaders(event) end
-    -- logger.on_research_finished(event)
 end)
 
 ----------------------------------------
@@ -641,7 +647,7 @@ script.on_event(defines.events.on_entity_damaged, function(event)
     local health_percentage = entity.get_health_ratio()
     local text_color = {r = 1 - health_percentage, g = health_percentage, b = 0}
     if cause and cause.name == "gun-turret" and cause.last_user and global.markets.autolvl_turrets[cause.last_user.name] then
-        player = cause.last_user
+        local player = cause.last_user
         player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet") + damage * 0.0000001)
     end
     

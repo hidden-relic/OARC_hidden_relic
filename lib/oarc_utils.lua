@@ -40,6 +40,15 @@ REPORT_PLAYER_BUFF_MINUTES = 30
 
 -- ------------------------------------------------------------------------------------
 
+function DeconCheck(event)
+    local player = game.players[event.player_index]
+    local entity = event.entity
+    local last_user = entity.last_user or nil
+    if last_user and last_user ~= player then
+        game.print({"", player.name, " just ordered deconstruction for ", last_user.name, "'s ", entity.localised_name})
+    end
+end
+
 local charging_station_multiplier = 1
 
 function ResetPlayer(playername)

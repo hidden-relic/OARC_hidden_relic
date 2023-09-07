@@ -10,10 +10,8 @@ end
 
 function OarcAutoDeconOnTick()
     if (global.oarc_decon_miners and (#global.oarc_decon_miners > 0)) then
-        game.print(#global.oarc_decon_miners.."miners in list")
         for i,miner in pairs(global.oarc_decon_miners) do
             if ((not miner) or (not miner.valid)) then
-                game.print("removing")
                 table.remove(global.oarc_decon_miners, i)
             else
                 if (#miner.surface.find_entities_filtered{
@@ -22,7 +20,6 @@ function OarcAutoDeconOnTick()
                         {miner.position.x+2, miner.position.y+2}}, 
                         type = "resource", limit = 1} == 0) then
                             miner.order_deconstruction(miner.force)
-                            game.print("ordered decon")
                         end
                         table.remove(global.oarc_decon_miners, i)
                     end

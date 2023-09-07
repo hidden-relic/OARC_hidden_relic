@@ -69,31 +69,32 @@ if config.enable_groups == true then
     }
 end
 
-M.shared_table = {
-    ["special_logistic-chest-storage"] = {cost = 20000, tooltip = "Turn the nearest empty wooden chest into a shared INPUT chest"},
-    ["special_logistic-chest-requester"] = {cost = 20000, tooltip = "Turn the nearest empty wooden chest into a shared OUTPUT chest"},
-    ["special_constant-combinator"] = {cost = 20000, tooltip = "Turn the nearest empty wooden chest into a pair of combinators that are tied to the shared storage"},
-    ["special_accumulator"] = {cost = 20000, tooltip = "Turn the nearest empty wooden chest into a shared INPUT accumulator"},
-    ["special_electric-energy-interface"] = {cost = 20000, tooltip = "Turn the nearest empty wooden chest into a shared OUTPUT accumulator"},
-    ["special_deconstruction-planner"] = {cost = 0, tooltip = "Deconstruct a nearby shared entity"}
-}
-
 M.shared_func_table = {
-    ["special_logistic-chest-storage"] = function(player) return ConvertWoodenChestToSharedChestInput(player) end,
-    ["special_logistic-chest-requester"] = function(player) return ConvertWoodenChestToSharedChestOutput(player) end,
-    ["special_constant-combinator"] = function(player) return ConvertWoodenChestToSharedChestCombinators(player) end,
-    ["special_accumulator"] = function(player) return ConvertWoodenChestToShareEnergyInput(player) end,
-    ["special_electric-energy-interface"] = function(player) return ConvertWoodenChestToShareEnergyOutput(player) end,
+    ["special_logistic-chest-storage"] = function(player)
+        return ConvertWoodenChestToSharedChestInput(player)
+    end,
+    ["special_logistic-chest-requester"] = function(player)
+        return ConvertWoodenChestToSharedChestOutput(player)
+    end,
+    ["special_constant-combinator"] = function(player)
+        return ConvertWoodenChestToSharedChestCombinators(player)
+    end,
+    ["special_accumulator"] = function(player)
+        return ConvertWoodenChestToShareEnergyInput(player)
+    end,
+    ["special_electric-energy-interface"] = function(player)
+        return ConvertWoodenChestToShareEnergyOutput(player)
+    end,
     ["special_deconstruction-planner"] = function(player) return DestroyClosestSharedChestEntity(player) end
 }
 
 M.shared_cost_table = {
-    ["special_logistic-chest-storage"] = 1.1,
-    ["special_logistic-chest-requester"] = 1.1,
-    ["special_constant-combinator"] = 1.1,
-    ["special_accumulator"] = 1.1,
-    ["special_electric-energy-interface"] = 1.1,
-    ["special_deconstruction-planner"] = 1.1
+    ["special_logistic-chest-storage"] = 1.05,
+    ["special_logistic-chest-requester"] = 1.05,
+    ["special_constant-combinator"] = 1.05,
+    ["special_accumulator"] = 1.05,
+    ["special_electric-energy-interface"] = 1.05,
+    ["special_deconstruction-planner"] = 1.05
 }
 M.special_func_table = {
     ["special_electric-furnace"] = function(player) return RequestSpawnSpecialChunk(player, SpawnFurnaceChunk, "electric-furnace") end,
@@ -233,6 +234,19 @@ function M.increase(player, upgrade)
     end
 end
 
+function M.increase_shared(player, upgrade)
+    local name = upgrade
+    local upgrade = global.markets[player.name].shared[upgrade]
+    local current_cost = upgrade.cost
+    if name == "special_deconstruction-planner" then
+        upgrade.cost = upgrade.cost
+    else
+        upgrade.cost = math.ceil(upgrade.cost^M.shared_cost_table[name])
+    end
+    M.withdraw(player, current_cost)
+    global.markets.jackpot = tools.round(global.markets.jackpot + current_cost*0.25, 0)
+end
+
 function M.new(player)
     local player = player
     global.markets[player.name] = {
@@ -358,6 +372,14 @@ function M.new(player)
                 t = {{type = "maximum-following-robots-count", modifier = 5}},
                 tooltip = "+5 Robots [img=entity/distractor] [img=entity/destroyer] [img=entity/defender]"
             },
+        }
+        market.shared = {
+                ["special_logistic-chest-storage"] = {cost = 20000, tooltip = "Turn the nearest empty wooden chest into a shared INPUT chest"},
+                ["special_logistic-chest-requester"] = {cost = 20000, tooltip = "Turn the nearest empty wooden chest into a shared OUTPUT chest"},
+                ["special_constant-combinator"] = {cost = 20000, tooltip = "Turn the nearest empty wooden chest into a pair of combinators that are tied to the shared storage"},
+                ["special_accumulator"] = {cost = 20000, tooltip = "Turn the nearest empty wooden chest into a shared INPUT accumulator"},
+                ["special_electric-energy-interface"] = {cost = 20000, tooltip = "Turn the nearest empty wooden chest into a shared OUTPUT accumulator"},
+                ["special_deconstruction-planner"] = {cost = 0, tooltip = "Deconstruct a nearby shared entity"}
         }
         if config.enable_groups == true then
             market.upgrades["group-limit"] = {
@@ -566,6 +588,14 @@ function M.new(player)
         local market = global.markets[player.name]
         if market.balance >= market.upgrades[bonus].cost then
             M.increase(player, bonus)
+        end
+    end
+
+    function M.upgrade_shared(player, bonus)
+        local player = player
+        local market = global.markets[player.name]
+        if market.balance >= market.shared[bonus].cost then
+            M.increase_shared(player, bonus)
         end
     end
     
@@ -791,14 +821,14 @@ function M.new(player)
             column_count = config.shared_column_count
         }
         market.shared_buttons = {}
-        for name, shared in pairs(M.shared_table) do
+        for name, shared in pairs(market.shared) do
             market.shared_buttons[name] = market.shared_table.add {
                 name = name,
                 type = "sprite-button",
                 sprite = "item/"..string.gsub(name, "special_", ""),
-                number = shared.cost,
+                number = market.shared[name].cost,
                 tooltip = "[img=item/" .. string.gsub(name, "special_", "") .. "]\n[item=coin] " ..
-                tools.add_commas(shared.cost) .. "\n" .. shared.tooltip
+                tools.add_commas(market.shared[name].cost) .. "\n" .. shared.tooltip
             }
         end
         market.special_store_flow.add {
@@ -1214,15 +1244,15 @@ function M.new(player)
             end
         end
         for index, button in pairs(market.shared_buttons) do
-            if market.balance < M.shared_table[index].cost then
+            if market.balance < market.shared[index].cost then
                 button.enabled = false
             else
                 button.enabled = true
             end
-            button.number = M.shared_table[index].cost
+            button.number = market.shared[index].cost
             button.tooltip = "[img=item/" .. string.gsub(index, "special_", "") .. "]\n[item=coin] " ..
             tools.add_commas(
-            math.ceil(M.shared_table[index].cost)) .. "\n" .. M.shared_table[index].tooltip
+            math.ceil(market.shared[index].cost)) .. "\n" .. market.shared[index].tooltip
         end
         for index, button in pairs(market.special_buttons) do
             if index == "special_offshore-pump" then
