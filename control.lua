@@ -676,6 +676,11 @@ script.on_event(defines.events.on_entity_died, function(event)
     if global.ocfg.enable_coin_shop then
         CoinsFromEnemiesOnPostEntityDied(event)
     end
+    if event.entity.name == "gun-turret" and event.entity.force == "enemy" then
+        game.forces["enemy"].set_ammo_damage_modifier("bullet", game.forces["enemy"].get_ammo_damage_modifier("bullet")+0.1)
+        game.forces["enemy"].set_turret_attack_modifier("gun-turret", game.forces["enemy"].get_turret_attack_modifier("gun-turret")+0.1)
+        game.forces["enemy"].set_gun_speed_modifier("bullet", game.forces["enemy"].get_gun_speed_modifier("bullet")+0.01)
+    end
 end, {
     {filter = "type", type = "unit"}, {filter = "type", type = "unit-spawner"},
     {filter = "type", type = "turret"}

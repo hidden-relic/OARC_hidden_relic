@@ -269,10 +269,17 @@ function MagicalFactorySpawnAll()
             }
         }, "black")
 
-        SpawnMediumEnemyTurret({x = c_area.left_top.x + 2, y = c_area.left_top.y + 2})
-        SpawnMediumEnemyTurret({x = c_area.right_bottom.x - 2, y = c_area.left_top.y + 2})
-        SpawnMediumEnemyTurret({x = c_area.left_top.x + 2, y = c_area.right_bottom.y - 2})
-        SpawnMediumEnemyTurret({x = c_area.right_bottom.x - 2, y = c_area.left_top.y - 2})
+        local positions = {
+            {x = c_area.left_top.x, y = c_area.left_top.y},
+            {x = c_area.left_top.x, y = c_area.right_bottom.y},
+            {x = c_area.right_bottom.x, y = c_area.left_top.y},
+            {x = c_area.right_bottom.x, y = c_area.right_bottom.y}
+        }
+
+            SpawnHardEnemyTurret(positions[1])
+            SpawnHardEnemyTurret(positions[2])
+            SpawnHardEnemyTurret(positions[3])
+            SpawnHardEnemyTurret(positions[4])
         
         -- Make it safe from regrowth
         if global.ocfg.enable_regrowth then
