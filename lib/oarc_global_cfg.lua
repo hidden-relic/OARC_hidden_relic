@@ -17,6 +17,14 @@ function InitOarcConfig()
     global.ocore = {}
     global.markets = {}
     global.config = {}
+    global.config.decon_triggers = {
+        decon_area = true,
+        built_entity = true,
+        mined_entity = true,
+        fired_rocket = true,
+        fired_explosive_rocket = true,
+        fired_nuke = true,
+    }
     global.config.limit_turret_upgrades = false
 
     if (game.active_mods["clean-tutorial-grid"]) then
