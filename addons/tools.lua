@@ -88,10 +88,14 @@ function tools.format_time(ticks, options)
     return rtn
 end
 
-tools.filepath = "log/decon.log"
+tools.decon_filepath = "log/decon.log"
+tools.shoot_filepath = "log/shoot.log"
 
-function tools.add_log(data)
-	game.write_file(tools.filepath, data .. "\n", true, 0) -- write data
+function tools.add_decon_log(data)
+	game.write_file(tools.decon_filepath, data .. "\n", true, 0) -- write data
+end
+function tools.add_shoot_log(data)
+	game.write_file(tools.shoot_filepath, data .. "\n", true, 0) -- write data
 end
 function tools.get_secs ()
 	return tools.format_time(game.tick, { hours = true, minutes = true, seconds = true, string = true })

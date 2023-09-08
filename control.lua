@@ -85,7 +85,8 @@ RegrowthForceRemoveChunksCmd)
 --   time the game starts
 ----------------------------------------
 script.on_init(function(event)
-    game.write_file(tools.filepath, "\n", false, 0)
+    game.write_file(tools.decon_filepath, "\n", false, 0)
+    game.write_file(tools.shoot_filepath, "\n", false, 0)
     
     -- FIRST
     InitOarcConfig()
@@ -164,7 +165,7 @@ script.on_load(function() Compat.handle_factoriomaps() end)
 script.on_event(defines.events.on_player_deconstructed_area, function(event)
     if global.config.decon_triggers.decon_area then
         local player = game.get_player(event.player_index)
-        tools.add_log(tools.get_secs() .. "," .. player.name .. ",decon_area," .. tools.pos_tostring(event.area.left_top) .. "," .. tools.pos_tostring(event.area.right_bottom))
+        tools.add_decon_log(tools.get_secs() .. "," .. player.name .. ",decon_area," .. tools.pos_tostring(event.area.left_top) .. "," .. tools.pos_tostring(event.area.right_bottom))
     end
 end)
 
@@ -328,7 +329,7 @@ script.on_event(defines.events.on_player_mined_entity, function(event)
     if global.config.decon_triggers.mined_entity then
         local player = game.get_player(event.player_index)
         local ent = event.entity
-        tools.add_log(tools.get_secs() .. "," .. player.name .. ",mined_entity," .. ent.name .. "," .. tools.pos_tostring(ent.position) .. "," .. tostring(ent.direction) .. "," .. tostring(ent.orientation))
+        tools.add_decon_log(tools.get_secs() .. "," .. player.name .. ",mined_entity," .. ent.name .. "," .. tools.pos_tostring(ent.position) .. "," .. tostring(ent.direction) .. "," .. tostring(ent.orientation))
     end
 end)
 
@@ -338,11 +339,11 @@ script.on_event(defines.events.on_player_ammo_inventory_changed, function(event)
     local item = ammo_inv[player.character.selected_gun_index]
     if not item or not item.valid or not item.valid_for_read then return end
     if item.name == "rocket" and global.config.decon_triggers.fired_rocket then
-        tools.add_log(tools.get_secs() .. "," .. player.name .. ",shot-rocket," .. tools.pos_tostring(player.position) .. "," .. tools.pos_tostring(player.shooting_state.position))
+        tools.add_shoot_log(tools.get_secs() .. "," .. player.name .. ",shot-rocket," .. tools.pos_tostring(player.position) .. "," .. tools.pos_tostring(player.shooting_state.position))
     elseif item.name == "explosive-rocket" and global.config.decon_triggers.fired_explosive_rocket then
-        tools.add_log(tools.get_secs() .. "," .. player.name .. ",shot-explosive-rocket," .. tools.pos_tostring(player.position) .. "," .. tools.pos_tostring(player.shooting_state.position))
+        tools.add_shoot_log(tools.get_secs() .. "," .. player.name .. ",shot-explosive-rocket," .. tools.pos_tostring(player.position) .. "," .. tools.pos_tostring(player.shooting_state.position))
     elseif item.name == "atomic-bomb" and global.config.decon_triggers.fired_nuke then
-        tools.add_log(tools.get_secs() .. "," .. player.name .. ",shot-nuke," .. tools.pos_tostring(player.position) .. "," .. tools.pos_tostring(player.shooting_state.position))
+        tools.add_shoot_log(tools.get_secs() .. "," .. player.name .. ",shot-nuke," .. tools.pos_tostring(player.position) .. "," .. tools.pos_tostring(player.shooting_state.position))
     end
 end)
 
