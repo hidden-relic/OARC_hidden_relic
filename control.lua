@@ -322,6 +322,10 @@ function(event)
     deathmarkers.playerDied(event)
 end)
 
+script.on_event(defines.events.on_trigger_fired_artillery, function(event)
+	logger.on_trigger_fired_artillery(event)
+end)
+
 script.on_event(defines.events.on_pre_player_mined_item,
 function(event) deathmarkers.onMined(event) end)
 

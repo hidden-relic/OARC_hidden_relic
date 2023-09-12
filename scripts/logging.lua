@@ -40,26 +40,26 @@ function M.on_player_left_game(e)
 		reason = "other"
 	end
 	game.write_file("ext/awflogging.out", game.table_to_json(
-		{
-			type='leave',
-			playerName=player.name,
-			reason=reason
-		}
-	) .. "\n", true, 0)
+	{
+		type='leave',
+		playerName=player.name,
+		reason=reason
+	}
+) .. "\n", true, 0)
 end
 function M.on_player_joined_game(e)
 	local player = game.get_player(e.player_index)
 	game.write_file("ext/awflogging.out", game.table_to_json(
-		{
-			type='join',
-			playerName=player.name
-		}
-	) .. "\n", true, 0)
+	{
+		type='join',
+		playerName=player.name
+	}
+) .. "\n", true, 0)
 end
 
 local function get_infinite_research_name(name)
 	-- gets the name of infinite research (without numbers)
-  	return string.match(name, "^(.-)%-%d+$") or name
+	return string.match(name, "^(.-)%-%d+$") or name
 end
 
 function M.on_research_finished(event)
@@ -90,10 +90,10 @@ function M.logStats()
 	do
 		local pdat = global.playerstats[p.name]
 		if (pdat == nil) then
-				-- format of array: {entities placed, ticks played}
-				pdat = {0, p.online_time}
-				print ("JLOGGER: STATS: " .. p.name .. " " .. 0 .. " " .. p.online_time)
-				global.playerstats[p.name] = pdat
+			-- format of array: {entities placed, ticks played}
+			pdat = {0, p.online_time}
+			print ("JLOGGER: STATS: " .. p.name .. " " .. 0 .. " " .. p.online_time)
+			global.playerstats[p.name] = pdat
 		else
 			if (pdat[1] ~= 0 or (p.online_time - pdat[2]) ~= 0) then
 				print ("JLOGGER: STATS: " .. p.name .. " " .. pdat[1] .. " " .. (p.online_time - pdat[2]))
@@ -112,6 +112,9 @@ function M.checkEvolution()
 end
 function M.on_trigger_fired_artillery(e)
 	print ("JLOGGER: ARTILLERY: " .. e.entity.name .. (e.source.name or "no source"))
+end
+function M.on_trigger_fired_artillery(event)
+	print ("JLOGGER: ARTILLERY: " .. event.entity.name .. (event.source.name or "no source"))
 end
 
 -- local logging = {}
