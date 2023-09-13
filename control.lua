@@ -327,7 +327,7 @@ script.on_event(defines.events.on_player_used_capsule, function(event)
         tools.add_shoot_log(tools.get_secs() .. "," .. game.players[event.player_index].name .. ",manually_shot_artillery," .. tools.pos_tostring(event.position))
         for _, player in pairs(game.connected_players) do
             if player.admin then
-                player.print({"", "[img=item/artillery-shell] ", game.players[event.player_index].name, " manually fired artillery [gps=", event.position.x, ",", event.position.y, "]"})
+                player.print({"", "[img=item/artillery-shell] ", game.players[event.player_index].name, " manually fired artillery [gps=", event.position.x, ",", event.position.y, ",", game.players[event.player_index].surface.name, "]"})
             end
         end
     end
