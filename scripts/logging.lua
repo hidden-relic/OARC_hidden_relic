@@ -113,9 +113,6 @@ end
 function M.on_trigger_fired_artillery(e)
 	print ("JLOGGER: ARTILLERY: " .. e.entity.name .. (e.source.name or "no source"))
 end
-function M.on_trigger_fired_artillery(event)
-	print ("JLOGGER: ARTILLERY: " .. event.entity.name .. (event.source.name or "no source"))
-end
 
 -- local logging = {}
 -- logging.events = {

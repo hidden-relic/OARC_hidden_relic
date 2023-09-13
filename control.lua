@@ -322,9 +322,23 @@ function(event)
     deathmarkers.playerDied(event)
 end)
 
-script.on_event(defines.events.on_trigger_fired_artillery, function(event)
-	logger.on_trigger_fired_artillery(event)
+script.on_event(defines.events.on_player_used_capsule, function(event)
+    if event.item.name == "artillery-targeting-remote" then
+        tools.add_shoot_log(tools.get_secs() .. "," .. game.players[event.player_index].name .. ",manually_shot_artillery," .. tools.pos_tostring(event.position))
+        for _, player in pairs(game.connected_players) do
+            if player.admin then
+                player.print({"", "[img=item/artillery-shell] ", game.players[event.player_index].name, " manually fired artillery [gps=", event.position.x, ",", event.position.y, "]"})
+            end
+        end
+    end
 end)
+
+-- script.on_event(defines.events.on_trigger_fired_artillery, function(event)
+-- 	logger.on_trigger_fired_artillery(event)
+--     game.print(tools.get_secs() .. "," .. event.source.name .. ",fired_artillery," .. event.entity.name)
+--     -- tools.add_shoot_log(tools.get_secs() .. "," .. event.source.name .. ",fired_artillery," .. event.entity.name)
+--     -- tools.add_shoot_logtools.get_secs() .. "," .. event.source.name .. ",fired_artillery," .. event.entity.name .. "," .. tools.pos_tostring(ent.position) .. "," .. tostring(ent.direction) .. "," .. tostring(ent.orientation))
+-- end)
 
 script.on_event(defines.events.on_pre_player_mined_item,
 function(event) deathmarkers.onMined(event) end)
@@ -368,7 +382,7 @@ end)
 script.on_event(defines.events.on_player_created, function(event)
     
     local player = game.players[event.player_index]
-
+    
     player.game_view_settings.show_entity_info = true
     
     -- Move the player to the game surface immediately.
