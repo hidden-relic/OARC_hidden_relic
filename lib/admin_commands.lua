@@ -18,7 +18,7 @@ local function getIndent(n)
     local indentation = ">>"
     local str = ""
     for i = 1, n, 1 do
-            str = str..indentation
+        str = str..indentation
     end
     return str
 end
@@ -47,16 +47,16 @@ local function buildTree(recipe, count, indent)
             for i, ingredient in pairs(ingredients) do
                 if ingredient.type == "item" and recipes[ingredient.name] then
                     str = str ..
-                              buildTree(recipes[ingredient.name],
-                                        ingredient.amount*count, indent)
+                    buildTree(recipes[ingredient.name],
+                    ingredient.amount*count, indent)
                 elseif fluid_table[ingredient.name] then
                     str = str ..
-                              buildTree(recipes["advanced-oil-processing"],
-                                        ingredient.amount*count, indent)
+                    buildTree(recipes["advanced-oil-processing"],
+                    ingredient.amount*count, indent)
                 elseif ingredient.type == "item" and not recipes[ingredient.name] then
                     string = " x" .. count .. " " .. ingredient.name ..
-        "\n"
-        str = str .. getIndent(indent)..string
+                    "\n"
+                    str = str .. getIndent(indent)..string
                 end
             end
         end
@@ -67,8 +67,8 @@ local function buildTree(recipe, count, indent)
 end
 
 commands.add_command("tree",
-                     "prints recipe tree\nleave the parameter blank to get all trees written to %AppData%/roaming/factorio/script-output/tree_all.txt\nexample:\n/tree electronic-circuit",
-                     function(command)
+"prints recipe tree\nleave the parameter blank to get all trees written to %AppData%/roaming/factorio/script-output/tree_all.txt\nexample:\n/tree electronic-circuit",
+function(command)
     local player = game.players[command.player_index]
     if command.parameter then
         if game.recipe_prototypes[command.parameter] then
@@ -147,8 +147,8 @@ end)
 local function format_chat_colour(message, color)
     color = color or Colors.white
     local color_tag = '[color=' .. tools.round(color.r, 3) .. ', ' ..
-                          tools.round(color.g, 3) .. ', ' ..
-                          tools.round(color.b, 3) .. ']'
+    tools.round(color.g, 3) .. ', ' ..
+    tools.round(color.b, 3) .. ']'
     return string.format('%s%s[/color]', color_tag, message)
 end
 
@@ -253,13 +253,13 @@ commands.add_command("me", "Perform an 'action' in chat", function(command)
     local action = command.parameter
     local player_name = player and player.name or '<Server>'
     game.print(string.format('* %s %s *', player_name, action),
-               player.chat_color)
+    player.chat_color)
 end)
 
 commands.add_command("repair",
-                     "Repairs all destroyed and damaged entities in an area",
-                     function(command)
-
+"Repairs all destroyed and damaged entities in an area",
+function(command)
+    
     local player = game.players[command.player_index]
     if player ~= nil and player.admin then
         local range = 10
@@ -271,7 +271,7 @@ commands.add_command("repair",
             player.print('Maximum Range is 100.')
             return
         end
-
+        
         local revive_count = 0
         local heal_count = 0
         local range2 = range ^ 2
@@ -281,7 +281,7 @@ commands.add_command("repair",
             {x = center.x - range, y = center.y - range},
             {x = center.x + range, y = center.y + range}
         }
-
+        
         local ghosts = surface.find_entities_filtered({
             area = area,
             type = 'entity-ghost',
@@ -297,7 +297,7 @@ commands.add_command("repair",
                 end
             end
         end
-
+        
         local entities = surface.find_entities_filtered({
             area = area,
             force = player.force
@@ -307,15 +307,15 @@ commands.add_command("repair",
                 local x = entity.position.x - center.x
                 local y = entity.position.y - center.y
                 if entity.health and entity.get_health_ratio() ~= 1 and x ^ 2 +
-                    y ^ 2 <= range2 then
+                y ^ 2 <= range2 then
                     heal_count = heal_count + 1
                     entity.health = 100000
                 end
             end
         end
         player.print(
-            revive_count .. " ghosts were revived and " .. heal_count ..
-                " entities were healed.")
+        revive_count .. " ghosts were revived and " .. heal_count ..
+        " entities were healed.")
     end
 end)
 
@@ -323,7 +323,7 @@ local function Modules(moduleInventory) -- returns the multiplier of the modules
     local effect1 = moduleInventory.get_item_count("productivity-module") -- type 1
     local effect2 = moduleInventory.get_item_count("productivity-module-2") -- type 2
     local effect3 = moduleInventory.get_item_count("productivity-module-3") -- type 3
-
+    
     local multi = effect1 * 4 + effect2 * 6 + effect3 * 10
     return multi / 100 + 1
 end
@@ -333,24 +333,24 @@ local function AmountOfMachines(itemsPerSecond, output)
 end
 
 commands.add_command("ratio",
-                     "gives ratio info on the selected machine and its recipe. provide a number for items/sec",
-                     function(command)
+"gives ratio info on the selected machine and its recipe. provide a number for items/sec",
+function(command)
     local player = game.players[command.player_index]
     local machine = player.selected -- selected machine
     local itemsPerSecond
     if not machine then -- nil check
         return player.print("[color=red]No valid machine selected..[/color]")
     end
-
+    
     if machine.type ~= "assembling-machine" and machine.type ~= "furnace" then
         return player.print("[color=red]Invalid machine..[/color]")
     end
     local recipe = machine.get_recipe() -- recipe
-
+    
     if not recipe then -- nil check
         return player.print("[color=red]No recipe set..[/color]")
     end
-
+    
     local items = recipe.ingredients -- items in that recipe
     local products = recipe.products -- output items
     local amountOfMachines
@@ -361,10 +361,10 @@ commands.add_command("ratio",
     end
     if itemsPerSecond then
         amountOfMachines = math.ceil(AmountOfMachines(itemsPerSecond, 1 /
-                                                          recipe.energy *
-                                                          machine.crafting_speed *
-                                                          products[1].amount *
-                                                          multi)) -- amount of machines
+        recipe.energy *
+        machine.crafting_speed *
+        products[1].amount *
+        multi)) -- amount of machines
     end
     if not amountOfMachines then
         amountOfMachines = 1 -- set to 1 to make it not nil
@@ -372,82 +372,82 @@ commands.add_command("ratio",
     ----------------------------items----------------------------
     for i, item in ipairs(items) do
         local sprite -- string to make the icon work either fluid ore item
-
+        
         if item.type == "item" then
             sprite = 'ratio.item-in'
         else
             sprite = 'ratio.fluid-in'
         end
-
+        
         local ips = item.amount / recipe.energy * machine.crafting_speed *
-                        amountOfMachines -- math on the items/fluids per second
+        amountOfMachines -- math on the items/fluids per second
         player.print {sprite, tools.round(ips, 3), item.name} -- full string
     end
     ----------------------------products----------------------------
-
+    
     for i, product in ipairs(products) do
         local sprite -- string to make the icon work either fluid ore item
-
+        
         if product.type == "item" then
             sprite = 'ratio.item-out'
         else
             sprite = 'ratio.fluid-out'
         end
-
+        
         local output = 1 / recipe.energy * machine.crafting_speed *
-                           product.amount * multi -- math on the outputs per second
+        product.amount * multi -- math on the outputs per second
         player.print {
             sprite, tools.round(output * amountOfMachines, 3), product.name
         } -- full string
-
+        
     end
-
+    
     if amountOfMachines ~= 1 then
         player.print {'ratio.machines', amountOfMachines}
     end
-
+    
 end)
 
 -- Give yourself or another player, power armor
 commands.add_command("give-power-armor-kit", "give a start kit",
-                     function(command)
-
+function(command)
+    
     local player = game.players[command.player_index]
     local target = player
-
+    
     if player ~= nil and player.admin then
         if (command.parameter ~= nil) then
             if game.players[command.parameter] ~= nil then
                 target = game.players[command.parameter]
             else
                 target.print(
-                    "Invalid player target. Double check the player name?")
+                "Invalid player target. Double check the player name?")
                 return
             end
         end
-
+        
         GiveQuickStartPowerArmor(target)
         player.print("Gave a powerstart kit to " .. target.name)
         target.print("You have been given a power armor starting kit!")
     end
 end)
 commands.add_command("give-power-armor-mk2", "give an mk2 kit",
-                     function(command)
-
+function(command)
+    
     local player = game.players[command.player_index]
     local target = player
-
+    
     if player ~= nil and player.admin then
         if (command.parameter ~= nil) then
             if game.players[command.parameter] ~= nil then
                 target = game.players[command.parameter]
             else
                 target.print(
-                    "Invalid player target. Double check the player name?")
+                "Invalid player target. Double check the player name?")
                 return
             end
         end
-
+        
         GivePowerArmorMK2(target)
         player.print("Gave a powerarmor MK2 kit to " .. target.name)
         target.print("You have been given a power armor Mk2 kit!")
@@ -455,21 +455,21 @@ commands.add_command("give-power-armor-mk2", "give an mk2 kit",
 end)
 
 commands.add_command("give-test-kit", "give a start kit", function(command)
-
+    
     local player = game.players[command.player_index]
     local target = player
-
+    
     if player ~= nil and player.admin then
         if (command.parameter ~= nil) then
             if game.players[command.parameter] ~= nil then
                 target = game.players[command.parameter]
             else
                 target.print(
-                    "Invalid player target. Double check the player name?")
+                "Invalid player target. Double check the player name?")
                 return
             end
         end
-
+        
         GiveTestKit(target)
         player.print("Gave a test kit to " .. target.name)
         target.print("You have been given a test kit!")
@@ -477,100 +477,100 @@ commands.add_command("give-test-kit", "give a start kit", function(command)
 end)
 
 commands.add_command("load-quickbar", "Pre-load quickbar shortcuts",
-                     function(command)
-
+function(command)
+    
     local p = game.players[command.player_index]
-
+    
     -- 1st Row
     p.set_quick_bar_slot(1, "transport-belt");
     p.set_quick_bar_slot(2, "splitter");
     p.set_quick_bar_slot(3, "underground-belt");
     p.set_quick_bar_slot(4, "inserter");
     p.set_quick_bar_slot(5, "small-electric-pole");
-
+    
     p.set_quick_bar_slot(6, "assembling-machine-1");
     p.set_quick_bar_slot(7, "electric-mining-drill");
     p.set_quick_bar_slot(8, "stone-wall");
     p.set_quick_bar_slot(9, "gun-turret");
     p.set_quick_bar_slot(10, "radar");
-
+    
     -- 2nd Row
     p.set_quick_bar_slot(11, "fast-transport-belt");
     p.set_quick_bar_slot(12, "fast-splitter");
     p.set_quick_bar_slot(13, "fast-underground-belt");
     p.set_quick_bar_slot(14, "fast-inserter");
     p.set_quick_bar_slot(15, "medium-electric-pole");
-
+    
     p.set_quick_bar_slot(16, "assembling-machine-2");
     p.set_quick_bar_slot(17, nil);
     p.set_quick_bar_slot(18, nil);
     p.set_quick_bar_slot(19, nil);
     p.set_quick_bar_slot(20, nil);
-
+    
     -- 3rd Row
     p.set_quick_bar_slot(21, "express-transport-belt");
     p.set_quick_bar_slot(22, "express-splitter");
     p.set_quick_bar_slot(23, "express-underground-belt");
     p.set_quick_bar_slot(24, "stack-inserter");
     p.set_quick_bar_slot(25, "substation");
-
+    
     p.set_quick_bar_slot(26, "assembling-machine-3");
     p.set_quick_bar_slot(27, "beacon");
     p.set_quick_bar_slot(28, nil);
     p.set_quick_bar_slot(29, nil);
     p.set_quick_bar_slot(30, nil);
     --[[
-        -- 4th Row
-        p.set_quick_bar_slot(31, "fast-transport-belt");
-        p.set_quick_bar_slot(32, "medium-electric-pole");
-        p.set_quick_bar_slot(33, "fast-inserter");
-        p.set_quick_bar_slot(34, "fast-underground-belt");
-        p.set_quick_bar_slot(35, "fast-splitter");
-        
-        p.set_quick_bar_slot(36, "stone-wall");
-        p.set_quick_bar_slot(37, "repair-pack");
-        p.set_quick_bar_slot(38, "gun-turret");
-        p.set_quick_bar_slot(39, "laser-turret");
-        p.set_quick_bar_slot(40, "radar");
-        
-        -- 5th Row
-        p.set_quick_bar_slot(41, "train-stop");
-        p.set_quick_bar_slot(42, "rail-signal");
-        p.set_quick_bar_slot(43, "rail-chain-signal");
-        p.set_quick_bar_slot(44, "rail");
-        p.set_quick_bar_slot(45, "big-electric-pole");
-        
-        p.set_quick_bar_slot(46, "locomotive");
-        p.set_quick_bar_slot(47, "cargo-wagon");
-        p.set_quick_bar_slot(48, "fluid-wagon");
-        p.set_quick_bar_slot(49, "pump");
-        p.set_quick_bar_slot(50, "storage-tank");
-        
-        -- 6th Row
-        p.set_quick_bar_slot(51, "oil-refinery");
-        p.set_quick_bar_slot(52, "chemical-plant");
-        p.set_quick_bar_slot(53, "storage-tank");
-        p.set_quick_bar_slot(54, "pump");
-        p.set_quick_bar_slot(55, nil);
-        
-        p.set_quick_bar_slot(56, "pipe");
-        p.set_quick_bar_slot(57, "pipe-to-ground");
-        p.set_quick_bar_slot(58, "assembling-machine-2");
-        p.set_quick_bar_slot(59, "pump");
-        p.set_quick_bar_slot(60, nil);
-        
-        -- 7th Row
-        p.set_quick_bar_slot(61, "roboport");
-        p.set_quick_bar_slot(62, "logistic-chest-storage");
-        p.set_quick_bar_slot(63, "logistic-chest-passive-provider");
-        p.set_quick_bar_slot(64, "logistic-chest-requester");
-        p.set_quick_bar_slot(65, "logistic-chest-buffer");
-        
-        p.set_quick_bar_slot(66, "logistic-chest-active-provider");
-        p.set_quick_bar_slot(67, "logistic-robot");
-        p.set_quick_bar_slot(68, "construction-robot");
-        p.set_quick_bar_slot(69, nil);
-        p.set_quick_bar_slot(70, nil); ]] --
+    -- 4th Row
+    p.set_quick_bar_slot(31, "fast-transport-belt");
+    p.set_quick_bar_slot(32, "medium-electric-pole");
+    p.set_quick_bar_slot(33, "fast-inserter");
+    p.set_quick_bar_slot(34, "fast-underground-belt");
+    p.set_quick_bar_slot(35, "fast-splitter");
+    
+    p.set_quick_bar_slot(36, "stone-wall");
+    p.set_quick_bar_slot(37, "repair-pack");
+    p.set_quick_bar_slot(38, "gun-turret");
+    p.set_quick_bar_slot(39, "laser-turret");
+    p.set_quick_bar_slot(40, "radar");
+    
+    -- 5th Row
+    p.set_quick_bar_slot(41, "train-stop");
+    p.set_quick_bar_slot(42, "rail-signal");
+    p.set_quick_bar_slot(43, "rail-chain-signal");
+    p.set_quick_bar_slot(44, "rail");
+    p.set_quick_bar_slot(45, "big-electric-pole");
+    
+    p.set_quick_bar_slot(46, "locomotive");
+    p.set_quick_bar_slot(47, "cargo-wagon");
+    p.set_quick_bar_slot(48, "fluid-wagon");
+    p.set_quick_bar_slot(49, "pump");
+    p.set_quick_bar_slot(50, "storage-tank");
+    
+    -- 6th Row
+    p.set_quick_bar_slot(51, "oil-refinery");
+    p.set_quick_bar_slot(52, "chemical-plant");
+    p.set_quick_bar_slot(53, "storage-tank");
+    p.set_quick_bar_slot(54, "pump");
+    p.set_quick_bar_slot(55, nil);
+    
+    p.set_quick_bar_slot(56, "pipe");
+    p.set_quick_bar_slot(57, "pipe-to-ground");
+    p.set_quick_bar_slot(58, "assembling-machine-2");
+    p.set_quick_bar_slot(59, "pump");
+    p.set_quick_bar_slot(60, nil);
+    
+    -- 7th Row
+    p.set_quick_bar_slot(61, "roboport");
+    p.set_quick_bar_slot(62, "logistic-chest-storage");
+    p.set_quick_bar_slot(63, "logistic-chest-passive-provider");
+    p.set_quick_bar_slot(64, "logistic-chest-requester");
+    p.set_quick_bar_slot(65, "logistic-chest-buffer");
+    
+    p.set_quick_bar_slot(66, "logistic-chest-active-provider");
+    p.set_quick_bar_slot(67, "logistic-robot");
+    p.set_quick_bar_slot(68, "construction-robot");
+    p.set_quick_bar_slot(69, nil);
+    p.set_quick_bar_slot(70, nil); ]] --
 end)
 
 local function stack_size(item)
@@ -580,8 +580,8 @@ local function stack_size(item)
 end
 
 commands.add_command("buddy",
-                     "supply two player names, and they will be reset and start again as buddies",
-                     function(command)
+"supply two player names, and they will be reset and start again as buddies",
+function(command)
     local player = game.players[command.player_index]
     if not player.admin then
         tools.error(player, "You are not admin my friend")
@@ -589,7 +589,7 @@ commands.add_command("buddy",
     end
     if not command.parameter then
         player.print(
-            "Supply 2 player names?? Do they want a moat....there are choices here.\n/buddy player1 player2 near/far true/false for moat")
+        "Supply 2 player names?? Do they want a moat....there are choices here.\n/buddy player1 player2 near/far true/false for moat")
     end
     local params = command.parameter
     local args = {}
@@ -612,74 +612,74 @@ commands.add_command("buddy",
         ResetPlayerForBuddySpawn(requester)
         -- Create a new spawn point
         local newSpawn = {x = 0, y = 0}
-
+        
         local buddyForce = CreatePlayerCustomForce(requester)
         player.force = buddyForce
-
+        
         -- Find coordinates of a good place to spawn
         if (distance == "far") then
             newSpawn = FindUngeneratedCoordinates(global.ocfg.far_dist_start,
-                                                  global.ocfg.far_dist_end,
-                                                  player.surface)
+            global.ocfg.far_dist_end,
+            player.surface)
         elseif (distance == "near") then
             newSpawn = FindUngeneratedCoordinates(global.ocfg.near_dist_start,
-                                                  global.ocfg.near_dist_end,
-                                                  player.surface)
+            global.ocfg.near_dist_end,
+            player.surface)
         end
-
+        
         -- If that fails, find a random map edge in a rand direction.
         if ((newSpawn.x == 0) and (newSpawn.y == 0)) then
             newSpawn = FindMapEdge(GetRandomVector(), player.surface)
             log("Resorting to find map edge! x=" .. newSpawn.x .. ",y=" ..
-                    newSpawn.y)
+            newSpawn.y)
         end
-
+        
         -- Create that spawn in the global vars
         local buddySpawn = {x = 0, y = 0}
         if (moat) then
             buddySpawn = {
                 x = newSpawn.x +
-                    (global.ocfg.spawn_config.gen_settings.land_area_tiles * 2) +
-                    10,
+                (global.ocfg.spawn_config.gen_settings.land_area_tiles * 2) +
+                10,
                 y = newSpawn.y
             }
         else
             buddySpawn = {
                 x = newSpawn.x +
-                    (global.ocfg.spawn_config.gen_settings.land_area_tiles * 2),
+                (global.ocfg.spawn_config.gen_settings.land_area_tiles * 2),
                 y = newSpawn.y
             }
         end
         ChangePlayerSpawn(player, newSpawn)
         ChangePlayerSpawn(requester, buddySpawn)
-
+        
         -- Send the player there
         QueuePlayerForDelayedSpawn(player.name, newSpawn, moat, false)
         QueuePlayerForDelayedSpawn(requester.name, buddySpawn, moat, false)
         SendBroadcastMsg(requester.name .. " and " .. player.name ..
-                             " are joining the game together!")
-
+        " are joining the game together!")
+        
         -- Unlock spawn control gui tab
         SetOarcGuiTabEnabled(player, OARC_SPAWN_CTRL_GUI_NAME, true)
         SetOarcGuiTabEnabled(game.players[requester.name],
-                             OARC_SPAWN_CTRL_GUI_NAME, true)
-
+        OARC_SPAWN_CTRL_GUI_NAME, true)
+        
         player.print({"oarc-please-wait"})
         player.print({"", {"oarc-please-wait"}, "!"})
         player.print({"", {"oarc-please-wait"}, "!!"})
         requester.print({"oarc-please-wait"})
         requester.print({"", {"oarc-please-wait"}, "!"})
         requester.print({"", {"oarc-please-wait"}, "!!"})
-
+        
         global.ocore.buddyPairs[player.name] = requester.name
         global.ocore.buddyPairs[requester.name] = player.name
     end
 end)
 
 commands.add_command("load-logistics", "Pre-load logistic requests",
-                     function(command)
+function(command)
     local p = game.players[command.player_index]
-
+    
     local list = {
         "electric-mining-drill", "gun-turret", "radar", "transport-belt",
         "underground-belt", "splitter", "fast-underground-belt",
@@ -693,7 +693,7 @@ commands.add_command("load-logistics", "Pre-load logistic requests",
     local limitlist = {"stone", "coal", "wood"}
     local antilist = {"iron-ore", "copper-ore"}
     local items = {}
-
+    
     for i = 1, #list do
         table.insert(items, {
             name = list[i],
@@ -716,13 +716,13 @@ commands.add_command("load-logistics", "Pre-load logistic requests",
 end)
 
 commands.add_command('find', 'finds the nearest patch of given resource',
-                     function(command)
+function(command)
     local player = game.players[command.player_index]
     local resource = command.parameter
     if find_patch.resources[resource] then
         find_patch.findPatch(find_patch.resources[resource], find_patch.range,
-                             player)
-
+        player)
+        
     end
 end)
 
@@ -745,8 +745,8 @@ commands.add_command("make", "magic", function(command)
 end)
 
 commands.add_command("get",
-                     "get <item_name> [<count>]\nneeds the game name (\"iron-plate\" no quotes). if no count is given, you'll get 1 stack",
-                     function(command)
+"get <item_name> [<count>]\nneeds the game name (\"iron-plate\" no quotes). if no count is given, you'll get 1 stack",
+function(command)
     local player, item_name, count = game.players[command.player_index], "", ""
     if command.parameter then
         local params = command.parameter
@@ -794,13 +794,13 @@ commands.add_command("tp", "teleport", function(command)
                 target_pos = global.ocore.playerSpawns[player.name]
             elseif target_pos == "back" then
                 target_pos = global.ocore.last_position[player.name] or
-                                 global.ocore.playerSpawns[player.name]
+                global.ocore.playerSpawns[player.name]
             elseif game.players[target_pos] then
                 if game.players[target_pos].connected then
                     target_pos = game.players[target_pos].position
                 else
                     target_pos =
-                        global.ocore.playerSpawns[game.players[target_pos].name]
+                    global.ocore.playerSpawns[game.players[target_pos].name]
                 end
             else
                 return
@@ -832,3 +832,23 @@ commands.add_command("protect", "protect an entity", function(command)
         player.print(player.selected.name.." protected.")
     end
 end)
+
+-- commands.add_command("join", "join another player's base (you will lose your ability to sell items)", function(command)
+--     local player = game.players[command.player_index]
+--     if not command.parameter then
+--         player.print("You forgot the player's name you'd wish to join")
+--         return
+--     end
+--     if not game.players[command.parameter] then
+--         player.print("Make sure you've spelled the player's name correctly. Use tab to autoenter.")
+--         return
+--     end
+--     if game.players[command.parameter] then
+--         if not game.players[command.parameter].connected then
+--             player.print("Please try again when " .. game.players[command.parameter].name .. " is online.")
+--             return
+--         else
+            
+--         end
+--     end
+-- end)
