@@ -268,18 +268,18 @@ function MagicalFactorySpawnAll()
                 y = c_area.right_bottom.y - 2
             }
         }, "black")
-
+        
         local positions = {
-            {x = c_area.left_top.x, y = c_area.left_top.y},
-            {x = c_area.left_top.x, y = c_area.right_bottom.y},
-            {x = c_area.right_bottom.x, y = c_area.left_top.y},
-            {x = c_area.right_bottom.x, y = c_area.right_bottom.y}
+            {x = c_area.left_top.x-2, y = c_area.left_top.y-2},
+            {x = c_area.left_top.x-2, y = c_area.right_bottom.y+2},
+            {x = c_area.right_bottom.x+2, y = c_area.left_top.y-2},
+            {x = c_area.right_bottom.x+2, y = c_area.right_bottom.y+2}
         }
-
-            SpawnHardEnemyTurret(positions[1])
-            SpawnHardEnemyTurret(positions[2])
-            SpawnHardEnemyTurret(positions[3])
-            SpawnHardEnemyTurret(positions[4])
+        
+        SpawnHardEnemyTurret(positions[1])
+        SpawnHardEnemyTurret(positions[2])
+        SpawnHardEnemyTurret(positions[3])
+        SpawnHardEnemyTurret(positions[4])
         
         -- Make it safe from regrowth
         if global.ocfg.enable_regrowth then
@@ -350,6 +350,19 @@ function RequestSpawnSpecialChunk(player, spawn_function, feature_name)
     (closest_chunk.y == player_chunk.y)) then
         local chunk_area = GetAreaFromChunkPos(closest_chunk)
         
+        for _, entity in pairs(game.surfaces[GAME_SURFACE_NAME].find_entities_filtered {
+            area = {
+                left_top = {
+                    chunk_area.left_top.x + 1, chunk_area.left_top.y + 1
+                },
+                right_bottom = {
+                    chunk_area.right_bottom.x - 1, chunk_area.right_bottom.y - 1
+                }
+            },
+            type = "corpse"
+        }) do
+            entity.destroy()
+        end
         local entities = game.surfaces[GAME_SURFACE_NAME]
         .find_entities_filtered {
             area = {
@@ -367,6 +380,12 @@ function RequestSpawnSpecialChunk(player, spawn_function, feature_name)
         -- Either there are no entities in the chunk (player is just on the boundary), or the only entity is the player.
         if ((#entities == 1) and (entities[1].player) and
         (entities[1].player == player)) or (#entities == 0) then
+            -- if entities[1].type ~= "character" then
+            --     player.print(
+            --     "Looks like this chunk already has something in it other than just you the player?! " ..
+            --     entities[1].name)
+            --     return false
+            -- end
             spawn_function(closest_chunk)
             -- Teleport to center of chunk to be safe.
             SafeTeleport(player, game.surfaces[GAME_SURFACE_NAME],

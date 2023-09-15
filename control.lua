@@ -330,6 +330,8 @@ script.on_event(defines.events.on_player_used_capsule, function(event)
                 player.print({"", "[img=item/artillery-shell] ", game.players[event.player_index].name, " manually fired artillery [gps=", event.position.x, ",", event.position.y, ",", game.players[event.player_index].surface.name, "]"})
             end
         end
+    elseif event.item.name == "grenade" then
+        tools.add_shoot_log(tools.get_secs() .. "," .. game.players[event.player_index].name .. ",manually_shot_artillery," .. tools.pos_tostring(event.position))
     end
 end)
 

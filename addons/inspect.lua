@@ -117,7 +117,7 @@ local inspect ={
 		keys[keysLength] = k
 	  end
 	end
-	table.sort(keys, sortKeys)
+	table.(keys, sortKeys)
 	return keys, keysLength, sequenceLength
   end
   
