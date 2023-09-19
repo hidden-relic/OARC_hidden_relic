@@ -89,12 +89,12 @@ M.shared_func_table = {
 }
 
 M.shared_cost_table = {
-    ["special_logistic-chest-storage"] = 1.05,
-    ["special_logistic-chest-requester"] = 1.05,
-    ["special_constant-combinator"] = 1.05,
-    ["special_accumulator"] = 1.05,
-    ["special_electric-energy-interface"] = 1.05,
-    ["special_deconstruction-planner"] = 1.05
+    ["special_logistic-chest-storage"] = 1.02,
+    ["special_logistic-chest-requester"] = 1.02,
+    ["special_constant-combinator"] = 1.02,
+    ["special_accumulator"] = 1.02,
+    ["special_electric-energy-interface"] = 1.02,
+    ["special_deconstruction-planner"] = 1.02
 }
 M.special_func_table = {
     ["special_electric-furnace"] = function(player) return RequestSpawnSpecialChunk(player, SpawnFurnaceChunk, "electric-furnace") end,
@@ -240,6 +240,8 @@ function M.increase_shared(player, upgrade)
     local current_cost = upgrade.cost
     if name == "special_deconstruction-planner" then
         upgrade.cost = upgrade.cost
+    elseif upgrade.cost > 10000000 then
+        upgrade.cost = 10000000
     else
         upgrade.cost = math.ceil(upgrade.cost^M.shared_cost_table[name])
     end
