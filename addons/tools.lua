@@ -92,16 +92,16 @@ tools.decon_filepath = "log/decon.log"
 tools.shoot_filepath = "log/shoot.log"
 
 function tools.add_decon_log(data)
-	game.write_file(tools.decon_filepath, data .. "\n", true, 0) -- write data
+    game.write_file(tools.decon_filepath, data .. "\n", true, 0) -- write data
 end
 function tools.add_shoot_log(data)
-	game.write_file(tools.shoot_filepath, data .. "\n", true, 0) -- write data
+    game.write_file(tools.shoot_filepath, data .. "\n", true, 0) -- write data
 end
 function tools.get_secs ()
-	return tools.format_time(game.tick, { hours = true, minutes = true, seconds = true, string = true })
+    return tools.format_time(game.tick, { hours = true, minutes = true, seconds = true, string = true })
 end
 function tools.pos_tostring (pos)
-	return tostring(pos.x) .. "," .. tostring(pos.y)
+    return tostring(pos.x) .. "," .. tostring(pos.y)
 end
 
 function tools.add_commas(amount)
@@ -193,16 +193,26 @@ function tools.statistics_log()
     end
 end
 
-function tools.sortByValue(t)
+function tools.get_keys_sorted_by_value(tbl)
+    local function sort_func(a, b)
+        return a < b
+    end
     local keys = {}
+    for key in pairs(tbl) do
+        table.insert(keys, key)
+    end
     
-    for key, _ in pairs(t) do table.insert(keys, key) end
+    table.sort(keys, function(a, b)
+        return sort_func(tbl[a], tbl[b])
+    end)
     
-    table.sort(keys, function(keyLhs, keyRhs) return t[keyLhs] < t[keyRhs] end)
-    local r = {}
-    for _, key in ipairs(keys) do r[key] = t[key] end
-    return r
+    return keys
 end
+
+-- for _, key in ipairs(sortedKeys) do
+--     print(key, items[key])
+--   end
+
 
 function tools.FlyingTime(this_tick)
     if not global.oarc_timers then global.oarc_timers = {} end
@@ -557,9 +567,69 @@ function tools.make(player, sharedobject, flow)
     end
 end
 
+function swap_ore()
+    local function find(player, res)
+        return player.surface.find_entities_filtered{name=res, position=player.position, radius=100}
+    end
+    local function get_keys_sorted_by_value(tbl)
+        local function sort_func(a, b)
+            return a < b
+        end
+        local keys = {}
+        for key in pairs(tbl) do
+            table.insert(keys, key)
+        end
+        
+        table.sort(keys, function(a, b)
+            return sort_func(tbl[a], tbl[b])
+        end)
+        
+        return keys
+    end
+    
+    local p = game.player
+    local t = {}
+    t["iron-ore"] = find(p, "iron-ore")
+    t["copper-ore"] = find(p, "copper-ore")
+    t["stone"] = find(p, "stone")
+    t["coal"] = find(p, "coal")
+    local sorted_names = {}
+    sorted_names["iron-ore"] = t["iron-ore"][1].position.y
+    sorted_names["copper-ore"] = t["copper-ore"][1].position.y
+    sorted_names["coal"] = t["coal"][1].position.y
+    sorted_names["stone"] = t["stone"][1].position.y
+    
+    sorted_names = get_keys_sorted_by_value(sorted_names)
+    
+    local desired = {"coal", "iron-ore", "copper-ore", "stone"}
+    for i, name in pairs(sorted_names) do
+        for _, ore in pairs(t[name]) do
+            game.player.surface.create_entity{name=desired[i], position=ore.position, amount=ore.amount}
+            ore.destroy()
+        end
+    end
+end
+
+function grow(playername)
+    local playername = playername or game.player.name
+    if game.players[playername] then
+        local player = game.players[playername]
+        local diff = 0
+        for i, res in pairs(player.surface.find_entities_filtered{type="resource"}) do
+            if i == 1 then diff = res.amount end
+            res.amount = res.amount + (res.amount * 0.1)
+            if i == 1 then diff = res.amount - diff end
+        end
+        if diff > 0 then
+            game.player.print("Grew by [color=green]" .. diff .. "[/color]")
+        end
+    end
+end
+
+
+
 function dg(playername, radius, chance)
     local playerpos = game.players[playername].position
-    local radius = radius
     local zone_size = radius / 3
     local chance = chance or 2
     local bug_table = {

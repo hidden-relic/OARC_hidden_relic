@@ -5,6 +5,7 @@
 require("lib/oarc_utils")
 local Colors = require("util/Colors")
 local find_patch = require("addons/find_patch")
+local market = require("addons/market")
 -- local spy = require("addons/spy")
 local tools = require("addons/tools")
 -- name :: string: Name of the command.
@@ -129,11 +130,25 @@ end
 
 -- game.player.print(get_assemblers("electronic-circuit", 10, "assembling-machine-2"))
 
-
-
-
-
-
+commands.add_command("give", "Share some of your coin with another player\nUsage: /give zerocool 10000", function(command)
+    local player = game.players[command.player_index]
+    local params = command.parameter
+    local args = {}
+    for arg in params:gmatch("%S+") do table.insert(args, arg) end
+    if not args[1] or not args[2] then player.print("Usage: /give zerocool 10000") end
+    if game.players[args[1]] then
+        if global.markets[player.name].balance >= args[2] then
+            global.markets[player.name].balance = global.markets[player.name].balance - args[2]
+            market.update(player)
+            global.markets[args[1]].balance = global.markets[args[1]].balance + args[2]
+            market.update(game.players[args[1]])
+        else
+            player.print("Insufficient funds")
+        end
+    else
+        player.print("Could not find player with the name '"..args[1].."'")
+    end
+end)
 
 commands.add_command("reset", "reset player", function(command)
     local player = game.players[command.player_index]
@@ -141,7 +156,7 @@ commands.add_command("reset", "reset player", function(command)
     if command.parameter and game.players[command.parameter] and player.admin then
         target = command.parameter
     end
-    if game.players[target].valid then ResetPlayer(target) end
+    if game.players[target].valid and game.players[target].character then ResetPlayer(target) end
 end)
 
 local function format_chat_colour(message, color)
@@ -848,7 +863,7 @@ end)
 --             player.print("Please try again when " .. game.players[command.parameter].name .. " is online.")
 --             return
 --         else
-            
+
 --         end
 --     end
 -- end)
