@@ -240,11 +240,11 @@ function M.increase_shared(player, upgrade)
     local current_cost = upgrade.cost
     if name == "special_deconstruction-planner" then
         upgrade.cost = upgrade.cost
-    elseif upgrade.cost > 10000000 then
-        upgrade.cost = 10000000
     else
         upgrade.cost = math.ceil(upgrade.cost^M.shared_cost_table[name])
     end
+    if upgrade.cost > 10000000 then
+        upgrade.cost = 10000000
     M.withdraw(player, current_cost)
     global.markets.jackpot = tools.round(global.markets.jackpot + current_cost*0.25, 0)
 end
