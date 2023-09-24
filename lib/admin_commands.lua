@@ -137,10 +137,10 @@ commands.add_command("give", "Share some of your coin with another player\nUsage
     for arg in params:gmatch("%S+") do table.insert(args, arg) end
     if not args[1] or not args[2] then player.print("Usage: /give zerocool 10000") end
     if game.players[args[1]] then
-        if global.markets[player.name].balance >= args[2] then
-            global.markets[player.name].balance = global.markets[player.name].balance - args[2]
+        if global.markets[player.name].balance >= tonumber(args[2]) then
+            global.markets[player.name].balance = global.markets[player.name].balance - tonumber(args[2])
             market.update(player)
-            global.markets[args[1]].balance = global.markets[args[1]].balance + args[2]
+            global.markets[args[1]].balance = global.markets[args[1]].balance + tonumber(args[2])
             market.update(game.players[args[1]])
         else
             player.print("Insufficient funds")
