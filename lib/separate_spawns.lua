@@ -21,7 +21,7 @@ local market = require("addons.market")
 function InitSpawnGlobalsAndForces()
 
     if (global.oarc_players == nil) then global.oarc_players = {} end
-    if (global.flying_tags == nil) then global.flying_tags = {} end
+    -- if (global.flying_tags == nil) then global.flying_tags = {} end
 
     -- Core global to help me organize shit.
     if (global.ocore == nil) then global.ocore = {} end

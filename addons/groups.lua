@@ -1,5 +1,5 @@
 local tools = require('addons/tools')
-local flying_tag = require("flying_tags")
+-- local flying_tag = require("flying_tags")
 
 local Group = {}
 
@@ -126,12 +126,12 @@ function Group.add(player, pet)
                 8, 1)
             }
             
-            local new_tag = {
-                entity = new_pet,
-                offset = {x = 0, y = 1},
-                text = {"", player.name, "'s ", new_pet.localised_name},
-                color = Group.pet_data[pet].color
-            }
+            -- local new_tag = {
+            --     entity = new_pet,
+            --     offset = {x = 0, y = 1},
+            --     text = {"", player.name, "'s ", new_pet.localised_name},
+            --     color = Group.pet_data[pet].color
+            -- }
             
             if Group.get_count(player) < group.max then
                 table.insert(group.pets[pet], new_pet)
@@ -140,7 +140,7 @@ function Group.add(player, pet)
                 group.pet_group.add_member(new_pet)
                 new_pet.ai_settings.allow_destroy_when_commands_fail = false
                 new_pet.ai_settings.allow_try_return_to_spawner = false
-                flying_tag.create(new_tag)
+                -- flying_tag.create(new_tag)
                 player.print({
                     "groups.pet_added",
                     Group.pet_data[pet].color[1] .. ", " ..

@@ -4,7 +4,7 @@ local prodscore = require('production-score')
 
 local group = require("addons.groups")
 
-local flying_tag = require("flying_tags")
+-- local flying_tag = require("flying_tags")
 
 local M = {}
 
@@ -615,7 +615,7 @@ function M.new(player)
             text = "SELL Chest",
             color = {r=0, g=1, b=1}
         }
-        flying_tag.create(new_tag)
+        -- flying_tag.create(new_tag)
         tools.protect_entity(market.sell_chest)
     end
     

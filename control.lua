@@ -34,7 +34,7 @@ local tools = require("addons/tools")
 local group = require("addons/groups")
 local find_patch = require("addons/find_patch")
 local deathmarkers = require("addons/death-marker")
-local flying_tags = require("flying_tags")
+-- local flying_tags = require("flying_tags")
 local logger = require("scripts/logging")
 -- Other soft-mod type features.
 require("lib/frontier_silo")
@@ -49,6 +49,8 @@ require("lib/notepad")
 require("lib/map_features")
 -- require("lib/oarc_buy")
 require("lib/auto_decon_miners")
+
+local Profiler = require("scripts/profiler")
 
 -- For Philip. I currently do not use this and need to add proper support for
 -- commands like this in the future.
@@ -85,6 +87,7 @@ RegrowthForceRemoveChunksCmd)
 --   time the game starts
 ----------------------------------------
 script.on_init(function(event)
+    Profiler.Start(true)
     game.write_file(tools.decon_filepath, "\n", false, 0)
     game.write_file(tools.shoot_filepath, "\n", false, 0)
     
@@ -488,7 +491,7 @@ script.on_event(defines.events.on_tick, function(event)
     if global.ocfg.enable_groups == true then
         group.on_tick()
     end
-    flying_tags.update()
+    -- flying_tags.update()
     
     -- tools.stockUp()
     

@@ -3,7 +3,7 @@
 -- Oarc's silly idea for a scripted item sharing solution.
 -- Buffer size is the limit of joules/tick so multiply by 60 to get /sec.
 local tools = require("addons.tools")
-local flying_tag = require("flying_tags")
+-- local flying_tag = require("flying_tags")
 
 SHARED_ELEC_OUTPUT_BUFFER_SIZE = 1000000000
 SHARED_ELEC_INPUT_BUFFER_SIZE = 1000000001
@@ -46,13 +46,13 @@ function SharedEnergySpawnInput(player, pos)
         position = pos,
         force = "shared"
     }
-    local new_tag = {
-        entity = inputElec,
-        offset = {x = 2, y = -1},
-        text = "->G",
-        color = {r=0, g=1, b=1, a=0.8}
-    }
-    flying_tag.create(new_tag)
+    -- local new_tag = {
+    --     entity = inputElec,
+    --     offset = {x = 2, y = -1},
+    --     text = "->G",
+    --     color = {r=0, g=1, b=1, a=0.8}
+    -- }
+    -- flying_tag.create(new_tag)
     inputElec.destructible = false
     inputElec.minable = false
     inputElec.operable = false
@@ -96,13 +96,13 @@ function SharedEnergySpawnOutput(player, pos)
         position = pos,
         force = "shared"
     }
-    local new_tag = {
-        entity = outputElec,
-        offset = {x = 2, y = -1},
-        text = "G->",
-        color = {r=0, g=1, b=1, a=0.8}
-    }
-    flying_tag.create(new_tag)
+    -- local new_tag = {
+    --     entity = outputElec,
+    --     offset = {x = 2, y = -1},
+    --     text = "G->",
+    --     color = {r=0, g=1, b=1, a=0.8}
+    -- }
+    -- flying_tag.create(new_tag)
     outputElec.destructible = false
     outputElec.minable = false
     outputElec.operable = false
@@ -418,13 +418,13 @@ function SharedChestsSpawnInput(player, pos)
         position = {pos.x, pos.y},
         force = "shared"
     }
-    local new_tag = {
-        entity = inputChest,
-        offset = {x = 1, y = -0.5},
-        text = "->G",
-        color = {r=0, g=1, b=1, a=0.8}
-    }
-    flying_tag.create(new_tag)
+    -- local new_tag = {
+    --     entity = inputChest,
+    --     offset = {x = 1, y = -0.5},
+    --     text = "->G",
+    --     color = {r=0, g=1, b=1, a=0.8}
+    -- }
+    -- flying_tag.create(new_tag)
     inputChest.destructible = false
     inputChest.minable = false
     inputChest.last_user = player
@@ -449,13 +449,13 @@ function SharedChestsSpawnOutput(player, pos, enable_example)
         position = {pos.x, pos.y},
         force = "shared"
     }
-    local new_tag = {
-        entity = outputChest,
-        offset = {x = 1, y = -0.5},
-        text = "G->",
-        color = {r=0, g=1, b=1, a=0.8}
-    }
-    flying_tag.create(new_tag)
+    -- local new_tag = {
+    --     entity = outputChest,
+    --     offset = {x = 1, y = -0.5},
+    --     text = "G->",
+    --     color = {r=0, g=1, b=1, a=0.8}
+    -- }
+    -- flying_tag.create(new_tag)
     outputChest.destructible = false
     outputChest.minable = false
     outputChest.last_user = player
