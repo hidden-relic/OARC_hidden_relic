@@ -50,7 +50,7 @@ require("lib/map_features")
 -- require("lib/oarc_buy")
 require("lib/auto_decon_miners")
 
-local Profiler = require("scripts/profiler")
+-- local Profiler = require("scripts/profiler")
 
 -- For Philip. I currently do not use this and need to add proper support for
 -- commands like this in the future.
@@ -87,7 +87,7 @@ RegrowthForceRemoveChunksCmd)
 --   time the game starts
 ----------------------------------------
 script.on_init(function(event)
-    Profiler.Start(true)
+    -- Profiler.Start(true)
     game.write_file(tools.decon_filepath, "\n", false, 0)
     game.write_file(tools.shoot_filepath, "\n", false, 0)
     
@@ -510,8 +510,10 @@ script.on_event(defines.events.on_tick, function(event)
         end
     end
     
-    if game.tick % 60 == 1 then
-        RechargePlayersOnTick()
+    if global.ocfg.enable_accumulator_charge_player then
+        if game.tick % 60 == 1 then
+            RechargePlayersOnTick()
+        end
     end
     
     if game.tick % 60*60*15 == 1 then

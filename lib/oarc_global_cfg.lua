@@ -35,6 +35,7 @@ function InitOarcConfig()
 
      -- SCENARIO VERSION (ONLY - no more mod version.)
      global.ocfg.enable_groups = false
+     global.ocfg.enable_accumulator_charge_player = false
      global.ocfg.coin_multiplier = ENEMY_COIN_MULTIPLIER
      global.ocfg.coin_generation_chances = ENEMY_COIN_GENERATION_CHANCES
 

@@ -558,14 +558,14 @@ function FadeoutRenderOnTick()
         for k, rid in pairs(global.oarc_renders_fadeout) do
             if (rendering.is_valid(rid)) then
                 local ttl = rendering.get_time_to_live(rid)
-                if ((ttl > 0) and (ttl < 200)) then
+                if ((ttl > 0) and (ttl < 100)) then
                     local color = rendering.get_color(rid)
-                    if (color.a > 0.005) then
+                    if (color.a > 0.01) then
                         rendering.set_color(rid, {
                             r = color.r,
                             g = color.g,
                             b = color.b,
-                            a = color.a - 0.005
+                            a = color.a - 0.01
                         })
                     end
                 end
