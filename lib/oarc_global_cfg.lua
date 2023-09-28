@@ -35,6 +35,7 @@ function InitOarcConfig()
 
      -- SCENARIO VERSION (ONLY - no more mod version.)
      global.ocfg.enable_groups = false
+     global.ocfg.enable_accumulator_charge_player = false
      global.ocfg.coin_multiplier = ENEMY_COIN_MULTIPLIER
      global.ocfg.coin_generation_chances = ENEMY_COIN_GENERATION_CHANCES
 
@@ -67,7 +68,7 @@ function InitOarcConfig()
     global.ocfg.enable_modular_armor_start = ENABLE_MODULAR_ARMOR_QUICK_START
     global.ocfg.lock_goodies_rocket_launch = LOCK_GOODIES_UNTIL_ROCKET_LAUNCH
     global.ocfg.scale_resources_around_spawns = SCALE_RESOURCES_AROUND_SPAWNS
-    
+
     global.ocfg.modified_enemy_spawning = OARC_MODIFIED_ENEMY_SPAWNING
     global.ocfg.near_dist_start = NEAR_MIN_DIST
     global.ocfg.near_dist_end = NEAR_MAX_DIST
@@ -75,9 +76,9 @@ function InitOarcConfig()
     global.ocfg.far_dist_end = FAR_MAX_DIST
     global.ocfg.vanilla_spawn_count = VANILLA_SPAWN_COUNT
     global.ocfg.vanilla_spawn_spacing = VANILLA_SPAWN_SPACING
-    
+
     global.ocfg.spawn_config = OARC_CFG
-    
+
     global.ocfg.enable_separate_teams = ENABLE_SEPARATE_TEAMS
     global.ocfg.main_force = MAIN_FORCE
     global.ocfg.shared_force = SHARED_FORCE
@@ -91,13 +92,13 @@ function InitOarcConfig()
     global.ocfg.frontier_pos_table = SILO_POSITIONS
     global.ocfg.frontier_silo_vision = ENABLE_SILO_VISION
     global.ocfg.frontier_allow_build = ENABLE_SILO_PLAYER_BUILD
-    
+
     global.ocfg.enable_anti_grief = ENABLE_ANTI_GRIEFING
     global.ocfg.ghost_ttl = GHOST_TIME_TO_LIVE
     global.ocfg.enable_friendly_fire = ENABLE_FRIENDLY_FIRE
-    
+
     global.ocfg.enable_server_write_files = ENABLE_SERVER_WRITE_FILES
-    
+
     --
 
     global.ocfg.enable_continuous_autofill = ENABLE_CONTINUOUS_AUTOFILL

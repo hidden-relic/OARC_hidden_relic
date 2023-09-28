@@ -87,9 +87,9 @@ function solo_spawn.create_new_spawn(player, position)
   
     for i = area.top_left.x, area.bottom_right.x, 1 do
       for j = area.top_left.y, area.bottom_right.y, 1 do
-    
+
           local dist = math.floor((center.x - i) ^ 2 + (center.y - j) ^ 2)
-    
+
           if (dist < r_sq) then
               table.insert(results, {name = "concrete", position ={i,j}})
   
@@ -100,7 +100,7 @@ function solo_spawn.create_new_spawn(player, position)
           end
       end
   end
-    
+
   player.surface.set_tiles(results)
   player.force.chart(player.surface, area)
 end

@@ -1,5 +1,5 @@
 local tools = require('addons/tools')
-local flying_tag = require("flying_tags")
+-- local flying_tag = require("flying_tags")
 
 local Group = {}
 
@@ -117,7 +117,9 @@ function Group.add(player, pet)
     (Group.get_count(player) < group.max) then
         if Group.pet_data[pet] then
             if not group.pets[pet] then group.pets[pet] = {} end
-            
+
+
+
             local new_pet = player.surface.create_entity {
                 name = pet,
                 force = player.force,
@@ -125,22 +127,27 @@ function Group.add(player, pet)
                 player.position,
                 8, 1)
             }
-            
-            local new_tag = {
-                entity = new_pet,
-                offset = {x = 0, y = 1},
-                text = {"", player.name, "'s ", new_pet.localised_name},
-                color = Group.pet_data[pet].color
-            }
-            
+
+
+
+            -- local new_tag = {
+            --     entity = new_pet,
+            --     offset = {x = 0, y = 1},
+            --     text = {"", player.name, "'s ", new_pet.localised_name},
+            --     color = Group.pet_data[pet].color
+            -- }
+
+
+
             if Group.get_count(player) < group.max then
                 table.insert(group.pets[pet], new_pet)
                 table.insert(group.tags, new_tag)
-                
+        
+
                 group.pet_group.add_member(new_pet)
                 new_pet.ai_settings.allow_destroy_when_commands_fail = false
                 new_pet.ai_settings.allow_try_return_to_spawner = false
-                flying_tag.create(new_tag)
+                -- flying_tag.create(new_tag)
                 player.print({
                     "groups.pet_added",
                     Group.pet_data[pet].color[1] .. ", " ..
@@ -275,7 +282,8 @@ function Group.on_tick()
             if player.online_time > cooldown["left"] then
                 if (game.tick % cooldown[Group.get_patrol_state(player)] == 0) then
                     Group.get_count(player)
-                    
+            
+
                     if not global.groups[player.name].pet_group then return end
                     if not global.groups[player.name].pet_group.valid then return end
                     if not global.groups[player.name].pet_group.members then return end
