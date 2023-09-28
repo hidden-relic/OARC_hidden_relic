@@ -179,20 +179,12 @@ script.on_event(defines.events.on_force_created, function(event)
     event.force.max_failed_attempts_per_tick_per_construction_queue = 20
 end)
 
-----------------------------------------
 script.on_event(defines.events.on_rocket_launched,
 function(event) 
     logger.on_rocket_launched(event)
     RocketLaunchEvent(event)
 end)
 
-----------------------------------------
--- Surface Generation
-----------------------------------------
-
-----------------------------------------
--- Chunk Generation
-----------------------------------------
 script.on_event(defines.events.on_chunk_generated, function(event)
     if (event.surface.name ~= GAME_SURFACE_NAME) then return end
     if global.ocfg.enable_regrowth then RegrowthChunkGenerate(event) end
@@ -201,15 +193,7 @@ script.on_event(defines.events.on_chunk_generated, function(event)
     CreateHoldingPen(event.surface, event.area)
 end)
 
-----------------------------------------
--- Decon logger
-----------------------------------------
--- script.on_event(defines.events.on_marked_for_deconstruction, function(event)
--- DeconCheck(event)
--- end)
-----------------------------------------
--- Gui Click
-----------------------------------------
+
 script.on_event(defines.events.on_gui_switch_state_changed, function(event)
     
     if not (event and event.element and event.element.valid) then return end
@@ -295,11 +279,15 @@ script.on_event(defines.events.on_gui_click, function(event)
         BuddySpawnRequestMenuClick(event)
         SharedSpawnJoinWaitMenuClick(event)
         
+        
         ClickOarcGuiButton(event)
+        
         
         -- if global.ocfg.enable_coin_shop then ClickOarcStoreButton(event) end
         
+        
         GameOptionsGuiClick(event)
+        
         
     end
 end)
@@ -412,7 +400,9 @@ script.on_event(defines.events.on_player_created, function(event)
             newSpawn = FindMapEdge(GetRandomVector(), player.surface)
         end
         
+        
         ChangePlayerSpawn(player, newSpawn)
+        
         
         QueuePlayerForDelayedSpawn(player.name, newSpawn, false,
         global.ocfg.enable_vanilla_spawns)
@@ -461,67 +451,78 @@ script.on_event(defines.events.on_trigger_fired_artillery, function(event)
     logger.on_trigger_fired_artillery(event)
 end)
 
-----------------------------------------
--- On tick events. Stuff that needs to happen at regular intervals.
--- Delayed events, delayed spawns, ...
-----------------------------------------
+script.on_nth_tick(10*60*60, function(event) UpdatePlayerBuffsOnTick(event) end)
+script.on_nth_tick(216000, function(event)
+    tools.statistics_log(event)
+    tools.shared_log(event)
+end)
+script.on_nth_tick(600, function(event) market.on_tick(event) end)
+script.on_nth_tick(60, function(event)
+    DelayedSpawnOnTick(event)
+    SharedChestsOnTick(event)
+    TimeoutSpeechBubblesOnTick(event)
+    RegrowthOnTick(event)
+end)
+script.on_nth_tick(10, function(event) MagicFactoriesOnTick(event) end)
+script.on_nth_tick(60*60, function(event)
+    OarcAutoDeconOnTick(event)
+    logger.checkEvolution(event)
+end)
+script.on_nth_tick(60*60*15, function(event) logger.logStats(event) end)
+
 script.on_event(defines.events.on_tick, function(event)
-    if global.ocfg.enable_regrowth then
-        RegrowthOnTick()
-        RegrowthForceRemovalOnTick()
-    end
+    -- if global.ocfg.enable_regrowth then
+    --     RegrowthOnTick()
+    -- end
     
-    -- if game.tick % 60 == 0 then tools.FlyingTime(game.tick) end
     
-    DelayedSpawnOnTick()
+    -- DelayedSpawnOnTick()
     
-    UpdatePlayerBuffsOnTick(game.tick)
+    -- UpdatePlayerBuffsOnTick(game.tick)
     
-    ReportPlayerBuffsOnTick()
+    -- ReportPlayerBuffsOnTick()
     
     -- if game.tick % game.surfaces[GAME_SURFACE_NAME].ticks_per_day == 1 then
     --     modify_night_color()
     -- end
     
-    if game.tick % 216000 == 0 then
-        tools.statistics_log()
-    end
+    -- if game.tick % 216000 == 0 then
+    --     tools.statistics_log()
+    -- end
     
-    market.on_tick()
-    if global.ocfg.enable_groups == true then
-        group.on_tick()
-    end
+    -- market.on_tick()
+    -- if global.ocfg.enable_groups == true then
+    --     group.on_tick()
+    -- end
     -- flying_tags.update()
     
-    -- tools.stockUp()
+    -- if global.ocfg.enable_chest_sharing then SharedChestsOnTick() end
     
-    if global.ocfg.enable_chest_sharing then SharedChestsOnTick() end
+    -- if (global.ocfg.enable_chest_sharing and global.ocfg.enable_magic_factories) then
+    --     MagicFactoriesOnTick()
+    -- end
     
-    if (global.ocfg.enable_chest_sharing and global.ocfg.enable_magic_factories) then
-        MagicFactoriesOnTick()
-    end
-    
-    TimeoutSpeechBubblesOnTick()
+    -- TimeoutSpeechBubblesOnTick()
     FadeoutRenderOnTick()
     
-    if global.ocfg.enable_miner_decon then
-        if game.tick % 300 == 1 then
-            OarcAutoDeconOnTick()
-        end
-    end
+    -- if global.ocfg.enable_miner_decon then
+    --     if game.tick % 300 == 1 then
+    --         OarcAutoDeconOnTick()
+    --     end
+    -- end
     
-    if global.ocfg.enable_accumulator_charge_player then
-        if game.tick % 60 == 1 then
-            RechargePlayersOnTick()
-        end
-    end
+    -- if global.ocfg.enable_accumulator_charge_player then
+    --     if game.tick % 60 == 1 then
+    --         RechargePlayersOnTick()
+    --     end
+    -- end
     
-    if game.tick % 60*60*15 == 1 then
-        logger.logStats()
-    end
-    if game.tick % 60*60 == 1 then
-        logger.checkEvolution()
-    end
+    -- if game.tick % 60*60*15 == 1 then
+    --     logger.logStats()
+    -- end
+    -- if game.tick % 60*60 == 1 then
+    --     logger.checkEvolution()
+    -- end
 end)
 
 script.on_event(defines.events.on_sector_scanned, function(event)

@@ -221,7 +221,8 @@ function M.increase(player, upgrade)
         local current_cost = upgrade.cost
         if name == "sell-speed" then
             upgrade.cost = math.floor(upgrade.cost^(M.upgrade_cost_table[name]^0.9^upgrade.lvl))
-        else    
+        else
+            
             upgrade.cost = upgrade.cost +
             (upgrade.cost * M.upgrade_cost_table[name])
         end
@@ -365,6 +366,7 @@ function M.new(player)
                 tooltip = "+5% Productivity [img=technology/mining-productivity-1]"
             },
             
+            
             ["maximum-following-robot-count"] = {
                 name = "Follower Robot Count",
                 lvl = 1,
@@ -376,12 +378,12 @@ function M.new(player)
             },
         }
         market.shared = {
-                ["special_logistic-chest-storage"] = {cost = 20000, tooltip = "Turn the nearest empty wooden chest into a shared INPUT chest"},
-                ["special_logistic-chest-requester"] = {cost = 20000, tooltip = "Turn the nearest empty wooden chest into a shared OUTPUT chest"},
-                ["special_constant-combinator"] = {cost = 20000, tooltip = "Turn the nearest empty wooden chest into a pair of combinators that are tied to the shared storage"},
-                ["special_accumulator"] = {cost = 20000, tooltip = "Turn the nearest empty wooden chest into a shared INPUT accumulator"},
-                ["special_electric-energy-interface"] = {cost = 20000, tooltip = "Turn the nearest empty wooden chest into a shared OUTPUT accumulator"},
-                ["special_deconstruction-planner"] = {cost = 0, tooltip = "Deconstruct a nearby shared entity"}
+            ["special_logistic-chest-storage"] = {cost = 20000, tooltip = "Turn the nearest empty wooden chest into a shared INPUT chest"},
+            ["special_logistic-chest-requester"] = {cost = 20000, tooltip = "Turn the nearest empty wooden chest into a shared OUTPUT chest"},
+            ["special_constant-combinator"] = {cost = 20000, tooltip = "Turn the nearest empty wooden chest into a pair of combinators that are tied to the shared storage"},
+            ["special_accumulator"] = {cost = 20000, tooltip = "Turn the nearest empty wooden chest into a shared INPUT accumulator"},
+            ["special_electric-energy-interface"] = {cost = 20000, tooltip = "Turn the nearest empty wooden chest into a shared OUTPUT accumulator"},
+            ["special_deconstruction-planner"] = {cost = 0, tooltip = "Deconstruct a nearby shared entity"}
         }
         if config.enable_groups == true then
             market.upgrades["group-limit"] = {
@@ -468,6 +470,7 @@ function M.new(player)
             M.withdraw(player, value * inserted)
             player.insert {name = item, count = inserted}
             global.markets.jackpot = tools.round(global.markets.jackpot + (value * inserted) * 0.25)
+            
             
             if not market.stats.items_purchased[item] then
                 market.stats.items_purchased[item] = {
@@ -592,7 +595,7 @@ function M.new(player)
             M.increase(player, bonus)
         end
     end
-
+    
     function M.upgrade_shared(player, bonus)
         local player = player
         local market = global.markets[player.name]
@@ -647,7 +650,9 @@ function M.new(player)
         local player = player
         local market = global.markets[player.name]
         
+        
         market.frame_flow = gui.get_frame_flow(player)
+        
         
         -- market main window
         market.market_frame = market.frame_flow.add {
@@ -660,7 +665,9 @@ function M.new(player)
             direction = "vertical"
         }
         
+        
         -- -- market info
+        
         
         market.item_label_left = market.market_flow.add {
             type = "label",
@@ -675,14 +682,18 @@ function M.new(player)
             caption = "Using Ctrl+Shift is not supported and will act as a normal Left or Right click"
         }
         
+        
         -- market container
+        
         
         market.container_flow = market.market_flow.add {
             type = "flow",
             direction = "horizontal"
         }
         
+        
         -- market items (left side)
+        
         
         market.items_frame = market.container_flow.add {
             type = "frame",
@@ -715,19 +726,24 @@ function M.new(player)
             end
         end
         
+        
         market.container_flow.add {
             type = "line",
             direction = "vertical"
         }
         
+        
         -- market special (right side)
+        
         
         market.special_store_flow = market.container_flow.add {
             type = "flow",
             direction = "vertical"
         }
         
+        
         -- -- market upgrades
+        
         
         market.upgrades_frame = market.special_store_flow.add {
             type = "frame",
@@ -762,6 +778,7 @@ function M.new(player)
         market.special_store_flow.add {
             type = "line"
         }
+        
         
         -- -- market followers
         if config.enable_groups == true then
@@ -804,7 +821,9 @@ function M.new(player)
             }
         end
         
+        
         -- -- market shared
+        
         
         market.shared_frame = market.special_store_flow.add {
             type = "frame",
@@ -837,7 +856,9 @@ function M.new(player)
             type = "line"
         }
         
+        
         -- -- market special
+        
         
         market.special_frame = market.special_store_flow.add {
             type = "frame",
@@ -871,6 +892,7 @@ function M.new(player)
     function M.create_stats_gui(player)
         local player = player
         local market = global.markets[player.name]
+        
         
         market.stats_frame = market.frame_flow.add {
             type = "frame",
@@ -956,7 +978,9 @@ function M.new(player)
             caption = market.stats.item_most_sold_coin
         }
         
+        
         local upgrades = global.markets[player.name].upgrades
+        
         
         table.insert(market.stats_labels, market.info_table.add {
             type = "label",
@@ -968,6 +992,7 @@ function M.new(player)
             caption = math.floor(upgrades["sell-speed"].lvl^1.1).." i/10 secs [color=blue](1 i/"..tools.round(10/math.floor(upgrades["sell-speed"].lvl^1.1), 2).."s)[/color]"
         }
         
+        
         table.insert(market.stats_labels, market.info_table.add {
             type = "label",
             caption = "[color=green]Character Health:[/color]"
@@ -977,6 +1002,7 @@ function M.new(player)
             type = "label",
             caption = player.character_health_bonus
         }
+        
         
         table.insert(market.stats_labels, market.info_table.add {
             type = "label",
@@ -988,6 +1014,7 @@ function M.new(player)
             caption = player.force.get_ammo_damage_modifier("bullet")
         }
         
+        
         table.insert(market.stats_labels, market.info_table.add {
             type = "label",
             caption = "[color=green]Hot & Heavy:[/color]"
@@ -997,6 +1024,7 @@ function M.new(player)
             type = "label",
             caption = player.force.get_turret_attack_modifier("flamethrower-turret")
         }
+        
         
         table.insert(market.stats_labels, market.info_table.add {
             type = "label",
@@ -1008,6 +1036,7 @@ function M.new(player)
             caption = player.force.get_gun_speed_modifier("rocket")
         }
         
+        
         table.insert(market.stats_labels, market.info_table.add {
             type = "label",
             caption = "[color=green]Lasers:[/color]"
@@ -1017,6 +1046,7 @@ function M.new(player)
             type = "label",
             caption = player.force.get_gun_speed_modifier("laser")
         }
+        
         
         table.insert(market.stats_labels, market.info_table.add {
             type = "label",
@@ -1028,6 +1058,7 @@ function M.new(player)
             caption = player.force.mining_drill_productivity_bonus
         }
         
+        
         table.insert(market.stats_labels, market.info_table.add {
             type = "label",
             caption = "[color=green]Combat Robot Count:[/color]"
@@ -1037,6 +1068,7 @@ function M.new(player)
             type = "label",
             caption = player.force.maximum_following_robot_count
         }
+        
         
         if config.enable_groups == true then
             table.insert(market.stats_labels, market.info_table.add {
@@ -1050,6 +1082,7 @@ function M.new(player)
             }
         end
     end
+    
     
     
     
@@ -1192,6 +1225,7 @@ function M.new(player)
         stats.item_most_sold_total
         market.stats_labels.item_most_sold_coin.caption = stats.item_most_sold_coin
         
+        
         market.stats_labels["sell-speed"].caption = math.floor(market.upgrades["sell-speed"].lvl^1.1).." i/10 secs [color=blue](1 i/"..tools.round(10/math.floor(market.upgrades["sell-speed"].lvl^1.1), 2).."s)[/color]"
         market.stats_labels["character-health"].caption = player.character_health_bonus
         market.stats_labels["gun"].caption = player.force.get_ammo_damage_modifier("bullet")
@@ -1203,6 +1237,7 @@ function M.new(player)
         if config.enable_groups == true then
             market.stats_labels["group-limit"].caption = market.upgrades["group-limit"].lvl
         end
+        
         
         market.market_button.number = balance
         market.market_button.tooltip = "[item=coin] " .. tools.add_commas(balance)
@@ -1430,8 +1465,8 @@ function M.new(player)
     --     end
     -- end
     
-    function M.on_tick()
-        if (game.tick % 108000 == 1) then
+    function M.on_tick(event)
+        if event.tick > 107000 and event.tick % 108000 < 600 then
             if global.markets.jackpot > 0 then
                 game.print("[color=0.8, 0.8, 0]JACKPOT:[/color] "..tools.add_commas(global.markets.jackpot))
                 local roll = math.random(1, #game.players*3)
@@ -1449,7 +1484,7 @@ function M.new(player)
         --         M.autofill(game.players[entry.name])
         --     end
         -- end
-        if (game.tick % 600 == 1) then
+        if event.tick > 10 then
             for _, player in pairs(game.players) do
                 player = tools.get_player(player)
                 if global.markets then

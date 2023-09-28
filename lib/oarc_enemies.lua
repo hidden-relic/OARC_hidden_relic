@@ -42,7 +42,7 @@ function OarcModifyEnemyGroup(group)
     if (group.command.type == defines.command.attack) then
         log("OarcModifyEnemyGroup defines.command.attack NOT IMPLEMENTED YET!")
         return
-    
+
     -- defines.command.attack_area --> destination --> closest enemy (within 3 chunk radius?)
     -- defines.command.build_base --> destination --> closest enemy (expansion chunk distance?)
     else
@@ -62,13 +62,15 @@ function OarcModifyEnemyGroup(group)
                                                 invert=true}
 
         -- Search through them all to find anything with a last_user.
-        local target_entity = nil                                   
+        local target_entity = nil                           
+
         for _,target in ipairs(target_entities) do
             if (target.last_user ~= nil) then
                 target_entity = target
                 break
             end
-        end                                                                
+        end                                                        
+
 
         -- No enemies nearby?
         if (target_entity == nil) then

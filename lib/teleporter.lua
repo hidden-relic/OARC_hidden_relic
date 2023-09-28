@@ -26,7 +26,8 @@ function M.TeleportPlayer( player )
                     break
                 -- we could allow only the player to use the teleporter.
                 -- elseif SameCoord(portal.dest, global.playerSpawns[player.name]) then
-                else    
+                else
+
                     -- teleport player to silo
                     player.print("you have been teleported");
                     dest = portal.dest;

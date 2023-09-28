@@ -49,40 +49,40 @@ function ResetPlayer(playername)
     end
 end
 
-function RechargePlayersOnTick()
-    for each, player in pairs(game.connected_players) do charge(player) end
-end
+-- function RechargePlayersOnTick()
+--     for each, player in pairs(game.connected_players) do charge(player) end
+-- end
 
-function DischargeAccumulators(surface, position, force, power_needs)
-    local accumulators = surface.find_entities_filtered {
-        name = 'accumulator',
-        force = force,
-        position = position,
-        radius = 13
-    }
-    local power_drained = 0
-    power_needs = power_needs * charging_station_multiplier
-    for _, accu in pairs(accumulators) do
-        if accu.valid then
-            if accu.energy > 3000000 and power_needs > 0 then
-                if power_needs >= 2000000 then
-                    power_drained = power_drained + 2000000
-                    accu.energy = accu.energy - 2000000
-                    power_needs = power_needs - 2000000
-                else
-                    power_drained = power_drained + power_needs
-                    accu.energy = accu.energy - power_needs
-                end
-            elseif power_needs <= 0 then
-                break
-            end
-        end
-    end
-    return power_drained / charging_station_multiplier
-end
+-- function DischargeAccumulators(surface, position, force, power_needs)
+--     local accumulators = surface.find_entities_filtered {
+--         name = 'accumulator',
+--         force = force,
+--         position = position,
+--         radius = 13
+--     }
+--     local power_drained = 0
+--     power_needs = power_needs * charging_station_multiplier
+--     for _, accu in pairs(accumulators) do
+--         if accu.valid then
+--             if accu.energy > 3000000 and power_needs > 0 then
+--                 if power_needs >= 2000000 then
+--                     power_drained = power_drained + 2000000
+--                     accu.energy = accu.energy - 2000000
+--                     power_needs = power_needs - 2000000
+--                 else
+--                     power_drained = power_drained + power_needs
+--                     accu.energy = accu.energy - power_needs
+--                 end
+--             elseif power_needs <= 0 then
+--                 break
+--             end
+--         end
+--     end
+--     return power_drained / charging_station_multiplier
+-- end
 
 function pcharge(player)
-    if player == nil then player = game.player end
+    local player = game.players[player] or game.player
     if not player.character then return end
     local armor_inventory = player.get_inventory(defines.inventory
     .character_armor)
@@ -97,68 +97,74 @@ function pcharge(player)
             piece.energy = piece.max_energy
         end
     end
-    for index, robot in pairs(game.player.surface.find_entities_filtered{name="construction-robot", position=game.player.position, radius=100}) do
+    for index, robot in pairs(game.player.surface.find_entities_filtered{name="construction-robot", position=game.player.position, radius=320}) do
         robot.energy = 1500000
     end
 end
 
-function charge(player)
-    if player == nil then player = game.player end
-    if not player.character then return end
-    local armor_inventory = player.get_inventory(defines.inventory
-    .character_armor)
-    if not armor_inventory.valid then return end
-    local armor = armor_inventory[1]
-    if not armor.valid_for_read then return end
-    local grid = armor.grid
-    if not grid or not grid.valid then return end
-    local equip = grid.equipment
-    for _, piece in pairs(equip) do
-        if piece.valid and piece.generator_power == 0 then
-            local energy_needs = piece.max_energy - piece.energy
-            if energy_needs > 0 then
-                local energy = DischargeAccumulators(player.surface,
-                player.position,
-                player.force, energy_needs)
-                if energy > 0 then
-                    if piece.energy + energy >= piece.max_energy then
-                        piece.energy = piece.max_energy
-                    else
-                        piece.energy = piece.energy + energy
-                    end
-                end
-            end
-        end
-    end
-end
+-- function charge(player)
+--     if player == nil then player = game.player end
+--     if not player.character then return end
+--     local armor_inventory = player.get_inventory(defines.inventory
+--     .character_armor)
+--     if not armor_inventory.valid then return end
+--     local armor = armor_inventory[1]
+--     if not armor.valid_for_read then return end
+--     local grid = armor.grid
+--     if not grid or not grid.valid then return end
+--     local equip = grid.equipment
+--     for _, piece in pairs(equip) do
+--         if piece.valid and piece.generator_power == 0 then
+--             local energy_needs = piece.max_energy - piece.energy
+--             if energy_needs > 0 then
+--                 local energy = DischargeAccumulators(player.surface,
+--                 player.position,
+--                 player.force, energy_needs)
+--                 if energy > 0 then
+--                     if piece.energy + energy >= piece.max_energy then
+--                         piece.energy = piece.max_energy
+--                     else
+--                         piece.energy = piece.energy + energy
+--                     end
+--                 end
+--             end
+--         end
+--     end
+-- end
 
 ------------acid--------------------------------------------------------------------
 local function UpdateForceBuffs(player, buff)
-    local name, text, color, modifier, base_multiplier = buff.name, buff.text,
-    buff.color,
-    player.force[buff.modifier],
-    buff.base_multiplier
-    local old_data = modifier
-    local multiplier = (player.online_time / TICKS_PER_HOUR) * base_multiplier
+    -- local name, text, color, modifier, base_multiplier = buff.name, buff.text,
+    -- buff.color,
+    -- player.force[buff.modifier],
+    -- buff.base_multiplier
+    local old_data = player.force[buff.modifier]
+    local multiplier = (player.online_time / TICKS_PER_HOUR) * buff.base_multiplier
     if player.online_time > 12*TICKS_PER_HOUR then
-        multiplier = (player.online_time / TICKS_PER_HOUR) * (base_multiplier/2)
+        multiplier = (player.online_time / TICKS_PER_HOUR) * (buff.base_multiplier/2)
     end
-    
-    FlyingText(text .. tools.round(multiplier, 3), player.position, color,
-    player.surface)
+
+
+
+    -- FlyingText(text .. tools.round(multiplier, 3), player.position, color,
+    -- player.surface)
     player.force[buff.modifier] = old_data + multiplier
 end
 
 function UpdatePlayerBuffs(player, buff)
-    local name, text, color, modifier, base_multiplier = buff.name, buff.text,
-    buff.color,
-    player[buff.modifier],
-    buff.base_multiplier
-    
-    local multiplier = (player.online_time / TICKS_PER_HOUR) * base_multiplier
-    
-    FlyingText(text .. tools.round((multiplier - modifier), 3), player.position,
-    color, player.surface)
+    -- local name, text, color, modifier, base_multiplier = buff.name, buff.text,
+    -- buff.color,
+    -- player[buff.modifier],
+    -- buff.base_multiplier
+
+
+
+    local multiplier = (player.online_time / TICKS_PER_HOUR) * buff.base_multiplier
+
+
+
+    -- FlyingText(text .. tools.round((multiplier - buff.modifier), 3), player.position,
+    -- color, player.surface)
     player[buff.modifier] = multiplier
 end
 
@@ -179,230 +185,290 @@ function modify_night_color(surface)
     surface.brightness_visual_weights = {random_tenth(nc.r), random_tenth(nc.g), random_tenth(nc.b)}
 end
 
-local gradient = {
-    {r = 0, g = 255, b = 0}, {r = 10, g = 245, b = 10},
-    {r = 20, g = 235, b = 20}, {r = 31, g = 224, b = 31},
-    {r = 41, g = 214, b = 41}, {r = 51, g = 204, b = 51},
-    {r = 61, g = 194, b = 61}, {r = 71, g = 184, b = 71},
-    {r = 82, g = 173, b = 82}, {r = 92, g = 163, b = 92},
-    {r = 102, g = 153, b = 102}, {r = 112, g = 143, b = 112},
-    {r = 122, g = 133, b = 122}, {r = 133, g = 122, b = 133},
-    {r = 143, g = 112, b = 143}, {r = 153, g = 102, b = 153},
-    {r = 163, g = 92, b = 163}, {r = 173, g = 82, b = 173},
-    {r = 184, g = 71, b = 184}, {r = 194, g = 61, b = 194},
-    {r = 204, g = 51, b = 204}, {r = 214, g = 41, b = 214},
-    {r = 224, g = 31, b = 224}, {r = 235, g = 20, b = 235},
-    {r = 245, g = 10, b = 245}, {r = 255, g = 0, b = 255}
-}
+-- local gradient = {
+--     {r = 0, g = 255, b = 0}, {r = 10, g = 245, b = 10},
+--     {r = 20, g = 235, b = 20}, {r = 31, g = 224, b = 31},
+--     {r = 41, g = 214, b = 41}, {r = 51, g = 204, b = 51},
+--     {r = 61, g = 194, b = 61}, {r = 71, g = 184, b = 71},
+--     {r = 82, g = 173, b = 82}, {r = 92, g = 163, b = 92},
+--     {r = 102, g = 153, b = 102}, {r = 112, g = 143, b = 112},
+--     {r = 122, g = 133, b = 122}, {r = 133, g = 122, b = 133},
+--     {r = 143, g = 112, b = 143}, {r = 153, g = 102, b = 153},
+--     {r = 163, g = 92, b = 163}, {r = 173, g = 82, b = 173},
+--     {r = 184, g = 71, b = 184}, {r = 194, g = 61, b = 194},
+--     {r = 204, g = 51, b = 204}, {r = 214, g = 41, b = 214},
+--     {r = 224, g = 31, b = 224}, {r = 235, g = 20, b = 235},
+--     {r = 245, g = 10, b = 245}, {r = 255, g = 0, b = 255}
+-- }
 
 local bonuses_data = {
-    ["1"] = {
-        name = "run_bonus",
-        text = "running + ",
-        color = gradient[1],
+    {
         modifier = "character_running_speed_modifier",
         base_multiplier = PLAYER_HOURLY_RUN_BONUS
     },
-    ["16"] = {
-        name = "handcraft_bonus",
-        text = "handcrafting + ",
-        color = gradient[3],
+    {
         modifier = "character_crafting_speed_modifier",
         base_multiplier = PLAYER_HOURLY_HANDCRAFT_BONUS
     },
-    ["31"] = {
-        name = "mining_bonus",
-        text = "mining + ",
-        color = gradient[5],
+    {
         modifier = "character_mining_speed_modifier",
         base_multiplier = PLAYER_HOURLY_MINING_BONUS
     },
-    ["46"] = {
-        name = "reach_bonus",
-        text = "reach + ",
-        color = gradient[7],
+    {
         modifier = "character_reach_distance_bonus",
         base_multiplier = PLAYER_HOURLY_REACH_BONUS
     },
-    ["61"] = {
-        name = "resource_reach_bonus",
-        text = "resource_reach + ",
-        color = gradient[9],
+    {
         modifier = "character_resource_reach_distance_bonus",
         base_multiplier = PLAYER_HOURLY_RESOURCE_REACH_BONUS
     },
-    ["76"] = {
-        name = "build_bonus",
-        text = "build reach + ",
-        color = gradient[11],
+    {
         modifier = "character_build_distance_bonus",
         base_multiplier = PLAYER_HOURLY_BUILD_BONUS
     },
-    ["91"] = {
-        name = "item_drop_bonus",
-        text = "item drop + ",
-        color = gradient[13],
+    {
         modifier = "character_item_drop_distance_bonus",
         base_multiplier = PLAYER_HOURLY_ITEM_DROP_BONUS
     },
-    ["106"] = {
-        name = "loot_pickup_bonus",
-        text = "loot pickup + ",
-        color = gradient[15],
+    {
         modifier = "character_loot_pickup_distance_bonus",
         base_multiplier = PLAYER_HOURLY_LOOT_BONUS
     },
-    ["121"] = {
-        name = "inventory_bonus",
-        text = "inventory + ",
-        color = gradient[17],
+    {
         modifier = "character_inventory_slots_bonus",
         base_multiplier = PLAYER_HOURLY_INV_BONUS
     },
-    ["136"] = {
-        name = "trash_bonus",
-        text = "trash + ",
-        color = gradient[19],
+    {
         modifier = "character_trash_slot_count_bonus",
         base_multiplier = PLAYER_HOURLY_TRASH_BONUS
     },
-    ["151"] = {
-        name = "bot_speed_bonus",
-        text = "bot speed + ",
-        color = gradient[21],
+    {
         modifier = "worker_robots_speed_modifier",
-        base_multiplier = FORCE_HOURLY_BOT_SPEED_BONUS
+        base_multiplier = FORCE_HOURLY_BOT_SPEED_BONUS,
+        force = true
     },
-    ["166"] = {
-        name = "bot_storage_bonus",
-        text = "bot storage + ",
-        color = gradient[23],
+    {
         modifier = "worker_robots_storage_bonus",
-        base_multiplier = FORCE_HOURLY_BOT_STORAGE_BONUS
+        base_multiplier = FORCE_HOURLY_BOT_STORAGE_BONUS,
+        force = true
     },
-    ["181"] = {
-        name = "bot_battery_bonus",
-        text = "bot battery + ",
-        color = gradient[25],
+    {
         modifier = "worker_robots_battery_modifier",
-        base_multiplier = FORCE_HOURLY_BOT_BATTERY_BONUS
+        base_multiplier = FORCE_HOURLY_BOT_BATTERY_BONUS,
+        force = true
     }
 }
+-- local bonuses_data = {
+--     ["1"] = {
+--         name = "run_bonus",
+--         text = "running + ",
+--         color = gradient[1],
+--         modifier = "character_running_speed_modifier",
+--         base_multiplier = PLAYER_HOURLY_RUN_BONUS
+--     },
+--     ["16"] = {
+--         name = "handcraft_bonus",
+--         text = "handcrafting + ",
+--         color = gradient[3],
+--         modifier = "character_crafting_speed_modifier",
+--         base_multiplier = PLAYER_HOURLY_HANDCRAFT_BONUS
+--     },
+--     ["31"] = {
+--         name = "mining_bonus",
+--         text = "mining + ",
+--         color = gradient[5],
+--         modifier = "character_mining_speed_modifier",
+--         base_multiplier = PLAYER_HOURLY_MINING_BONUS
+--     },
+--     ["46"] = {
+--         name = "reach_bonus",
+--         text = "reach + ",
+--         color = gradient[7],
+--         modifier = "character_reach_distance_bonus",
+--         base_multiplier = PLAYER_HOURLY_REACH_BONUS
+--     },
+--     ["61"] = {
+--         name = "resource_reach_bonus",
+--         text = "resource_reach + ",
+--         color = gradient[9],
+--         modifier = "character_resource_reach_distance_bonus",
+--         base_multiplier = PLAYER_HOURLY_RESOURCE_REACH_BONUS
+--     },
+--     ["76"] = {
+--         name = "build_bonus",
+--         text = "build reach + ",
+--         color = gradient[11],
+--         modifier = "character_build_distance_bonus",
+--         base_multiplier = PLAYER_HOURLY_BUILD_BONUS
+--     },
+--     ["91"] = {
+--         name = "item_drop_bonus",
+--         text = "item drop + ",
+--         color = gradient[13],
+--         modifier = "character_item_drop_distance_bonus",
+--         base_multiplier = PLAYER_HOURLY_ITEM_DROP_BONUS
+--     },
+--     ["106"] = {
+--         name = "loot_pickup_bonus",
+--         text = "loot pickup + ",
+--         color = gradient[15],
+--         modifier = "character_loot_pickup_distance_bonus",
+--         base_multiplier = PLAYER_HOURLY_LOOT_BONUS
+--     },
+--     ["121"] = {
+--         name = "inventory_bonus",
+--         text = "inventory + ",
+--         color = gradient[17],
+--         modifier = "character_inventory_slots_bonus",
+--         base_multiplier = PLAYER_HOURLY_INV_BONUS
+--     },
+--     ["136"] = {
+--         name = "trash_bonus",
+--         text = "trash + ",
+--         color = gradient[19],
+--         modifier = "character_trash_slot_count_bonus",
+--         base_multiplier = PLAYER_HOURLY_TRASH_BONUS
+--     },
+--     ["151"] = {
+--         name = "bot_speed_bonus",
+--         text = "bot speed + ",
+--         color = gradient[21],
+--         modifier = "worker_robots_speed_modifier",
+--         base_multiplier = FORCE_HOURLY_BOT_SPEED_BONUS
+--     },
+--     ["166"] = {
+--         name = "bot_storage_bonus",
+--         text = "bot storage + ",
+--         color = gradient[23],
+--         modifier = "worker_robots_storage_bonus",
+--         base_multiplier = FORCE_HOURLY_BOT_STORAGE_BONUS
+--     },
+--     ["181"] = {
+--         name = "bot_battery_bonus",
+--         text = "bot battery + ",
+--         color = gradient[25],
+--         modifier = "worker_robots_battery_modifier",
+--         base_multiplier = FORCE_HOURLY_BOT_BATTERY_BONUS
+--     }
+-- }
 
-local force_ticks = {["151"] = true, ["166"] = true, ["181"] = true}
+-- local force_ticks = {["151"] = true, ["166"] = true, ["181"] = true}
 
-function UpdatePlayerBuffsOnTick(this_tick)
-    local this_tick = tostring((this_tick %
-    (TICKS_PER_MINUTE * PLAYER_BUFF_MINUTES)))
-    if bonuses_data[this_tick] then
-        local this_bonus = bonuses_data[this_tick]
-        if force_ticks[this_tick] then
-            for __, force in pairs(game.forces) do
-                for __, player in pairs(force.players) do
+function UpdatePlayerBuffsOnTick(event)
+    if event.tick > 10 then
+        -- local this_tick = tostring((event.tick %
+        -- (TICKS_PER_MINUTE * PLAYER_BUFF_MINUTES)))
+        -- if bonuses_data[this_tick] then
+        -- local this_bonus = bonuses_data[this_tick]
+        -- if force_ticks[this_tick] then
+        for _, bonus in pairs(bonuses_data) do
+            if bonus.force then
+                for __, force in pairs(game.forces) do
+                    for __, player in pairs(force.players) do
+                        player = tools.get_player(player)
+                        if player.character and player.character.valid then
+                            UpdateForceBuffs(player, bonus)
+                        end
+                    end
+                end
+            else
+                for __, player in pairs(game.connected_players) do
                     player = tools.get_player(player)
-                    if player.character and player.character.valid then
-                        UpdateForceBuffs(player, this_bonus)
+                    if player and player.character and player.character.valid then
+                        UpdatePlayerBuffs(player, bonus)
                     end
                 end
             end
-        else
-            for __, player in pairs(game.connected_players) do
-                player = tools.get_player(player)
-                if player and player.character and player.character.valid then
-                    UpdatePlayerBuffs(player, this_bonus)
-                end
-            end
         end
     end
 end
+-- local function buff_prefix(i)
+--     return "[font=default-semibold][color=" .. gradient[i].r .. ", " ..
+--     gradient[i].g .. ", " .. gradient[i].b .. "]"
+-- end
 
-local function buff_prefix(i)
-    return "[font=default-semibold][color=" .. gradient[i].r .. ", " ..
-    gradient[i].g .. ", " .. gradient[i].b .. "]"
-end
+-- local function buff_mid(i)
+--     return "[/color][/font][font=default][color=" .. gradient[i].r .. ", " ..
+--     gradient[i].g .. ", " .. gradient[i].b .. "]"
+-- end
 
-local function buff_mid(i)
-    return "[/color][/font][font=default][color=" .. gradient[i].r .. ", " ..
-    gradient[i].g .. ", " .. gradient[i].b .. "]"
-end
+-- local function buff_suffix() return "[/color][/font]\n" end
 
-local function buff_suffix() return "[/color][/font]\n" end
+-- function ReportPlayerBuffsOnTick()
+--     if game.tick >= TICKS_PER_MINUTE * REPORT_PLAYER_BUFF_MINUTES then
+--         if ((game.tick % (TICKS_PER_MINUTE * REPORT_PLAYER_BUFF_MINUTES)) == 0) then
+--             for _, player in pairs(game.connected_players) do
+--                 player = tools.get_player(player)
+--                 if player.character and player.character.valid then
+--                     local hours = player.online_time / TICKS_PER_HOUR
+--                     local run_bonus, handcraft_bonus, mining_bonus, reach_bonus,
+--                     resource_reach_bonus, build_bonus, item_drop_bonus,
+--                     loot_pickup_bonus, inventory_bonus, trash_bonus,
+--                     bot_speed_bonus, bot_storage_bonus, bot_battery_bonus =
+--                     hours * PLAYER_HOURLY_RUN_BONUS + 1,
+--                     hours * PLAYER_HOURLY_HANDCRAFT_BONUS + 1,
+--                     hours * PLAYER_HOURLY_MINING_BONUS + 1,
+--                     hours * PLAYER_HOURLY_REACH_BONUS + 1,
+--                     hours * PLAYER_HOURLY_RESOURCE_REACH_BONUS + 1,
+--                     hours * PLAYER_HOURLY_BUILD_BONUS + 1,
+--                     hours * PLAYER_HOURLY_ITEM_DROP_BONUS + 1,
+--                     hours * PLAYER_HOURLY_LOOT_BONUS + 1,
+--                     hours * PLAYER_HOURLY_INV_BONUS,
+--                     hours * PLAYER_HOURLY_TRASH_BONUS,
+--                     hours * FORCE_HOURLY_BOT_SPEED_BONUS + 1,
+--                     hours * FORCE_HOURLY_BOT_STORAGE_BONUS + 1,
+--                     hours * FORCE_HOURLY_BOT_BATTERY_BONUS + 1
 
-function ReportPlayerBuffsOnTick()
-    if game.tick >= TICKS_PER_MINUTE * REPORT_PLAYER_BUFF_MINUTES then
-        if ((game.tick % (TICKS_PER_MINUTE * REPORT_PLAYER_BUFF_MINUTES)) == 0) then
-            for _, player in pairs(game.connected_players) do
-                player = tools.get_player(player)
-                if player.character and player.character.valid then
-                    local hours = player.online_time / TICKS_PER_HOUR
-                    local run_bonus, handcraft_bonus, mining_bonus, reach_bonus,
-                    resource_reach_bonus, build_bonus, item_drop_bonus,
-                    loot_pickup_bonus, inventory_bonus, trash_bonus,
-                    bot_speed_bonus, bot_storage_bonus, bot_battery_bonus =
-                    hours * PLAYER_HOURLY_RUN_BONUS + 1,
-                    hours * PLAYER_HOURLY_HANDCRAFT_BONUS + 1,
-                    hours * PLAYER_HOURLY_MINING_BONUS + 1,
-                    hours * PLAYER_HOURLY_REACH_BONUS + 1,
-                    hours * PLAYER_HOURLY_RESOURCE_REACH_BONUS + 1,
-                    hours * PLAYER_HOURLY_BUILD_BONUS + 1,
-                    hours * PLAYER_HOURLY_ITEM_DROP_BONUS + 1,
-                    hours * PLAYER_HOURLY_LOOT_BONUS + 1,
-                    hours * PLAYER_HOURLY_INV_BONUS,
-                    hours * PLAYER_HOURLY_TRASH_BONUS,
-                    hours * FORCE_HOURLY_BOT_SPEED_BONUS + 1,
-                    hours * FORCE_HOURLY_BOT_STORAGE_BONUS + 1,
-                    hours * FORCE_HOURLY_BOT_BATTERY_BONUS + 1
-                    
-                    local string = ""
-                    string = string ..
-                    "[font=heading-1]Your playtime bonuses have increased![/font]\n"
-                    string = string ..
-                    "[font=heading-2]Here are your current totals:[/font]\n"
-                    
-                    string = string .. buff_prefix(1) .. "Running Speed >>> " ..
-                    buff_mid(2) .. run_bonus .. buff_suffix()
-                    string = string .. buff_prefix(3) ..
-                    "Handcrafting Speed >>> >>> " .. buff_mid(4) ..
-                    handcraft_bonus .. buff_suffix()
-                    string =
-                    string .. buff_prefix(5) .. "Handmining Speed >>> " ..
-                    buff_mid(6) .. mining_bonus .. buff_suffix()
-                    string =
-                    string .. buff_prefix(7) .. "Reach Distance >>> " ..
-                    buff_mid(8) .. reach_bonus .. buff_suffix()
-                    string =
-                    string .. buff_prefix(9) .. "Resource Reach >>> " ..
-                    buff_mid(10) .. resource_reach_bonus ..
-                    buff_suffix()
-                    string = string .. buff_prefix(11) .. "Build Reach >>> " ..
-                    buff_mid(12) .. build_bonus .. buff_suffix()
-                    string =
-                    string .. buff_prefix(13) .. "Item Drop Reach >>> " ..
-                    buff_mid(14) .. item_drop_bonus .. buff_suffix()
-                    string = string .. buff_prefix(15) ..
-                    "Loot Pickup Reach >>> " .. buff_mid(16) ..
-                    loot_pickup_bonus .. buff_suffix()
-                    string =
-                    string .. buff_prefix(17) .. "Inventory Slots >>> " ..
-                    buff_mid(18) .. inventory_bonus .. buff_suffix()
-                    string = string .. buff_prefix(19) .. "Trash Slots >>> " ..
-                    buff_mid(20) .. trash_bonus .. buff_suffix()
-                    string = string .. buff_prefix(21) .. "Robot Speed >>> " ..
-                    buff_mid(22) .. bot_speed_bonus ..
-                    buff_suffix()
-                    string =
-                    string .. buff_prefix(23) .. "Robot Inventory >>> " ..
-                    buff_mid(24) .. bot_storage_bonus .. buff_suffix()
-                    string =
-                    string .. buff_prefix(25) .. "Robot Battery >>> " ..
-                    buff_mid(26) .. bot_battery_bonus .. buff_suffix()
-                    
-                    DisplaySpeechBubble(player, string, 10)
-                end
-            end
-        end
-    end
-end
+--                     local string = ""
+--                     string = string ..
+--                     "[font=heading-1]Your playtime bonuses have increased![/font]\n"
+--                     string = string ..
+--                     "[font=heading-2]Here are your current totals:[/font]\n"
+
+--                     string = string .. buff_prefix(1) .. "Running Speed >>> " ..
+--                     buff_mid(2) .. run_bonus .. buff_suffix()
+--                     string = string .. buff_prefix(3) ..
+--                     "Handcrafting Speed >>> >>> " .. buff_mid(4) ..
+--                     handcraft_bonus .. buff_suffix()
+--                     string =
+--                     string .. buff_prefix(5) .. "Handmining Speed >>> " ..
+--                     buff_mid(6) .. mining_bonus .. buff_suffix()
+--                     string =
+--                     string .. buff_prefix(7) .. "Reach Distance >>> " ..
+--                     buff_mid(8) .. reach_bonus .. buff_suffix()
+--                     string =
+--                     string .. buff_prefix(9) .. "Resource Reach >>> " ..
+--                     buff_mid(10) .. resource_reach_bonus ..
+--                     buff_suffix()
+--                     string = string .. buff_prefix(11) .. "Build Reach >>> " ..
+--                     buff_mid(12) .. build_bonus .. buff_suffix()
+--                     string =
+--                     string .. buff_prefix(13) .. "Item Drop Reach >>> " ..
+--                     buff_mid(14) .. item_drop_bonus .. buff_suffix()
+--                     string = string .. buff_prefix(15) ..
+--                     "Loot Pickup Reach >>> " .. buff_mid(16) ..
+--                     loot_pickup_bonus .. buff_suffix()
+--                     string =
+--                     string .. buff_prefix(17) .. "Inventory Slots >>> " ..
+--                     buff_mid(18) .. inventory_bonus .. buff_suffix()
+--                     string = string .. buff_prefix(19) .. "Trash Slots >>> " ..
+--                     buff_mid(20) .. trash_bonus .. buff_suffix()
+--                     string = string .. buff_prefix(21) .. "Robot Speed >>> " ..
+--                     buff_mid(22) .. bot_speed_bonus ..
+--                     buff_suffix()
+--                     string =
+--                     string .. buff_prefix(23) .. "Robot Inventory >>> " ..
+--                     buff_mid(24) .. bot_storage_bonus .. buff_suffix()
+--                     string =
+--                     string .. buff_prefix(25) .. "Robot Battery >>> " ..
+--                     buff_mid(26) .. bot_battery_bonus .. buff_suffix()
+
+--                     DisplaySpeechBubble(player, string, 10)
+--                 end
+--             end
+--         end
+--     end
+-- end
 
 function getPlayerBonuses(player)
     local player = tools.get_player(player)
@@ -486,11 +552,15 @@ function GetGPStext(pos) return "[gps=" .. pos.x .. "," .. pos.y .. "]" end
 
 -- Requires having an on_tick handler.
 function DisplaySpeechBubble(player, text, timeout_secs)
-    
+
+
+
     if (global.oarc_speech_bubbles == nil) then
         global.oarc_speech_bubbles = {}
     end
-    
+
+
+
     if (player and player.character) then
         local sp = player.surface.create_entity {
             name = "compi-speech-bubble",
@@ -537,8 +607,8 @@ function TemporaryHelperText(text, position, ttl, color)
 end
 
 -- Every second, check a global table to see if we have any speech bubbles to kill.
-function TimeoutSpeechBubblesOnTick()
-    if ((game.tick % (TICKS_PER_SECOND)) == 3) then
+function TimeoutSpeechBubblesOnTick(event)
+    if (event.tick > 10) then
         if (global.oarc_speech_bubbles and (#global.oarc_speech_bubbles > 0)) then
             for k, sp in pairs(global.oarc_speech_bubbles) do
                 if (game.tick > sp.timeout_tick) then
@@ -626,11 +696,6 @@ end
 function clampInt32(val) return clamp(val, MAX_INT32_NEG, MAX_INT32_POS) end
 
 -- Simple function to get total number of items in table
-function TableLength(T)
-    local count = 0
-    for _ in pairs(T) do count = count + 1 end
-    return count
-end
 
 -- Fisher-Yares shuffle
 -- https://stackoverflow.com/questions/35572435/how-do-you-do-the-fisher-yates-shuffle-in-lua
@@ -680,7 +745,9 @@ function getDistance(posA, posB)
     -- Get the length for each of the components x and y
     local xDist = posB.x - posA.x
     local yDist = posB.y - posA.y
-    
+
+
+
     return math.sqrt((xDist ^ 2) + (yDist ^ 2))
 end
 
@@ -688,16 +755,22 @@ function getCenter(posA, posB)
     -- Simple function to get center between two positions.
     local xCenter = (posA.x + posB.x) / 2
     local yCenter = (posA.y + posB.y) / 2
-    
+
+
+
     return {x = xCenter, y = yCenter}
 end
 
 -- Given a table of positions, returns key for closest to given pos.
 function GetClosestPosFromTable(pos, pos_table)
-    
+
+
+
     local closest_dist = nil
     local closest_key = nil
-    
+
+
+
     for k, p in pairs(pos_table) do
         local new_dist = getDistance(pos, p)
         if (closest_dist == nil) then
@@ -708,12 +781,16 @@ function GetClosestPosFromTable(pos, pos_table)
             closest_key = k
         end
     end
-    
+
+
+
     if (closest_key == nil) then
         log("GetClosestPosFromTable ERROR - None found?")
         return nil
     end
-    
+
+
+
     return pos_table[closest_key]
 end
 
@@ -743,7 +820,9 @@ function GivePlayerStarterItems(player)
     for name, count in pairs(PLAYER_SPAWN_START_ITEMS) do
         player.insert({name = name, count = count})
     end
-    
+
+
+
     if global.ocfg.enable_power_armor_start then
         GiveQuickStartPowerArmor(player)
     elseif global.ocfg.enable_modular_armor_start then
@@ -754,7 +833,9 @@ end
 -- Modular armor quick start
 function GiveQuickStartModularArmor(player)
     player.insert {name = "modular-armor", count = 1}
-    
+
+
+
     if player and player.get_inventory(defines.inventory.character_armor) ~= nil and
     player.get_inventory(defines.inventory.character_armor)[1] ~= nil then
         local p_armor =
@@ -774,7 +855,9 @@ end
 -- Cheater's quick start
 function GiveQuickStartPowerArmor(player)
     player.insert {name = "power-armor", count = 1}
-    
+
+
+
     if player and player.get_inventory(defines.inventory.character_armor) ~= nil and
     player.get_inventory(defines.inventory.character_armor)[1] ~= nil then
         local p_armor =
@@ -799,7 +882,9 @@ end
 
 function GivePowerArmorMK2(player)
     player.insert {name = "power-armor-mk2", count = 1}
-    
+
+
+
     if player and player.get_inventory(defines.inventory.character_armor) ~= nil and
     player.get_inventory(defines.inventory.character_armor)[1] ~= nil then
         local p_armor =
@@ -943,9 +1028,12 @@ end
 function RenderPath(path, ttl, players)
     local last_pos = path[1].position
     local color = {r = 1, g = 0, b = 0, a = 0.5}
-    
+
+
+
     for i, v in pairs(path) do
         if (i ~= 1) then
+            
             
             color = {
                 r = 1 / (1 + (i % 3)),
@@ -1007,7 +1095,9 @@ function ClearNearbyEnemies(pos, safeDist, surface)
         left_top = {x = pos.x - safeDist, y = pos.y - safeDist},
         right_bottom = {x = pos.x + safeDist, y = pos.y + safeDist}
     }
-    
+
+
+
     for _, entity in pairs(surface.find_entities_filtered {
         area = safeArea,
         force = "enemy"
@@ -1019,24 +1109,31 @@ end
 function FindMapEdge(directionVec, surface)
     local position = {x = 0, y = 0}
     local chunkPos = {x = 0, y = 0}
-    
+
+
+
     -- Keep checking chunks in the direction of the vector
     while (true) do
+        
         
         -- Set some absolute limits.
         if ((math.abs(chunkPos.x) > 1000) or (math.abs(chunkPos.y) > 1000)) then
             break
+            
             
             -- If chunk is already generated, keep looking
         elseif (surface.is_chunk_generated(chunkPos)) then
             chunkPos.x = chunkPos.x + directionVec.x
             chunkPos.y = chunkPos.y + directionVec.y
             
+            
             -- Found a possible ungenerated area
         else
             
+            
             chunkPos.x = chunkPos.x + directionVec.x
             chunkPos.y = chunkPos.y + directionVec.y
+            
             
             -- Check there are no generated chunks in a 10x10 area.
             if IsChunkAreaUngenerated(chunkPos, 10, surface) then
@@ -1046,7 +1143,9 @@ function FindMapEdge(directionVec, surface)
             end
         end
     end
-    
+
+
+
     -- log("spawn: x=" .. position.x .. ", y=" .. position.y)
     return position
 end
@@ -1056,18 +1155,26 @@ end
 function FindUngeneratedCoordinates(minDistChunks, maxDistChunks, surface)
     local position = {x = 0, y = 0}
     local chunkPos = {x = 0, y = 0}
-    
+
+
+
     local maxTries = 100
     local tryCounter = 0
-    
+
+
+
     local minDistSqr = minDistChunks ^ 2
     local maxDistSqr = maxDistChunks ^ 2
-    
+
+
+
     while (true) do
         chunkPos.x = math.random(0, maxDistChunks) * RandomNegPos()
         chunkPos.y = math.random(0, maxDistChunks) * RandomNegPos()
         
+        
         local distSqrd = chunkPos.x ^ 2 + chunkPos.y ^ 2
+        
         
         -- Enforce a max number of tries
         tryCounter = tryCounter + 1
@@ -1075,9 +1182,11 @@ function FindUngeneratedCoordinates(minDistChunks, maxDistChunks, surface)
             log("FindUngeneratedCoordinates - Max Tries Hit!")
             break
             
+            
             -- Check that the distance is within the min,max specified
         elseif ((distSqrd < minDistSqr) or (distSqrd > maxDistSqr)) then
             -- Keep searching!
+            
             
             -- Check there are no generated chunks in a 10x10 area.
         elseif IsChunkAreaUngenerated(chunkPos,
@@ -1088,7 +1197,9 @@ function FindUngeneratedCoordinates(minDistChunks, maxDistChunks, surface)
             break -- SUCCESS
         end
     end
-    
+
+
+
     log("spawn: x=" .. position.x .. ", y=" .. position.y)
     return position
 end
@@ -1123,7 +1234,9 @@ end
 -- Get an area given a position and distance.
 -- Square length = 2x distance
 function GetAreaAroundPos(pos, dist)
-    
+
+
+
     return {
         left_top = {x = pos.x - dist, y = pos.y - dist},
         right_bottom = {x = pos.x + dist, y = pos.y + dist}
@@ -1196,15 +1309,21 @@ end
 
 -- For easy local testing of map gen settings. Just set what you want and uncomment usage in CreateGameSurface!
 function SurfaceSettingsHelper(settings)
-    
+
+
+
     settings.terrain_segmentation = 4
     settings.water = 3
     settings.starting_area = 0
-    
+
+
+
     local r_freq = 1.20
     local r_rich = 5.00
     local r_size = 0.18
-    
+
+
+
     settings.autoplace_controls["coal"].frequency = r_freq
     settings.autoplace_controls["coal"].richness = r_rich
     settings.autoplace_controls["coal"].size = r_size
@@ -1223,33 +1342,46 @@ function SurfaceSettingsHelper(settings)
     settings.autoplace_controls["uranium-ore"].frequency = r_freq * 0.5
     settings.autoplace_controls["uranium-ore"].richness = r_rich
     settings.autoplace_controls["uranium-ore"].size = r_size
-    
+
+
+
     settings.autoplace_controls["enemy-base"].frequency = 0.80
     settings.autoplace_controls["enemy-base"].richness = 0.70
     settings.autoplace_controls["enemy-base"].size = 0.70
-    
+
+
+
     settings.autoplace_controls["trees"].frequency = 1.00
     settings.autoplace_controls["trees"].richness = 1.00
     settings.autoplace_controls["trees"].size = 1.00
-    
+
+
+
     settings.cliff_settings.cliff_elevation_0 = 3
     settings.cliff_settings.cliff_elevation_interval = 200
     settings.cliff_settings.richness = 3
-    
+
+
+
     settings.property_expression_names["control-setting:aux:bias"] = "0.00"
     settings.property_expression_names["control-setting:aux:frequency:multiplier"] =
     "5.00"
     settings.property_expression_names["control-setting:moisture:bias"] = "0.40"
     settings.property_expression_names["control-setting:moisture:frequency:multiplier"] =
     "50"
-    
+
+
+
     return settings
 end
 
 -- Create another surface so that we can modify map settings and not have a screwy nauvis map.
 function CreateGameSurface()
-    
+
+
+
     if (GAME_SURFACE_NAME ~= "nauvis") then
+        
         
         -- Get starting surface settings.
         local nauvis_difficulty_settings = game.difficulty_settings
@@ -1257,10 +1389,12 @@ function CreateGameSurface()
         TECHNOLOGY_PRICE_MULTIPLIER or 1
         local nauvis_settings = game.surfaces["nauvis"].map_gen_settings
         
+        
         if global.ocfg.enable_vanilla_spawns then
             nauvis_settings.starting_points =
             CreateVanillaSpawns(global.ocfg.vanilla_spawn_count,
             global.ocfg.vanilla_spawn_spacing)
+            
             
             -- ENFORCE ISLAND MAP GEN
             if (global.ocfg.silo_islands) then
@@ -1269,11 +1403,14 @@ function CreateGameSurface()
             end
         end
         
+        
         -- Enable this to test things out easily.
         -- nauvis_settings = SurfaceSettingsHelper(nauvis_settings)
         
+        
         -- Create new game surface
         local s = game.create_surface(GAME_SURFACE_NAME, nauvis_settings)
+        
         
         -- daytime data by default:
         -- 0 (or 1) is noon
@@ -1291,7 +1428,9 @@ function CreateGameSurface()
         s.morning = 0.525
         s.dawn = 0.75
     end
-    
+
+
+
     -- Add surface and safe areas
     if global.ocfg.enable_regrowth then
         RegrowthMarkAreaSafeGivenChunkPos({x = 0, y = 0}, 4, true)
@@ -1299,9 +1438,13 @@ function CreateGameSurface()
 end
 
 function CreateTileArrow(surface, pos, type)
-    
+
+
+
     local tiles = {}
-    
+
+
+
     if (type == "LEFT") then
         table.insert(tiles,
         {name = "hazard-concrete-left", position = {pos.x, pos.y}})
@@ -1367,15 +1510,21 @@ function CreateTileArrow(surface, pos, type)
             position = {pos.x + 3, pos.y + 1}
         })
     end
-    
+
+
+
     surface.set_tiles(tiles, true)
 end
 
 -- Allowed colors: red, green, blue, orange, yellow, pink, purple, black, brown, cyan, acid
 function CreateFixedColorTileArea(surface, area, color)
-    
+
+
+
     local tiles = {}
-    
+
+
+
     for i = area.left_top.x, area.right_bottom.x do
         for j = area.left_top.y, area.right_bottom.y do
             table.insert(tiles, {
@@ -1384,13 +1533,17 @@ function CreateFixedColorTileArea(surface, area, color)
             })
         end
     end
-    
+
+
+
     surface.set_tiles(tiles, true)
 end
 
 -- Find closest player-owned entity
 function FindClosestPlayerOwnedEntity(player, name, radius)
-    
+
+
+
     local entities = player.surface.find_entities_filtered {
         position = player.position,
         radius = radius,
@@ -1398,7 +1551,9 @@ function FindClosestPlayerOwnedEntity(player, name, radius)
         force = player.force
     }
     if (not entities or (#entities == 0)) then return nil end
-    
+
+
+
     return player.surface.get_closest(player.position, entities)
 end
 
@@ -1428,21 +1583,27 @@ end
 -- 100% small would mean all worms are changed to small.
 function DowngradeWormsInArea(surface, area, small_percent, medium_percent,
     big_percent)
-    
+
+
+
     local worm_types = {
         "small-worm-turret", "medium-worm-turret", "big-worm-turret",
         "behemoth-worm-turret"
     }
-    
+
+
+
     for _, entity in pairs(surface.find_entities_filtered {
         area = area,
         name = worm_types
     }) do
         
+        
         -- Roll a number between 0-100
         local rand_percent = math.random(0, 100)
         local worm_pos = entity.position
         local worm_name = entity.name
+        
         
         -- If number is less than small percent, change to small
         if (rand_percent <= small_percent) then
@@ -1455,6 +1616,7 @@ function DowngradeWormsInArea(surface, area, small_percent, medium_percent,
                 }
             end
             
+            
             -- ELSE If number is less than medium percent, change to small
         elseif (rand_percent <= medium_percent) then
             if (not (worm_name == "medium-worm-turret")) then
@@ -1466,6 +1628,7 @@ function DowngradeWormsInArea(surface, area, small_percent, medium_percent,
                 }
             end
             
+            
             -- ELSE If number is less than big percent, change to small
         elseif (rand_percent <= big_percent) then
             if (not (worm_name == "big-worm-turret")) then
@@ -1476,6 +1639,7 @@ function DowngradeWormsInArea(surface, area, small_percent, medium_percent,
                     force = game.forces.enemy
                 }
             end
+            
             
             -- ELSE ignore it.
         end
@@ -1501,14 +1665,18 @@ end
 -- Yeah kind of an unecessary wrapper, but makes my life easier to remember the worm types.
 function RemoveWormsInArea(surface, area, small, medium, big, behemoth)
     local worm_types = {}
-    
+
+
+
     if (small) then table.insert(worm_types, "small-worm-turret") end
     if (medium) then table.insert(worm_types, "medium-worm-turret") end
     if (big) then table.insert(worm_types, "big-worm-turret") end
     if (behemoth) then table.insert(worm_types, "behemoth-worm-turret") end
-    
+
+
+
     -- Destroy
-    if (TableLength(worm_types) > 0) then
+    if (table_size(worm_types) > 0) then
         for _, entity in pairs(surface.find_entities_filtered {
             area = area,
             name = worm_types
@@ -1579,13 +1747,19 @@ function DropEmptySteelChest(player)
 end
 
 function DropGravestoneChests(player)
-    
+
+
+
     local grave
     local count = 0
-    
+
+
+
     -- Make sure we save stuff we're holding in our hands.
     player.clean_cursor()
-    
+
+
+
     -- Loop through a players different inventories
     -- Put it all into a chest.
     -- If the chest is full, create a new chest.
@@ -1595,13 +1769,16 @@ function DropGravestoneChests(player)
         defines.inventory.character_vehicle, defines.inventory.character_trash
     } do
         
+        
         local inv = player.get_inventory(id)
+        
         
         -- No idea how inv can be nil sometimes...?
         if (inv ~= nil) then
             if ((#inv > 0) and not inv.is_empty()) then
                 for j = 1, #inv do
                     if inv[j].valid_for_read then
+                        
                         
                         -- Create a chest when counter is reset
                         if (count == 0) then
@@ -1615,8 +1792,10 @@ function DropGravestoneChests(player)
                         end
                         count = count + 1
                         
+                        
                         -- Copy the item stack into a chest slot.
                         grave_inv[count].set_stack(inv[j])
+                        
                         
                         -- Reset counter when chest is full
                         if (count == #grave_inv) then
@@ -1626,11 +1805,14 @@ function DropGravestoneChests(player)
                 end
             end
             
+            
             -- Clear the player inventory so we don't have duplicate items lying around.
             inv.clear()
         end
     end
-    
+
+
+
     if (grave ~= nil) then
         player.print(
         "Successfully dropped your items into a chest! Go get them quick!")
@@ -1642,17 +1824,24 @@ function DropGravestoneChestFromCorpse(corpse)
     if ((corpse == nil) or (corpse.character_corpse_player_index == nil)) then
         return
     end
-    
+
+
+
     local grave, grave_inv
     local count = 0
-    
+
+
+
     local inv = corpse.get_inventory(defines.inventory.character_corpse)
-    
+
+
+
     -- No idea how inv can be nil sometimes...?
     if (inv ~= nil) then
         if ((#inv > 0) and not inv.is_empty()) then
             for j = 1, #inv do
                 if inv[j].valid_for_read then
+                    
                     
                     -- Create a chest when counter is reset
                     if (count == 0) then
@@ -1665,8 +1854,10 @@ function DropGravestoneChestFromCorpse(corpse)
                     end
                     count = count + 1
                     
+                    
                     -- Copy the item stack into a chest slot.
                     grave_inv[count].set_stack(inv[j])
+                    
                     
                     -- Reset counter when chest is full
                     if (count == #grave_inv) then count = 0 end
@@ -1674,16 +1865,21 @@ function DropGravestoneChestFromCorpse(corpse)
             end
         end
         
+        
         -- Clear the player inventory so we don't have duplicate items lying around.
         -- inv.clear()
     end
-    
+
+
+
     if (grave ~= nil) and
     (game.players[corpse.character_corpse_player_index] ~= nil) then
         game.players[corpse.character_corpse_player_index].print(
         "Your corpse got eaten by biters! They kindly dropped your items into a chest! Go get them quick!")
     end
-    
+
+
+
 end
 
 --------------------------------------------------------------------------------
@@ -1697,10 +1893,14 @@ end
 function TransferItems(srcInv, destEntity, itemStack)
     -- Check if item is in srcInv
     if (srcInv.get_item_count(itemStack.name) == 0) then return -1 end
-    
+
+
+
     -- Check if can insert into destInv
     if (not destEntity.can_insert(itemStack)) then return -2 end
-    
+
+
+
     -- Insert items
     local itemsRemoved = srcInv.remove(itemStack)
     itemStack.count = itemsRemoved
@@ -1726,13 +1926,17 @@ end
 function AutofillTurret(player, turret)
     local mainInv = player.get_main_inventory()
     if (mainInv == nil) then return end
-    
+
+
+
     -- Attempt to transfer some ammo
     local ret = TransferItemMultipleTypes(mainInv, turret, {
         "uranium-rounds-magazine", "piercing-rounds-magazine",
         "firearm-magazine"
     }, AUTOFILL_TURRET_AMMO_QUANTITY)
-    
+
+
+
     -- Check the result and print the right text to inform the user what happened.
     if (ret > 0) then
         -- Inserted ammo successfully
@@ -1750,7 +1954,9 @@ end
 function AutoFillVehicle(player, vehicle)
     local mainInv = player.get_main_inventory()
     if (mainInv == nil) then return end
-    
+
+
+
     -- Attempt to transfer some fuel
     if ((vehicle.name == "car") or (vehicle.name == "tank") or
     (vehicle.name == "locomotive")) then
@@ -1758,7 +1964,9 @@ function AutoFillVehicle(player, vehicle)
             "nuclear-fuel", "rocket-fuel", "solid-fuel", "coal", "wood"
         }, 50)
     end
-    
+
+
+
     -- Attempt to transfer some ammo
     if ((vehicle.name == "car") or (vehicle.name == "tank")) then
         TransferItemMultipleTypes(mainInv, vehicle, {
@@ -1766,7 +1974,9 @@ function AutoFillVehicle(player, vehicle)
             "firearm-magazine"
         }, 100)
     end
-    
+
+
+
     -- Attempt to transfer some tank shells
     if (vehicle.name == "tank") then
         TransferItemMultipleTypes(mainInv, vehicle, {
@@ -1782,17 +1992,23 @@ end
 
 -- Enforce a circle of land, also adds trees in a ring around the area.
 function CreateCropCircle(surface, centerPos, chunkArea, tileRadius, fillTile)
-    
+
+
+
     local tileRadSqr = tileRadius ^ 2
-    
+
+
+
     local dirtTiles = {}
     for i = chunkArea.left_top.x, chunkArea.right_bottom.x, 1 do
         for j = chunkArea.left_top.y, chunkArea.right_bottom.y, 1 do
+            
             
             -- This ( X^2 + Y^2 ) is used to calculate if something
             -- is inside a circle area.
             local distVar = math.floor(
             (centerPos.x - i) ^ 2 + (centerPos.y - j) ^ 2)
+            
             
             -- Fill in all unexpected water in a circle
             if (distVar < tileRadSqr) then
@@ -1802,6 +2018,7 @@ function CreateCropCircle(surface, centerPos, chunkArea, tileRadius, fillTile)
                     table.insert(dirtTiles, {name = fillTile, position = {i, j}})
                 end
             end
+            
             
             -- Create a circle of trees around the spawn point.
             if ((distVar < tileRadSqr - 100) and (distVar > tileRadSqr - 500)) then
@@ -1813,7 +2030,9 @@ function CreateCropCircle(surface, centerPos, chunkArea, tileRadius, fillTile)
             end
         end
     end
-    
+
+
+
     surface.set_tiles(dirtTiles)
 end
 
@@ -1821,16 +2040,20 @@ end
 -- Enforce a square of land, with a tree border
 -- this is equivalent to the CreateCropCircle code
 function CreateCropOctagon(surface, centerPos, chunkArea, tileRadius, fillTile)
-    
+
+
+
     local dirtTiles = {}
     for i = chunkArea.left_top.x, chunkArea.right_bottom.x, 1 do
         for j = chunkArea.left_top.y, chunkArea.right_bottom.y, 1 do
+            
             
             local distVar1 = math.floor(math.max(math.abs(centerPos.x - i),
             math.abs(centerPos.y - j)))
             local distVar2 = math.floor(math.abs(centerPos.x - i) +
             math.abs(centerPos.y - j))
             local distVar = math.max(distVar1 * 1.15, distVar2 * 0.627 * 1.175);
+            
             
             -- Fill in all unexpected water in a circle
             if (distVar < tileRadius + 2) then
@@ -1840,6 +2063,7 @@ function CreateCropOctagon(surface, centerPos, chunkArea, tileRadius, fillTile)
                     table.insert(dirtTiles, {name = fillTile, position = {i, j}})
                 end
             end
+            
             
             -- Create a tree ring
             if ((distVar < tileRadius) and (distVar > tileRadius - 2)) then
@@ -1856,24 +2080,32 @@ end
 
 -- Add a circle of water
 function CreateMoat(surface, centerPos, chunkArea, tileRadius, moatTile, bridge)
-    
+
+
+
     local tileRadSqr = tileRadius ^ 2
-    
+
+
+
     local tiles = {}
     for i = chunkArea.left_top.x, chunkArea.right_bottom.x, 1 do
         for j = chunkArea.left_top.y, chunkArea.right_bottom.y, 1 do
+            
             
             if (bridge and
             ((j == centerPos.y - 1) or (j == centerPos.y) or
             (j == centerPos.y + 1))) then
                 
+                
             else
+                
                 
                 -- This ( X^2 + Y^2 ) is used to calculate if something
                 -- is inside a circle area.
                 local distVar = math.floor(
                 (centerPos.x - i) ^ 2 + (centerPos.y - j) ^
                 2)
+                
                 
                 -- Create a circle of water
                 if ((distVar < tileRadSqr +
@@ -1884,6 +2116,7 @@ function CreateMoat(surface, centerPos, chunkArea, tileRadius, moatTile, bridge)
                 end
             end
             
+            
             -- Enforce land inside the edges of the circle to make sure it's
             -- a clean transition
             -- if ((distVar <= tileRadSqr) and
@@ -1892,7 +2125,9 @@ function CreateMoat(surface, centerPos, chunkArea, tileRadius, moatTile, bridge)
             -- end
         end
     end
-    
+
+
+
     surface.set_tiles(tiles)
 end
 
@@ -1947,11 +2182,13 @@ function CreateHoldingPen(surface, chunkArea)
     ((chunkArea.left_top.y >= -(radiusTiles + 2 * CHUNK_SIZE)) and
     (chunkArea.left_top.y <= (radiusTiles + 2 * CHUNK_SIZE)))) then
         
+        
         -- Remove stuff
         RemoveAliensInArea(surface, chunkArea)
         RemoveInArea(surface, chunkArea, "tree")
         RemoveInArea(surface, chunkArea, "resource")
         RemoveInArea(surface, chunkArea, "cliff")
+        
         
         CreateCropCircle(surface, {x = 0, y = 0}, chunkArea, radiusTiles,
         "red-refined-concrete")
@@ -1999,9 +2236,13 @@ end
 function Autofill(event)
     local eventEntity = event.created_entity
     local player = game.players[event.player_index]
-    
+
+
+
     -- Make sure player isn't dead?
-    
+
+
+
     if (eventEntity.name == "gun-turret") then
         if not event.robot then
             local player = game.players[event.player_index]
@@ -2013,7 +2254,9 @@ function Autofill(event)
         --     global.oshared.iturrets[turret] = index
         -- end
     end
-    
+
+
+
     if ((eventEntity.name == "car") or (eventEntity.name == "tank") or
     (eventEntity.name == "locomotive")) then
         AutoFillVehicle(player, eventEntity)

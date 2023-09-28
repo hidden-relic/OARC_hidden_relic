@@ -13,7 +13,8 @@ local market = require("addons.market")
  |_ _|| \| ||_ _||_   _|
   | | | .` | | |   | |  
  |___||_|\_||___|  |_|  
-                        
+                
+
 --]]
 
 -- Initializes the globals used to track the special spawn and player
@@ -101,7 +102,8 @@ end
  | _ \| |     /_\\ \ / /| __|| _ \   / __|| _ \| __|/ __||_ _|| __||_ _|/ __|
  |  _/| |__  / _ \\ V / | _| |   /   \__ \|  _/| _|| (__  | | | _|  | || (__ 
  |_|  |____|/_/ \_\|_|  |___||_|_\   |___/|_|  |___|\___||___||_|  |___|\___|
-                                                                             
+                                                                     
+
 --]]
 
 -- When a new player is created, present the spawn options
@@ -149,7 +151,8 @@ end
  / __|| _ \ /_\\ \    / /| \| |   / __|| __||_   _|| | | || _ \
  \__ \|  _// _ \\ \/\/ / | .` |   \__ \| _|   | |  | |_| ||  _/
  |___/|_| /_/ \_\\_/\_/  |_|\_|   |___/|___|  |_|   \___/ |_|  
-                                                               
+                                                       
+
 --]]
 
 -- Add a spawn to the shared spawn global
@@ -190,7 +193,7 @@ function GenerateStartingResources(surface, pos)
         -- This places resources in a semi-circle
         -- Tweak in config.lua
         local angle_offset = rand_settings.angle_offset
-        local num_resources = TableLength(
+        local num_resources = table_size(
                                   global.ocfg.spawn_config.resource_tiles)
         local theta =
             ((rand_settings.angle_final - rand_settings.angle_offset) /
@@ -404,7 +407,8 @@ end
   / __|| || || | | || \| || |/ /    / __|| __|| \| || __|| _ \  /_\|_   _||_ _|/ _ \ | \| |
  | (__ | __ || |_| || .` || ' <    | (_ || _| | .` || _| |   / / _ \ | |   | || (_) || .` |
   \___||_||_| \___/ |_|\_||_|\_\    \___||___||_|\_||___||_|_\/_/ \_\|_|  |___|\___/ |_|\_|
-                                                                                           
+                                                                                   
+
 --]]
 
 -- Clear the spawn areas.
@@ -655,7 +659,8 @@ end
   / __|| |   | __|  /_\  | \| || | | || _ \
  | (__ | |__ | _|  / _ \ | .` || |_| ||  _/
   \___||____||___|/_/ \_\|_|\_| \___/ |_|  
-                                           
+                                   
+
 --]]
 
 function ResetPlayerAndDestroyForce(player)
@@ -925,7 +930,8 @@ end
  | || || __|| |   | _ \| __|| _ \   / __||_   _|| | | || __|| __|
  | __ || _| | |__ |  _/| _| |   /   \__ \  | |  | |_| || _| | _| 
  |_||_||___||____||_|  |___||_|_\   |___/  |_|   \___/ |_|  |_|  
-                                                              
+                                                      
+
 --]]
 
 -- Same as GetClosestPosFromTable but specific to global.ocore.uniqueSpawns
@@ -1080,8 +1086,8 @@ end
 -- Check a table to see if there are any players waiting to spawn
 -- Check if we are past the delayed tick count
 -- Spawn the players and remove them from the table.
-function DelayedSpawnOnTick()
-    if ((game.tick % (30)) == 1) then
+function DelayedSpawnOnTick(event)
+    if (event.tick > 10) then
         if ((global.ocore.delayedSpawns ~= nil) and
             (#global.ocore.delayedSpawns > 0)) then
             for i = #global.ocore.delayedSpawns, 1, -1 do
@@ -1112,7 +1118,7 @@ function SendPlayerToSpawn(player)
 end
 
 function SendPlayerToRandomSpawn(player)
-    local numSpawns = TableLength(global.ocore.uniqueSpawns)
+    local numSpawns = table_size(global.ocore.uniqueSpawns)
     local rndSpawn = math.random(0, numSpawns)
     local counter = 0
 
@@ -1136,7 +1142,8 @@ end
  | __|/ _ \ | _ \ / __|| __|   / __|| _ \| __|/ __||_ _|| __||_ _|/ __|
  | _|| (_) ||   /| (__ | _|    \__ \|  _/| _|| (__  | | | _|  | || (__ 
  |_|  \___/ |_|_\ \___||___|   |___/|_|  |___|\___||___||_|  |___|\___|
-                                                                       
+                                                               
+
 --]]
 
 function CreateForce(force_name)
@@ -1148,7 +1155,7 @@ function CreateForce(force_name)
         return CreateForce(force_name .. "_") -- Append a character to make the force name unique.
 
         -- Create a new force
-    elseif (TableLength(game.forces) < MAX_FORCES) then
+    elseif (table_size(game.forces) < MAX_FORCES) then
         newForce = game.create_force(force_name)
         newForce.max_successful_attempts_per_tick_per_construction_queue = 20
         newForce.max_failed_attempts_per_tick_per_construction_queue = 20
@@ -1212,7 +1219,8 @@ end
  \ \ / //_\  | \| ||_ _|| |   | |     /_\   / __|| _ \ /_\\ \    / /| \| |/ __|
   \ V // _ \ | .` | | | | |__ | |__  / _ \  \__ \|  _// _ \\ \/\/ / | .` |\__ \
    \_//_/ \_\|_|\_||___||____||____|/_/ \_\ |___/|_| /_/ \_\\_/\_/  |_|\_||___/
-                                                                               
+                                                                       
+
 --]]
 
 -- Function to generate some map_gen_settings.starting_points

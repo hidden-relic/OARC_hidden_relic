@@ -84,22 +84,24 @@ function M.on_init ()
 	global.playerstats = {}
 end
 
-function M.logStats()
-	-- log built entities and playtime of players
-	for _, p in pairs(game.players)
-	do
-		local pdat = global.playerstats[p.name]
-		if (pdat == nil) then
-			-- format of array: {entities placed, ticks played}
-			pdat = {0, p.online_time}
-			print ("JLOGGER: STATS: " .. p.name .. " " .. 0 .. " " .. p.online_time)
-			global.playerstats[p.name] = pdat
-		else
-			if (pdat[1] ~= 0 or (p.online_time - pdat[2]) ~= 0) then
-				print ("JLOGGER: STATS: " .. p.name .. " " .. pdat[1] .. " " .. (p.online_time - pdat[2]))
+function M.logStats(event)
+	if event.tick > 10 then
+		-- log built entities and playtime of players
+		for _, p in pairs(game.players)
+		do
+			local pdat = global.playerstats[p.name]
+			if (pdat == nil) then
+				-- format of array: {entities placed, ticks played}
+				pdat = {0, p.online_time}
+				print ("JLOGGER: STATS: " .. p.name .. " " .. 0 .. " " .. p.online_time)
+				global.playerstats[p.name] = pdat
+			else
+				if (pdat[1] ~= 0 or (p.online_time - pdat[2]) ~= 0) then
+					print ("JLOGGER: STATS: " .. p.name .. " " .. pdat[1] .. " " .. (p.online_time - pdat[2]))
+				end
+				-- update the data
+				global.playerstats[p.name] = {0, p.online_time}
 			end
-			-- update the data
-			global.playerstats[p.name] = {0, p.online_time}
 		end
 	end
 end
@@ -107,8 +109,10 @@ end
 function M.on_rocket_launched(e)
 	print ("JLOGGER: ROCKET: " .. "ROCKET LAUNCHED")
 end
-function M.checkEvolution()
-	print("JLOGGER: EVOLUTION: " .. string.format("%.4f", game.forces["enemy"].evolution_factor))
+function M.checkEvolution(event)
+	if event.tick > 10 then
+		print("JLOGGER: EVOLUTION: " .. string.format("%.4f", game.forces["enemy"].evolution_factor))
+	end
 end
 function M.on_trigger_fired_artillery(e)
 	print ("JLOGGER: ARTILLERY: " .. e.entity.name .. (e.source.name or "no source"))

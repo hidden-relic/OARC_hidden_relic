@@ -34,5 +34,8 @@
     "Lua.runtime.special": {
         "__object_name": "type"
     },
-    "Lua.runtime.plugin": "c:/Users/16038/AppData/Roaming/Code/User/workspaceStorage/b52fd9763127c8e6a1f0f135326c1adb/justarandomgeek.factoriomod-debug/sumneko-3rd/factorio/plugin.lua"
+    "Lua.runtime.plugin": "c:/Users/16038/AppData/Roaming/Code/User/workspaceStorage/b52fd9763127c8e6a1f0f135326c1adb/justarandomgeek.factoriomod-debug/sumneko-3rd/factorio/plugin.lua",
+    "Lua.diagnostics.disable": [
+        "missing-fields"
+    ]
 }
