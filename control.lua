@@ -50,7 +50,7 @@ require("lib/map_features")
 -- require("lib/oarc_buy")
 require("lib/auto_decon_miners")
 
--- local Profiler = require("scripts/profiler")
+local Profiler = require("scripts/profiler")
 
 -- For Philip. I currently do not use this and need to add proper support for
 -- commands like this in the future.
@@ -471,6 +471,7 @@ end)
 script.on_nth_tick(60*60*15, function(event) logger.logStats(event) end)
 
 script.on_event(defines.events.on_tick, function(event)
+    SharedPowerOnTick(event)
     -- if global.ocfg.enable_regrowth then
     --     RegrowthOnTick()
     -- end
