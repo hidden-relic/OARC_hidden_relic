@@ -806,12 +806,14 @@ function SharedChestsDistributeRequests()
     end
 end
 
+function SharedPowerOnTick()
+    -- Every tick we share power
+    SharedEnergyStoreInputOnTick()
+    SharedEnergyDistributeOutputOnTick()
+end
+
 function SharedChestsOnTick(event)
-    if event.tick > 10 then
-        
-        -- Every tick we share power
-        SharedEnergyStoreInputOnTick()
-        SharedEnergyDistributeOutputOnTick()
+    if event.tick > 10 then     
         SharedChestsDepositAll()
         SharedChestsTallyRequests()
         SharedChestsDistributeRequests()
