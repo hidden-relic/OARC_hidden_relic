@@ -812,24 +812,25 @@ function SharedPowerOnTick()
     SharedEnergyDistributeOutputOnTick()
 end
 
-function SharedChestsOnTick(event)
-    if event.tick > 10 then     
-        SharedChestsDepositAll()
-        SharedChestsTallyRequests()
-        SharedChestsDistributeRequests()
-        SharedChestsUpdateCombinators()
-        -- Every second, we check the input chests and deposit stuff.
-        -- if ((game.tick % (60)) == 37) then SharedChestsDepositAll() end
-        
-        -- Every second, we check the output chests for requests
-        -- if ((game.tick % (60)) == 38) then SharedChestsTallyRequests() end
-        
-        -- Every second, we distribute to the output chests.
-        -- if ((game.tick % (60)) == 39) then SharedChestsDistributeRequests() end
-        
-        -- Every second, we update our combinator status info.
-        -- if ((game.tick % (60)) == 40) then SharedChestsUpdateCombinators() end
-    end
+function SharedChestsOnTick()
+    -- if event.tick > 10 then     
+    --     SharedChestsDepositAll()
+    --     SharedChestsTallyRequests()
+    --     SharedChestsDistributeRequests()
+    --     SharedChestsUpdateCombinators()
+    SharedPowerOnTick()
+    -- Every second, we check the input chests and deposit stuff.
+    if ((game.tick % (60)) == 37) then SharedChestsDepositAll() end
+    
+    -- Every second, we check the output chests for requests
+    if ((game.tick % (60)) == 38) then SharedChestsTallyRequests() end
+    
+    -- Every second, we distribute to the output chests.
+    if ((game.tick % (60)) == 39) then SharedChestsDistributeRequests() end
+    
+    -- Every second, we update our combinator status info.
+    if ((game.tick % (60)) == 40) then SharedChestsUpdateCombinators() end
+    -- end
 end
 
 -- local ammo_table = {}

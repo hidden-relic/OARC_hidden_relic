@@ -668,14 +668,14 @@ function SpawnMagicBuilding(entity_name, position)
     return magic_building
 end
 
-function MagicFactoriesOnTick(event)
-    if event.tick > 10 then
+function MagicFactoriesOnTick()
+    -- if event.tick > 10 then
         MagicFurnaceOnTick()
         MagicChemplantOnTick()
         MagicRefineryOnTick()
         MagicAssemblerOnTick()
         MagicCentrifugeOnTick()
-    end
+    -- end
 end
 
 -- Some helpful math:
