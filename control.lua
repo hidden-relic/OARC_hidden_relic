@@ -459,7 +459,7 @@ end)
 script.on_nth_tick(600, function(event) market.on_tick(event) end)
 script.on_nth_tick(60, function(event)
     DelayedSpawnOnTick(event)
-    SharedChestsOnTick(event)
+    -- SharedChestsOnTick(event)
     TimeoutSpeechBubblesOnTick(event)
     RegrowthOnTick(event)
 end)
@@ -471,7 +471,7 @@ end)
 script.on_nth_tick(60*60*15, function(event) logger.logStats(event) end)
 
 script.on_event(defines.events.on_tick, function(event)
-    SharedPowerOnTick(event)
+    -- SharedPowerOnTick()
     -- if global.ocfg.enable_regrowth then
     --     RegrowthOnTick()
     -- end
@@ -497,11 +497,11 @@ script.on_event(defines.events.on_tick, function(event)
     -- end
     -- flying_tags.update()
     
-    -- if global.ocfg.enable_chest_sharing then SharedChestsOnTick() end
+    if global.ocfg.enable_chest_sharing then SharedChestsOnTick() end
     
-    -- if (global.ocfg.enable_chest_sharing and global.ocfg.enable_magic_factories) then
-    --     MagicFactoriesOnTick()
-    -- end
+    if (global.ocfg.enable_chest_sharing and global.ocfg.enable_magic_factories) then
+        MagicFactoriesOnTick()
+    end
     
     -- TimeoutSpeechBubblesOnTick()
     FadeoutRenderOnTick()
