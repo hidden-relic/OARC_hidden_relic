@@ -262,7 +262,7 @@ function DisplaySpawnOptions(player)
     end
     local spawn_distance_notes={"oarc-spawn-dist-notes", global.ocfg.near_dist_start, global.ocfg.near_dist_end, global.ocfg.far_dist_start, global.ocfg.far_dist_end}
     AddLabel(sGui, "note_lbl1", spawn_distance_notes, my_note_style)
-    player.opened = player.gui.screen.spawn_opts
+    -- player.opened = player.gui.screen.spawn_opts
 end
 
 
