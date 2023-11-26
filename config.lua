@@ -15,7 +15,7 @@ DEBUG_MODE = false
 -- This stuff is shown in the welcome GUI and Info panel. Make sure it's valid.
 WELCOME_MSG_TITLE = "Welcome to AwF server with OARC!"
 WELCOME_MSG = "Hi, Welcome to the All Weekend Factorio server, enjoy your stay here!" -- Printed to player on join as well.
-SERVER_MSG = "Rules: Be polite. Ask before changing other players's stuff. Have fun!\n"..
+SERVER_MSG = "Rules: Be polite. the use of any other player's base, regardless of that player's activity, including their factory production, their stored items, or their resource plots, without the consent of that player is not allowed. players should use the shared storage system to receive items from other players unless explicitly stated.\n"..
 "This server is running a custom scenario that allows individual starting areas on the map."
 
 SCENARIO_INFO_MSG = "Latest updates in this scenario version:\n"..
@@ -459,11 +459,11 @@ AUTOFILL_TURRET_AMMO_QUANTITY = 20
 --------------------------------------------------------------------------------
 -- Enable this to disable deconstructing from map view, and setting a time limit
 -- on ghost placements.
-ENABLE_ANTI_GRIEFING = false
+ENABLE_ANTI_GRIEFING = true
 
 -- Makes blueprint ghosts dissapear if they have been placed longer than this
 -- ONLY has an effect if ENABLE_ANTI_GRIEFING is true!
-GHOST_TIME_TO_LIVE = 10 * TICKS_PER_MINUTE
+GHOST_TIME_TO_LIVE = 60 * TICKS_PER_MINUTE
 
 -- I like keeping this off... set to true if you want to shoot your own chests
 -- and stuff.
