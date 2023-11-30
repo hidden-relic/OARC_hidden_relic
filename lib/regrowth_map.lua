@@ -263,38 +263,38 @@ end
 -- This is the main work function, it checks a single chunk in the list
 -- per tick. It works according to the rules listed in the header of this
 -- file.
-function RegrowthOnTick(event)
-    if event.tick > 10 then
-        
-        -- Every half a second, refresh all chunks near a single player
-        -- Cyles through all players. Tick is offset by 2
+function RegrowthOnTick()
+    
+    -- Every half a second, refresh all chunks near a single player
+    -- Cyles through all players. Tick is offset by 2
+    if ((game.tick % (30)) == 2) then
         RefreshPlayerArea()
-        
-        -- Every tick, check a few points in the 2d array of the only active surface According to /measured-command this
-        -- shouldn't take more than 0.1ms on average
-        for i=1,10 do
-            RegrowthSingleStepArray()
+    end
+    
+    -- Every tick, check a few points in the 2d array of the only active surface According to /measured-command this
+    -- shouldn't take more than 0.1ms on average
+    for i=1,20 do
+        RegrowthSingleStepArray()
+    end
+    
+    if (not global.world_eater_disable) then
+        WorldEaterSingleStep()
+    end
+    
+    -- Allow enable/disable of auto cleanup, can change during runtime.
+    local interval_ticks = global.rg.timeout_ticks
+    -- Send a broadcast warning before it happens.
+    if ((game.tick % interval_ticks) == interval_ticks-(60*30 + 1)) then
+        if (#global.rg.removal_list > 100) then
+            SendBroadcastMsg("Map cleanup in 30 seconds... Unused and old map chunks will be deleted!")
         end
-        
-        if (not global.world_eater_disable) then
-            WorldEaterSingleStep()
-        end
-        
-        -- Allow enable/disable of auto cleanup, can change during runtime.
-        local interval_ticks = global.rg.timeout_ticks
-        -- Send a broadcast warning before it happens.
-        if (game.tick % interval_ticks) < interval_ticks-(60*30) and (game.tick % interval_ticks) >= interval_ticks-(60*30+1) then
-            if (#global.rg.removal_list > 100) then
-                SendBroadcastMsg("Map cleanup soon... Unused and old map chunks will be deleted!")
-            end
-        end
-        
-        -- Delete all listed chunks across all active surfaces
-        if ((game.tick % interval_ticks) >= interval_ticks-1) then
-            if (#global.rg.removal_list > 100) then
-                OarcRegrowthRemoveAllChunks()
-                SendBroadcastMsg("Map cleanup done, sorry for your loss.")
-            end
+    end
+    
+    -- Delete all listed chunks across all active surfaces
+    if ((game.tick % interval_ticks) == interval_ticks-1) then
+        if (#global.rg.removal_list > 100) then
+            OarcRegrowthRemoveAllChunks()
+            SendBroadcastMsg("Map cleanup done, sorry for your loss.")
         end
     end
 end
