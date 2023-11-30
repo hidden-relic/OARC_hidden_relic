@@ -472,9 +472,10 @@ script.on_nth_tick(60*60*15, function(event) logger.logStats(event) end)
 
 script.on_event(defines.events.on_tick, function(event)
     -- SharedPowerOnTick()
-    -- if global.ocfg.enable_regrowth then
-    --     RegrowthOnTick()
-    -- end
+    if global.ocfg.enable_regrowth then
+        RegrowthOnTick()
+        RegrowthForceRemovalOnTick()
+    end
     
     
     -- DelayedSpawnOnTick()
