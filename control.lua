@@ -248,11 +248,13 @@ script.on_event(defines.events.on_gui_click, function(event)
                 end
             end
         end
-        if global.markets[player.name].shared_buttons and global.markets[player.name].shared_buttons[event.element.name] then
-            local button =
-            global.markets[player.name].shared_buttons[event.element.name]
-            if market.shared_func_table[button.name](player) then
-                market.upgrade_shared(player, button.name)
+        if global.ocfg.enable_shared_purchasing == true then
+            if global.markets[player.name].shared_buttons and global.markets[player.name].shared_buttons[event.element.name] then
+                local button =
+                global.markets[player.name].shared_buttons[event.element.name]
+                if market.shared_func_table[button.name](player) then
+                    market.upgrade_shared(player, button.name)
+                end
             end
         end
         if global.markets[player.name].special_buttons and global.markets[player.name].special_buttons[event.element.name] then
