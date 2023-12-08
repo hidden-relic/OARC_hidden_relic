@@ -18,15 +18,8 @@ WELCOME_MSG = "Hi, Welcome to the All Weekend Factorio server, enjoy your stay h
 SERVER_MSG = "Rules: Be polite. the use of any other player's base, regardless of that player's activity, including their factory production, their stored items, or their resource plots, without the consent of that player is not allowed. players should use the shared storage system to receive items from other players unless explicitly stated.\n"..
 "This server is running a custom scenario that allows individual starting areas on the map."
 
-SCENARIO_INFO_MSG = "Latest updates in this scenario version:\n"..
-"Market system :: Players can now buy items and upgrades for coin.\n"..
-"Coin is acquired by killing bugs or by using the Green Chest\n"..
-"Green Chest :: Players can now sell items for coin by placing them inside the Green Chest. \n"..
-"Player Bonuses :: Players will slowly gain bonuses to their\n"..
-"player crafting/running/mining speed,\n"..
-"their inventory and trash capacity, their reach distances,\n"..
-"and their robot's speed, battery, and inventory size over time.\n"..
-"Death Markers :: A map marker and a line from your character to your corpse will be shown upon death.\n"..
+SCENARIO_INFO_MSG = "Players gain bonuses to their player crafting/running/mining speed, their inventory and trash capacity, their reach distances, and their robot's speed, battery, and inventory size over time.\n"..
+"Death Markers, Market System\n"..
 "Item & energy sharing system! No attacks on your base while you are offline!\n"..
 "This scenario gives you and/or your friends your own starting area.\n"..
 "You can be on the main team or your own. All teams are friendly.\n"..
