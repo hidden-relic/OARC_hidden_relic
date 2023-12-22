@@ -428,6 +428,7 @@ script.on_event(defines.events.on_player_respawned, function(event)
         GivePlayerLongReach(game.players[event.player_index])
     end
     deathmarkers.playerRespawned(event)
+    UpdateBuffs(game.players[event.player_index])
 end)
 
 script.on_event(defines.events.on_player_left_game, function(event)

@@ -143,9 +143,9 @@ local function UpdateForceBuffs(player, buff)
     if player.online_time > 12*TICKS_PER_HOUR then
         multiplier = (player.online_time / TICKS_PER_HOUR) * (buff.base_multiplier/2)
     end
-
-
-
+    
+    
+    
     -- FlyingText(text .. tools.round(multiplier, 3), player.position, color,
     -- player.surface)
     player.force[buff.modifier] = old_data + multiplier
@@ -156,13 +156,13 @@ function UpdatePlayerBuffs(player, buff)
     -- buff.color,
     -- player[buff.modifier],
     -- buff.base_multiplier
-
-
-
+    
+    
+    
     local multiplier = (player.online_time / TICKS_PER_HOUR) * buff.base_multiplier
-
-
-
+    
+    
+    
     -- FlyingText(text .. tools.round((multiplier - buff.modifier), 3), player.position,
     -- color, player.surface)
     player[buff.modifier] = multiplier
@@ -382,6 +382,21 @@ function UpdatePlayerBuffsOnTick(event)
         end
     end
 end
+
+function UpdateBuffs(player)
+    local player = tools.get_player(player)
+    for _, bonus in pairs(bonuses_data) do
+        if bonus.force then
+            if player.character and player.character.valid then
+                UpdateForceBuffs(player, bonus)
+            end
+        else
+            if player and player.character and player.character.valid then
+                UpdatePlayerBuffs(player, bonus)
+            end
+        end
+    end
+end
 -- local function buff_prefix(i)
 --     return "[font=default-semibold][color=" .. gradient[i].r .. ", " ..
 --     gradient[i].g .. ", " .. gradient[i].b .. "]"
@@ -552,15 +567,15 @@ function GetGPStext(pos) return "[gps=" .. pos.x .. "," .. pos.y .. "]" end
 
 -- Requires having an on_tick handler.
 function DisplaySpeechBubble(player, text, timeout_secs)
-
-
-
+    
+    
+    
     if (global.oarc_speech_bubbles == nil) then
         global.oarc_speech_bubbles = {}
     end
-
-
-
+    
+    
+    
     if (player and player.character) then
         local sp = player.surface.create_entity {
             name = "compi-speech-bubble",
@@ -745,9 +760,9 @@ function getDistance(posA, posB)
     -- Get the length for each of the components x and y
     local xDist = posB.x - posA.x
     local yDist = posB.y - posA.y
-
-
-
+    
+    
+    
     return math.sqrt((xDist ^ 2) + (yDist ^ 2))
 end
 
@@ -755,22 +770,22 @@ function getCenter(posA, posB)
     -- Simple function to get center between two positions.
     local xCenter = (posA.x + posB.x) / 2
     local yCenter = (posA.y + posB.y) / 2
-
-
-
+    
+    
+    
     return {x = xCenter, y = yCenter}
 end
 
 -- Given a table of positions, returns key for closest to given pos.
 function GetClosestPosFromTable(pos, pos_table)
-
-
-
+    
+    
+    
     local closest_dist = nil
     local closest_key = nil
-
-
-
+    
+    
+    
     for k, p in pairs(pos_table) do
         local new_dist = getDistance(pos, p)
         if (closest_dist == nil) then
@@ -781,16 +796,16 @@ function GetClosestPosFromTable(pos, pos_table)
             closest_key = k
         end
     end
-
-
-
+    
+    
+    
     if (closest_key == nil) then
         log("GetClosestPosFromTable ERROR - None found?")
         return nil
     end
-
-
-
+    
+    
+    
     return pos_table[closest_key]
 end
 
@@ -820,9 +835,9 @@ function GivePlayerStarterItems(player)
     for name, count in pairs(PLAYER_SPAWN_START_ITEMS) do
         player.insert({name = name, count = count})
     end
-
-
-
+    
+    
+    
     if global.ocfg.enable_power_armor_start then
         GiveQuickStartPowerArmor(player)
     elseif global.ocfg.enable_modular_armor_start then
@@ -833,9 +848,9 @@ end
 -- Modular armor quick start
 function GiveQuickStartModularArmor(player)
     player.insert {name = "modular-armor", count = 1}
-
-
-
+    
+    
+    
     if player and player.get_inventory(defines.inventory.character_armor) ~= nil and
     player.get_inventory(defines.inventory.character_armor)[1] ~= nil then
         local p_armor =
@@ -855,9 +870,9 @@ end
 -- Cheater's quick start
 function GiveQuickStartPowerArmor(player)
     player.insert {name = "power-armor", count = 1}
-
-
-
+    
+    
+    
     if player and player.get_inventory(defines.inventory.character_armor) ~= nil and
     player.get_inventory(defines.inventory.character_armor)[1] ~= nil then
         local p_armor =
@@ -882,9 +897,9 @@ end
 
 function GivePowerArmorMK2(player)
     player.insert {name = "power-armor-mk2", count = 1}
-
-
-
+    
+    
+    
     if player and player.get_inventory(defines.inventory.character_armor) ~= nil and
     player.get_inventory(defines.inventory.character_armor)[1] ~= nil then
         local p_armor =
@@ -1028,9 +1043,9 @@ end
 function RenderPath(path, ttl, players)
     local last_pos = path[1].position
     local color = {r = 1, g = 0, b = 0, a = 0.5}
-
-
-
+    
+    
+    
     for i, v in pairs(path) do
         if (i ~= 1) then
             
@@ -1095,9 +1110,9 @@ function ClearNearbyEnemies(pos, safeDist, surface)
         left_top = {x = pos.x - safeDist, y = pos.y - safeDist},
         right_bottom = {x = pos.x + safeDist, y = pos.y + safeDist}
     }
-
-
-
+    
+    
+    
     for _, entity in pairs(surface.find_entities_filtered {
         area = safeArea,
         force = "enemy"
@@ -1109,9 +1124,9 @@ end
 function FindMapEdge(directionVec, surface)
     local position = {x = 0, y = 0}
     local chunkPos = {x = 0, y = 0}
-
-
-
+    
+    
+    
     -- Keep checking chunks in the direction of the vector
     while (true) do
         
@@ -1143,9 +1158,9 @@ function FindMapEdge(directionVec, surface)
             end
         end
     end
-
-
-
+    
+    
+    
     -- log("spawn: x=" .. position.x .. ", y=" .. position.y)
     return position
 end
@@ -1155,19 +1170,19 @@ end
 function FindUngeneratedCoordinates(minDistChunks, maxDistChunks, surface)
     local position = {x = 0, y = 0}
     local chunkPos = {x = 0, y = 0}
-
-
-
+    
+    
+    
     local maxTries = 100
     local tryCounter = 0
-
-
-
+    
+    
+    
     local minDistSqr = minDistChunks ^ 2
     local maxDistSqr = maxDistChunks ^ 2
-
-
-
+    
+    
+    
     while (true) do
         chunkPos.x = math.random(0, maxDistChunks) * RandomNegPos()
         chunkPos.y = math.random(0, maxDistChunks) * RandomNegPos()
@@ -1197,9 +1212,9 @@ function FindUngeneratedCoordinates(minDistChunks, maxDistChunks, surface)
             break -- SUCCESS
         end
     end
-
-
-
+    
+    
+    
     log("spawn: x=" .. position.x .. ", y=" .. position.y)
     return position
 end
@@ -1234,9 +1249,9 @@ end
 -- Get an area given a position and distance.
 -- Square length = 2x distance
 function GetAreaAroundPos(pos, dist)
-
-
-
+    
+    
+    
     return {
         left_top = {x = pos.x - dist, y = pos.y - dist},
         right_bottom = {x = pos.x + dist, y = pos.y + dist}
@@ -1309,21 +1324,21 @@ end
 
 -- For easy local testing of map gen settings. Just set what you want and uncomment usage in CreateGameSurface!
 function SurfaceSettingsHelper(settings)
-
-
-
+    
+    
+    
     settings.terrain_segmentation = 4
     settings.water = 3
     settings.starting_area = 0
-
-
-
+    
+    
+    
     local r_freq = 1.20
     local r_rich = 5.00
     local r_size = 0.18
-
-
-
+    
+    
+    
     settings.autoplace_controls["coal"].frequency = r_freq
     settings.autoplace_controls["coal"].richness = r_rich
     settings.autoplace_controls["coal"].size = r_size
@@ -1342,44 +1357,44 @@ function SurfaceSettingsHelper(settings)
     settings.autoplace_controls["uranium-ore"].frequency = r_freq * 0.5
     settings.autoplace_controls["uranium-ore"].richness = r_rich
     settings.autoplace_controls["uranium-ore"].size = r_size
-
-
-
+    
+    
+    
     settings.autoplace_controls["enemy-base"].frequency = 0.80
     settings.autoplace_controls["enemy-base"].richness = 0.70
     settings.autoplace_controls["enemy-base"].size = 0.70
-
-
-
+    
+    
+    
     settings.autoplace_controls["trees"].frequency = 1.00
     settings.autoplace_controls["trees"].richness = 1.00
     settings.autoplace_controls["trees"].size = 1.00
-
-
-
+    
+    
+    
     settings.cliff_settings.cliff_elevation_0 = 3
     settings.cliff_settings.cliff_elevation_interval = 200
     settings.cliff_settings.richness = 3
-
-
-
+    
+    
+    
     settings.property_expression_names["control-setting:aux:bias"] = "0.00"
     settings.property_expression_names["control-setting:aux:frequency:multiplier"] =
     "5.00"
     settings.property_expression_names["control-setting:moisture:bias"] = "0.40"
     settings.property_expression_names["control-setting:moisture:frequency:multiplier"] =
     "50"
-
-
-
+    
+    
+    
     return settings
 end
 
 -- Create another surface so that we can modify map settings and not have a screwy nauvis map.
 function CreateGameSurface()
-
-
-
+    
+    
+    
     if (GAME_SURFACE_NAME ~= "nauvis") then
         
         
@@ -1428,9 +1443,9 @@ function CreateGameSurface()
         s.morning = 0.525
         s.dawn = 0.75
     end
-
-
-
+    
+    
+    
     -- Add surface and safe areas
     if global.ocfg.enable_regrowth then
         RegrowthMarkAreaSafeGivenChunkPos({x = 0, y = 0}, 4, true)
@@ -1438,13 +1453,13 @@ function CreateGameSurface()
 end
 
 function CreateTileArrow(surface, pos, type)
-
-
-
+    
+    
+    
     local tiles = {}
-
-
-
+    
+    
+    
     if (type == "LEFT") then
         table.insert(tiles,
         {name = "hazard-concrete-left", position = {pos.x, pos.y}})
@@ -1510,21 +1525,21 @@ function CreateTileArrow(surface, pos, type)
             position = {pos.x + 3, pos.y + 1}
         })
     end
-
-
-
+    
+    
+    
     surface.set_tiles(tiles, true)
 end
 
 -- Allowed colors: red, green, blue, orange, yellow, pink, purple, black, brown, cyan, acid
 function CreateFixedColorTileArea(surface, area, color)
-
-
-
+    
+    
+    
     local tiles = {}
-
-
-
+    
+    
+    
     for i = area.left_top.x, area.right_bottom.x do
         for j = area.left_top.y, area.right_bottom.y do
             table.insert(tiles, {
@@ -1533,17 +1548,17 @@ function CreateFixedColorTileArea(surface, area, color)
             })
         end
     end
-
-
-
+    
+    
+    
     surface.set_tiles(tiles, true)
 end
 
 -- Find closest player-owned entity
 function FindClosestPlayerOwnedEntity(player, name, radius)
-
-
-
+    
+    
+    
     local entities = player.surface.find_entities_filtered {
         position = player.position,
         radius = radius,
@@ -1551,9 +1566,9 @@ function FindClosestPlayerOwnedEntity(player, name, radius)
         force = player.force
     }
     if (not entities or (#entities == 0)) then return nil end
-
-
-
+    
+    
+    
     return player.surface.get_closest(player.position, entities)
 end
 
@@ -1583,16 +1598,16 @@ end
 -- 100% small would mean all worms are changed to small.
 function DowngradeWormsInArea(surface, area, small_percent, medium_percent,
     big_percent)
-
-
-
+    
+    
+    
     local worm_types = {
         "small-worm-turret", "medium-worm-turret", "big-worm-turret",
         "behemoth-worm-turret"
     }
-
-
-
+    
+    
+    
     for _, entity in pairs(surface.find_entities_filtered {
         area = area,
         name = worm_types
@@ -1665,16 +1680,16 @@ end
 -- Yeah kind of an unecessary wrapper, but makes my life easier to remember the worm types.
 function RemoveWormsInArea(surface, area, small, medium, big, behemoth)
     local worm_types = {}
-
-
-
+    
+    
+    
     if (small) then table.insert(worm_types, "small-worm-turret") end
     if (medium) then table.insert(worm_types, "medium-worm-turret") end
     if (big) then table.insert(worm_types, "big-worm-turret") end
     if (behemoth) then table.insert(worm_types, "behemoth-worm-turret") end
-
-
-
+    
+    
+    
     -- Destroy
     if (table_size(worm_types) > 0) then
         for _, entity in pairs(surface.find_entities_filtered {
@@ -1747,19 +1762,19 @@ function DropEmptySteelChest(player)
 end
 
 function DropGravestoneChests(player)
-
-
-
+    
+    
+    
     local grave
     local count = 0
-
-
-
+    
+    
+    
     -- Make sure we save stuff we're holding in our hands.
     player.clean_cursor()
-
-
-
+    
+    
+    
     -- Loop through a players different inventories
     -- Put it all into a chest.
     -- If the chest is full, create a new chest.
@@ -1810,9 +1825,9 @@ function DropGravestoneChests(player)
             inv.clear()
         end
     end
-
-
-
+    
+    
+    
     if (grave ~= nil) then
         player.print(
         "Successfully dropped your items into a chest! Go get them quick!")
@@ -1824,18 +1839,18 @@ function DropGravestoneChestFromCorpse(corpse)
     if ((corpse == nil) or (corpse.character_corpse_player_index == nil)) then
         return
     end
-
-
-
+    
+    
+    
     local grave, grave_inv
     local count = 0
-
-
-
+    
+    
+    
     local inv = corpse.get_inventory(defines.inventory.character_corpse)
-
-
-
+    
+    
+    
     -- No idea how inv can be nil sometimes...?
     if (inv ~= nil) then
         if ((#inv > 0) and not inv.is_empty()) then
@@ -1869,17 +1884,17 @@ function DropGravestoneChestFromCorpse(corpse)
         -- Clear the player inventory so we don't have duplicate items lying around.
         -- inv.clear()
     end
-
-
-
+    
+    
+    
     if (grave ~= nil) and
     (game.players[corpse.character_corpse_player_index] ~= nil) then
         game.players[corpse.character_corpse_player_index].print(
         "Your corpse got eaten by biters! They kindly dropped your items into a chest! Go get them quick!")
     end
-
-
-
+    
+    
+    
 end
 
 --------------------------------------------------------------------------------
@@ -1893,14 +1908,14 @@ end
 function TransferItems(srcInv, destEntity, itemStack)
     -- Check if item is in srcInv
     if (srcInv.get_item_count(itemStack.name) == 0) then return -1 end
-
-
-
+    
+    
+    
     -- Check if can insert into destInv
     if (not destEntity.can_insert(itemStack)) then return -2 end
-
-
-
+    
+    
+    
     -- Insert items
     local itemsRemoved = srcInv.remove(itemStack)
     itemStack.count = itemsRemoved
@@ -1926,17 +1941,17 @@ end
 function AutofillTurret(player, turret)
     local mainInv = player.get_main_inventory()
     if (mainInv == nil) then return end
-
-
-
+    
+    
+    
     -- Attempt to transfer some ammo
     local ret = TransferItemMultipleTypes(mainInv, turret, {
         "uranium-rounds-magazine", "piercing-rounds-magazine",
         "firearm-magazine"
     }, AUTOFILL_TURRET_AMMO_QUANTITY)
-
-
-
+    
+    
+    
     -- Check the result and print the right text to inform the user what happened.
     if (ret > 0) then
         -- Inserted ammo successfully
@@ -1954,9 +1969,9 @@ end
 function AutoFillVehicle(player, vehicle)
     local mainInv = player.get_main_inventory()
     if (mainInv == nil) then return end
-
-
-
+    
+    
+    
     -- Attempt to transfer some fuel
     if ((vehicle.name == "car") or (vehicle.name == "tank") or
     (vehicle.name == "locomotive")) then
@@ -1964,9 +1979,9 @@ function AutoFillVehicle(player, vehicle)
             "nuclear-fuel", "rocket-fuel", "solid-fuel", "coal", "wood"
         }, 50)
     end
-
-
-
+    
+    
+    
     -- Attempt to transfer some ammo
     if ((vehicle.name == "car") or (vehicle.name == "tank")) then
         TransferItemMultipleTypes(mainInv, vehicle, {
@@ -1974,9 +1989,9 @@ function AutoFillVehicle(player, vehicle)
             "firearm-magazine"
         }, 100)
     end
-
-
-
+    
+    
+    
     -- Attempt to transfer some tank shells
     if (vehicle.name == "tank") then
         TransferItemMultipleTypes(mainInv, vehicle, {
@@ -1992,13 +2007,13 @@ end
 
 -- Enforce a circle of land, also adds trees in a ring around the area.
 function CreateCropCircle(surface, centerPos, chunkArea, tileRadius, fillTile)
-
-
-
+    
+    
+    
     local tileRadSqr = tileRadius ^ 2
-
-
-
+    
+    
+    
     local dirtTiles = {}
     for i = chunkArea.left_top.x, chunkArea.right_bottom.x, 1 do
         for j = chunkArea.left_top.y, chunkArea.right_bottom.y, 1 do
@@ -2030,9 +2045,9 @@ function CreateCropCircle(surface, centerPos, chunkArea, tileRadius, fillTile)
             end
         end
     end
-
-
-
+    
+    
+    
     surface.set_tiles(dirtTiles)
 end
 
@@ -2040,9 +2055,9 @@ end
 -- Enforce a square of land, with a tree border
 -- this is equivalent to the CreateCropCircle code
 function CreateCropOctagon(surface, centerPos, chunkArea, tileRadius, fillTile)
-
-
-
+    
+    
+    
     local dirtTiles = {}
     for i = chunkArea.left_top.x, chunkArea.right_bottom.x, 1 do
         for j = chunkArea.left_top.y, chunkArea.right_bottom.y, 1 do
@@ -2080,13 +2095,13 @@ end
 
 -- Add a circle of water
 function CreateMoat(surface, centerPos, chunkArea, tileRadius, moatTile, bridge)
-
-
-
+    
+    
+    
     local tileRadSqr = tileRadius ^ 2
-
-
-
+    
+    
+    
     local tiles = {}
     for i = chunkArea.left_top.x, chunkArea.right_bottom.x, 1 do
         for j = chunkArea.left_top.y, chunkArea.right_bottom.y, 1 do
@@ -2125,9 +2140,9 @@ function CreateMoat(surface, centerPos, chunkArea, tileRadius, moatTile, bridge)
             -- end
         end
     end
-
-
-
+    
+    
+    
     surface.set_tiles(tiles)
 end
 
@@ -2236,13 +2251,13 @@ end
 function Autofill(event)
     local eventEntity = event.created_entity
     local player = game.players[event.player_index]
-
-
-
+    
+    
+    
     -- Make sure player isn't dead?
-
-
-
+    
+    
+    
     if (eventEntity.name == "gun-turret") then
         if not event.robot then
             local player = game.players[event.player_index]
@@ -2254,9 +2269,9 @@ function Autofill(event)
         --     global.oshared.iturrets[turret] = index
         -- end
     end
-
-
-
+    
+    
+    
     if ((eventEntity.name == "car") or (eventEntity.name == "tank") or
     (eventEntity.name == "locomotive")) then
         AutoFillVehicle(player, eventEntity)
