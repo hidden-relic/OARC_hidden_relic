@@ -36,6 +36,8 @@ function OarcAutoDeconOnTick(event)
             end
             if (event.entity and event.entity.position and event.entity.surface) then
                 
+                if event.entity.name == "uranium-ore" then return end
+                
                 
                 local nearby_miners = event.entity.surface.find_entities_filtered{
                     area = {
