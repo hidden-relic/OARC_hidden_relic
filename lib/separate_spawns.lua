@@ -915,6 +915,8 @@ function TransferOwnershipOfSharedSpawn(prevOwnerName, newOwnerName)
         global.ocore.sharedSpawns[prevOwnerName]
     global.ocore.sharedSpawns[newOwnerName].openAccess = false
     global.ocore.sharedSpawns[prevOwnerName] = nil
+    global.markets[newOwnerName].sell_chest = global.markets[prevOwnerName].sell_chest
+    global.markets[prevOwnerName].sell_chest = nil
 
     -- Transfer the unique spawn global
     global.ocore.uniqueSpawns[newOwnerName] =
