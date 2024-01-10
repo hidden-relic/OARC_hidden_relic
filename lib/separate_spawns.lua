@@ -864,7 +864,7 @@ function CleanupPlayerGlobals(playerName)
         if (#teamMates >= 1) then
             local newOwnerName = table.remove(teamMates) -- Remove 1 to use as new owner.
             TransferOwnershipOfSharedSpawn(playerName, newOwnerName)
-            SendBroadcastMsg(playerName .. "has left so " .. newOwnerName ..
+            SendBroadcastMsg(playerName .. " has left so " .. newOwnerName ..
                                  " now owns their base.")
         else
             global.ocore.sharedSpawns[playerName] = nil
@@ -915,8 +915,12 @@ function TransferOwnershipOfSharedSpawn(prevOwnerName, newOwnerName)
         global.ocore.sharedSpawns[prevOwnerName]
     global.ocore.sharedSpawns[newOwnerName].openAccess = false
     global.ocore.sharedSpawns[prevOwnerName] = nil
-    global.markets[newOwnerName].sell_chest = global.markets[prevOwnerName].sell_chest
-    global.markets[prevOwnerName].sell_chest = nil
+    local x_dist = global.ocfg.spawn_config.resource_rand_pos_settings
+                           .radius
+        market.create_sell_chest(game.players[newOwnerName], {
+            x = global.ocore.sharedSpawns[newOwnerName].position.x + x_dist - 3,
+            y = global.ocore.sharedSpawns[newOwnerName].position.y - 1
+        })
 
     -- Transfer the unique spawn global
     global.ocore.uniqueSpawns[newOwnerName] =
