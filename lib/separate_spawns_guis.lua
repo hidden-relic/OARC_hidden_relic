@@ -835,17 +835,16 @@ function CreateSpawnCtrlGuiTab(tab_container, player)
                     end
             
 
-                    -- Spawn the player
                     local joiningPlayer = game.players[joinQueuePlayerChoice]
-                    local newSpawn = FindUngeneratedCoordinates(global.ocfg.near_dist_start,global.ocfg.far_dist_end, joiningPlayer.surface)
-                    ChangePlayerSpawn(joiningPlayer, newSpawn)
-                    QueuePlayerForDelayedSpawn(joiningPlayer.name, newSpawn, moatChoice, global.ocfg.enable_vanilla_spawns)
+                    ChangePlayerSpawn(joiningPlayer, global.ocore.sharedSpawns[player.name].position)
+                    SendPlayerToSpawn(joiningPlayer)
+                    GivePlayerStarterItems(joiningPlayer)
                     table.insert(global.ocore.sharedSpawns[player.name].players, joiningPlayer.name)
                     joiningPlayer.force = game.players[player.name].force
             
 
                     -- -- Render some welcoming text...
-                    -- DisplayWelcomeGroundTextAtSpawn(joiningPlayer, global.ocore.sharedSpawns[player.name].position)
+                    DisplayWelcomeGroundTextAtSpawn(joiningPlayer, global.ocore.sharedSpawns[player.name].position)
             
 
                     -- Unlock spawn control gui tab
