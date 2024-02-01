@@ -139,7 +139,7 @@ M.upgrade_cost_table = {
     ["tank-flame"] = 0.2,
     ["rocketry"] = 0.2,
     ["laser"] = 0.2,
-    ["mining-drill-productivity-bonus"] = 0.25,
+    ["mining-drill-productivity-bonus"] = 0.35,
     ["maximum-following-robot-count"] = 0.2,
     ["group-limit"] = 0.25,
     -- ["autofill-turret"] = 0,
@@ -363,7 +363,7 @@ function M.new(player)
             ["mining-drill-productivity-bonus"] = {
                 name = "Mining Drill Productivity",
                 lvl = 1,
-                max_lvl = 6,
+                max_lvl = 10,
                 cost = 1000000,
                 sprite = "technology/mining-productivity-1",
                 t = {{type = "mining-drill-productivity-bonus", modifier = 0.05}},
