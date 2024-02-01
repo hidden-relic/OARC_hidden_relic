@@ -139,7 +139,7 @@ M.upgrade_cost_table = {
     ["tank-flame"] = 0.2,
     ["rocketry"] = 0.2,
     ["laser"] = 0.2,
-    ["mining-drill-productivity-bonus"] = 0.25,
+    ["mining-drill-productivity-bonus"] = 0.35,
     ["maximum-following-robot-count"] = 0.2,
     ["group-limit"] = 0.25,
     -- ["autofill-turret"] = 0,
@@ -318,7 +318,7 @@ function M.new(player)
             sprite = "item/submachine-gun",
             hovered_sprite = "item/gun-turret",
             t = {},
-            tooltip = "+10% Bullet Damage\n+10% Gun Turret Attack\n %10% Bullet Speed\n[img=item/firearm-magazine] [img=item/piercing-rounds-magazine] [img=item/uranium-rounds-magazine] [img=item/gun-turret]"
+            tooltip = "+1% Bullet Damage\n+1% Gun Turret Attack\n +1% Bullet Speed\n[img=item/firearm-magazine] [img=item/piercing-rounds-magazine] [img=item/uranium-rounds-magazine] [img=item/gun-turret]"
         },
         ["tank-flame"] = {
             name = "Hot & Heavy",
@@ -328,7 +328,7 @@ function M.new(player)
             sprite = "item/flamethrower",
             hovered_sprite = "item/tank",
             t = {},
-            tooltip = "+10% Tank Shell Damage\n+10%Tank Shell Speed\n+10% Flamethrower Damage\n+10% Flamethrower Turret Attack\n [img=item/flamethrower-ammo] [img=item/flamethrower-turret] [img=item/cannon-shell]"
+            tooltip = "+1% Tank Shell Damage\n+1%Tank Shell Speed\n+1% Flamethrower Damage\n+1% Flamethrower Turret Attack\n [img=item/flamethrower-ammo] [img=item/flamethrower-turret] [img=item/cannon-shell]"
         },
         ["rocketry"] = {
             name = "Rocketry",
@@ -338,7 +338,7 @@ function M.new(player)
             sprite = "item/rocket",
             hovered_sprite = "item/explosive-rocket",
             t = {},
-            tooltip = "+10% Rocket Damage\n+10% Rocket Speed\n[img=item/rocket] [img=item/explosive-rocket]"
+            tooltip = "+1% Rocket Damage\n+1% Rocket Speed\n[img=item/rocket] [img=item/explosive-rocket]"
         },
         ["laser"] = {
             name = "Lasers",
@@ -348,7 +348,7 @@ function M.new(player)
             sprite = "item/laser-turret",
             hovered_sprite = "item/personal-laser-defense-equipment",
             t = {},
-            tooltip = "+10% Laser Damage\n+10% Laser Speed\n+10% Laser Turret Attack\n+10% Electric+Beam Attack\n[img=item/laser-turret] [img=item/personal-laser-defense-equipment] [img=entity/destroyer] [img=entity/distractor] [img=item/discharge-defense-equipment]"
+            tooltip = "+1% Laser Damage\n+1% Laser Speed\n+1% Laser Turret Attack\n+1% Electric+Beam Attack\n[img=item/laser-turret] [img=item/personal-laser-defense-equipment] [img=entity/destroyer] [img=entity/distractor] [img=item/discharge-defense-equipment]"
         },
         ["autolvl-turret"] = {
             name = "Gun Turret Combat Training",
@@ -363,7 +363,7 @@ function M.new(player)
             ["mining-drill-productivity-bonus"] = {
                 name = "Mining Drill Productivity",
                 lvl = 1,
-                max_lvl = 6,
+                max_lvl = 11,
                 cost = 1000000,
                 sprite = "technology/mining-productivity-1",
                 t = {{type = "mining-drill-productivity-bonus", modifier = 0.05}},
@@ -1496,17 +1496,11 @@ function M.new(player)
             for _, player in pairs(game.players) do
                 player = tools.get_player(player)
                 if global.markets then
-                    if not global.markets[player.name] then
-                        return
+                    if global.markets[player.name] then
+                        if global.markets[player.name].sell_chest and global.markets[player.name].sell_chest.valid then
+                            M.check_sell_chest(player)
+                        end
                     end
-                    if not global.markets[player.name].sell_chest then
-                        return
-                    end
-                    if not global.markets[player.name].sell_chest.valid then
-                        return
-                    end
-                    M.check_sell_chest(player)
-                    -- M.update(player)
                 end
             end
         end
