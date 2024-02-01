@@ -153,25 +153,25 @@ M.upgrade_func_table = {
         player.character_health_bonus = player.character_health_bonus + 25
     end,
     ["gun"] = function(player)
-        player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet")+0.1)
-        player.force.set_turret_attack_modifier("gun-turret", player.force.get_turret_attack_modifier("gun-turret")+0.1)
+        player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet")+0.01)
+        player.force.set_turret_attack_modifier("gun-turret", player.force.get_turret_attack_modifier("gun-turret")+0.01)
         player.force.set_gun_speed_modifier("bullet", player.force.get_gun_speed_modifier("bullet")+0.01)
     end,
     ["tank-flame"] = function(player)
-        player.force.set_ammo_damage_modifier("flamethrower", player.force.get_ammo_damage_modifier("flamethrower")+0.1)
-        player.force.set_ammo_damage_modifier("cannon-shell", player.force.get_ammo_damage_modifier("cannon-shell")+0.1)
-        player.force.set_turret_attack_modifier("flamethrower-turret", player.force.get_turret_attack_modifier("flamethrower-turret")+0.1)
+        player.force.set_ammo_damage_modifier("flamethrower", player.force.get_ammo_damage_modifier("flamethrower")+0.01)
+        player.force.set_ammo_damage_modifier("cannon-shell", player.force.get_ammo_damage_modifier("cannon-shell")+0.01)
+        player.force.set_turret_attack_modifier("flamethrower-turret", player.force.get_turret_attack_modifier("flamethrower-turret")+0.01)
         player.force.set_gun_speed_modifier("cannon-shell", player.force.get_gun_speed_modifier("cannon-shell")+0.01)
     end,
     ["rocketry"] = function(player)
-        player.force.set_ammo_damage_modifier("rocket", player.force.get_ammo_damage_modifier("rocket")+0.1)
+        player.force.set_ammo_damage_modifier("rocket", player.force.get_ammo_damage_modifier("rocket")+0.01)
         player.force.set_gun_speed_modifier("rocket", player.force.get_gun_speed_modifier("rocket")+0.01)
     end,
     ["laser"] = function(player)
-        player.force.set_ammo_damage_modifier("laser", player.force.get_ammo_damage_modifier("laser")+0.1)
-        player.force.set_ammo_damage_modifier("electric", player.force.get_ammo_damage_modifier("electric")+0.1)
-        player.force.set_ammo_damage_modifier("beam", player.force.get_ammo_damage_modifier("beam")+0.1)
-        player.force.set_turret_attack_modifier("laser-turret", player.force.get_turret_attack_modifier("laser-turret")+0.1)
+        player.force.set_ammo_damage_modifier("laser", player.force.get_ammo_damage_modifier("laser")+0.01)
+        player.force.set_ammo_damage_modifier("electric", player.force.get_ammo_damage_modifier("electric")+0.01)
+        player.force.set_ammo_damage_modifier("beam", player.force.get_ammo_damage_modifier("beam")+0.01)
+        player.force.set_turret_attack_modifier("laser-turret", player.force.get_turret_attack_modifier("laser-turret")+0.01)
         player.force.set_gun_speed_modifier("laser", player.force.get_gun_speed_modifier("laser")+0.01)
     end,
     ["mining-drill-productivity-bonus"] = function(player)
@@ -231,7 +231,7 @@ function M.increase(player, upgrade)
             (upgrade.cost * M.upgrade_cost_table[name])
         end
         M.withdraw(player, current_cost)
-        global.markets.jackpot = tools.round(global.markets.jackpot + current_cost*0.25, 0)
+        global.markets.jackpot = tools.round(global.markets.jackpot + current_cost*0.1, 0)
         local up_func = M.upgrade_func_table[name]
         up_func(player)
     else
@@ -251,7 +251,7 @@ function M.increase_shared(player, upgrade)
         upgrade.cost = math.ceil(upgrade.cost^M.shared_cost_table[name])
     end
     M.withdraw(player, current_cost)
-    global.markets.jackpot = tools.round(global.markets.jackpot + current_cost*0.25, 0)
+    global.markets.jackpot = tools.round(global.markets.jackpot + current_cost*0.1, 0)
 end
 
 function M.new(player)
@@ -277,7 +277,7 @@ function M.new(player)
         ["sell-speed"] = {
             name = "Sell Speed",
             lvl = 1,
-            max_lvl = 50,
+            max_lvl = 26,
             cost = 10000,
             sprite = "utility/character_running_speed_modifier_constant",
             -- potential future speeds for ups optimization
@@ -304,7 +304,7 @@ function M.new(player)
         ["character-health"] = {
             name = "Character Health",
             lvl = 1,
-            max_lvl = 100,
+            max_lvl = 26,
             cost = 1000,
             sprite = "utility/rail_planner_indication_arrow",
             t = {},
@@ -313,42 +313,42 @@ function M.new(player)
         ["gun"] = {
             name = "Weaponry",
             lvl = 1,
-            max_lvl = 100,
+            max_lvl = 26,
             cost = 10000,
             sprite = "item/submachine-gun",
             hovered_sprite = "item/gun-turret",
             t = {},
-            tooltip = "+10% Bullet Damage\n+10% Gun Turret Attack\n %10% Bullet Speed\n[img=item/firearm-magazine] [img=item/piercing-rounds-magazine] [img=item/uranium-rounds-magazine] [img=item/gun-turret]"
+            tooltip = "+1% Bullet Damage\n+1% Gun Turret Attack\n +1% Bullet Speed\n[img=item/firearm-magazine] [img=item/piercing-rounds-magazine] [img=item/uranium-rounds-magazine] [img=item/gun-turret]"
         },
         ["tank-flame"] = {
             name = "Hot & Heavy",
             lvl = 1,
-            max_lvl = 100,
+            max_lvl = 26,
             cost = 10000,
             sprite = "item/flamethrower",
             hovered_sprite = "item/tank",
             t = {},
-            tooltip = "+10% Tank Shell Damage\n+10%Tank Shell Speed\n+10% Flamethrower Damage\n+10% Flamethrower Turret Attack\n [img=item/flamethrower-ammo] [img=item/flamethrower-turret] [img=item/cannon-shell]"
+            tooltip = "+1% Tank Shell Damage\n+1%Tank Shell Speed\n+1% Flamethrower Damage\n+1% Flamethrower Turret Attack\n [img=item/flamethrower-ammo] [img=item/flamethrower-turret] [img=item/cannon-shell]"
         },
         ["rocketry"] = {
             name = "Rocketry",
             lvl = 1,
-            max_lvl = 100,
+            max_lvl = 26,
             cost = 10000,
             sprite = "item/rocket",
             hovered_sprite = "item/explosive-rocket",
             t = {},
-            tooltip = "+10% Rocket Damage\n+10% Rocket Speed\n[img=item/rocket] [img=item/explosive-rocket]"
+            tooltip = "+1% Rocket Damage\n+1% Rocket Speed\n[img=item/rocket] [img=item/explosive-rocket]"
         },
         ["laser"] = {
             name = "Lasers",
             lvl = 1,
-            max_lvl = 100,
+            max_lvl = 26,
             cost = 10000,
             sprite = "item/laser-turret",
             hovered_sprite = "item/personal-laser-defense-equipment",
             t = {},
-            tooltip = "+10% Laser Damage\n+10% Laser Speed\n+10% Laser Turret Attack\n+10% Electric+Beam Attack\n[img=item/laser-turret] [img=item/personal-laser-defense-equipment] [img=entity/destroyer] [img=entity/distractor] [img=item/discharge-defense-equipment]"
+            tooltip = "+1% Laser Damage\n+1% Laser Speed\n+1% Laser Turret Attack\n+1% Electric+Beam Attack\n[img=item/laser-turret] [img=item/personal-laser-defense-equipment] [img=entity/destroyer] [img=entity/distractor] [img=item/discharge-defense-equipment]"
         },
         ["autolvl-turret"] = {
             name = "Gun Turret Combat Training",
@@ -363,7 +363,7 @@ function M.new(player)
             ["mining-drill-productivity-bonus"] = {
                 name = "Mining Drill Productivity",
                 lvl = 1,
-                max_lvl = 100,
+                max_lvl = 6,
                 cost = 1000000,
                 sprite = "technology/mining-productivity-1",
                 t = {{type = "mining-drill-productivity-bonus", modifier = 0.05}},
@@ -374,7 +374,7 @@ function M.new(player)
             ["maximum-following-robot-count"] = {
                 name = "Follower Robot Count",
                 lvl = 1,
-                max_lvl = 100,
+                max_lvl = 26,
                 cost = 10000,
                 sprite = "technology/follower-robot-count-1",
                 t = {{type = "maximum-following-robots-count", modifier = 5}},
@@ -475,7 +475,7 @@ function M.new(player)
             end
             M.withdraw(player, value * inserted)
             player.insert {name = item, count = inserted}
-            global.markets.jackpot = tools.round(global.markets.jackpot + (value * inserted) * 0.25)
+            global.markets.jackpot = tools.round(global.markets.jackpot + (value * inserted) * 0.1)
             
             
             if not market.stats.items_purchased[item] then
@@ -1496,17 +1496,11 @@ function M.new(player)
             for _, player in pairs(game.players) do
                 player = tools.get_player(player)
                 if global.markets then
-                    if not global.markets[player.name] then
-                        return
+                    if global.markets[player.name] then
+                        if global.markets[player.name].sell_chest and global.markets[player.name].sell_chest.valid then
+                            M.check_sell_chest(player)
+                        end
                     end
-                    if not global.markets[player.name].sell_chest then
-                        return
-                    end
-                    if not global.markets[player.name].sell_chest.valid then
-                        return
-                    end
-                    M.check_sell_chest(player)
-                    -- M.update(player)
                 end
             end
         end

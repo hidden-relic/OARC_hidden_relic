@@ -134,6 +134,7 @@ end
 
 commands.add_command("give", "Share some of your coin with another player\nUsage: /give zerocool 10000", function(command)
     local player = game.players[command.player_index]
+    if not command.parameter then player.print("Usage: /give zerocool 10000") return end
     local params = command.parameter
     local args = {}
     for arg in params:gmatch("%S+") do table.insert(args, arg) end

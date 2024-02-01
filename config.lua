@@ -380,7 +380,7 @@ MAIN_FORCE = "Main Force"
 
 -- Enable if players can allow others to join their base.
 -- And specify how many including the host are allowed.
-ENABLE_SHARED_SPAWNS = false
+ENABLE_SHARED_SPAWNS = true
 MAX_PLAYERS_AT_SHARED_SPAWN = 4
 
 -- Share local team chat with all teams
@@ -456,7 +456,7 @@ ENABLE_ANTI_GRIEFING = true
 
 -- Makes blueprint ghosts dissapear if they have been placed longer than this
 -- ONLY has an effect if ENABLE_ANTI_GRIEFING is true!
-GHOST_TIME_TO_LIVE = 120 * TICKS_PER_MINUTE
+GHOST_TIME_TO_LIVE = 240 * TICKS_PER_MINUTE
 
 -- I like keeping this off... set to true if you want to shoot your own chests
 -- and stuff.
