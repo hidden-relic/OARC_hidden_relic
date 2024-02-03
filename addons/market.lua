@@ -545,7 +545,15 @@ function M.new(player)
         local market = global.markets[player.name]
         local item = item
         local value = global.markets.item_values[item] * 0.75
-        M.deposit(player, value)
+        if FindPlayerSharedSpawn(player.name) then
+            value = value / (#global.ocore.sharedSpawns[player.name].players + 1)
+            for _, teammate in pairs(global.ocore.sharedSpawns[player.name].players) do
+                M.deposit(game.players[teammate], value)
+            end
+            M.deposit(player, value)
+        else
+            M.deposit(player, value)
+        end
         if not market.stats.items_sold[item] then
             market.stats.items_sold[item] = {count = 1, value = value}
         else
