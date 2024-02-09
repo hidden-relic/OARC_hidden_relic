@@ -140,8 +140,15 @@ local function UpdateForceBuffs(player, buff)
     -- buff.base_multiplier
     local old_data = player.force[buff.modifier]
     local multiplier = (player.online_time / TICKS_PER_HOUR) * buff.base_multiplier
+    if #player.force.players == 1 then
+        multiplier = (player.online_time / TICKS_PER_HOUR) * (buff.base_multiplier*2)
+    end
     if player.online_time > 12*TICKS_PER_HOUR then
-        multiplier = (player.online_time / TICKS_PER_HOUR) * (buff.base_multiplier/2)
+        if #player.force.players == 1 then
+            multiplier = (player.online_time / TICKS_PER_HOUR) * (buff.base_multiplier)
+        else
+            multiplier = (player.online_time / TICKS_PER_HOUR) * (buff.base_multiplier/2)
+        end
     end
     
     
@@ -1327,15 +1334,15 @@ function SurfaceSettingsHelper(settings)
     
     
     
-    settings.terrain_segmentation = 4
-    settings.water = 3
-    settings.starting_area = 0
+    settings.terrain_segmentation = 1
+    settings.water = 1
+    settings.starting_area = 1
     
     
     
-    local r_freq = 1.20
-    local r_rich = 5.00
-    local r_size = 0.18
+    local r_freq = 1.50
+    local r_rich = 2.00
+    local r_size = 1.00
     
     
     
@@ -1360,9 +1367,9 @@ function SurfaceSettingsHelper(settings)
     
     
     
-    settings.autoplace_controls["enemy-base"].frequency = 0.80
-    settings.autoplace_controls["enemy-base"].richness = 0.70
-    settings.autoplace_controls["enemy-base"].size = 0.70
+    settings.autoplace_controls["enemy-base"].frequency = 1
+    settings.autoplace_controls["enemy-base"].richness = 1
+    settings.autoplace_controls["enemy-base"].size = 1
     
     
     
@@ -1420,7 +1427,7 @@ function CreateGameSurface()
         
         
         -- Enable this to test things out easily.
-        -- nauvis_settings = SurfaceSettingsHelper(nauvis_settings)
+        nauvis_settings = SurfaceSettingsHelper(nauvis_settings)
         
         
         -- Create new game surface

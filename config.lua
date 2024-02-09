@@ -137,7 +137,7 @@ ENABLE_POWER_ARMOR_QUICK_START = false
 ENABLE_MODULAR_ARMOR_QUICK_START = true
 
 
-TECHNOLOGY_PRICE_MULTIPLIER = 2.5
+TECHNOLOGY_PRICE_MULTIPLIER = 1.75
 
 ------------------------------------------------------------------------------------------------------------------------
 -- MAP CONFIGURATION OPTIONS
@@ -294,29 +294,29 @@ OARC_CFG = {
     {
         ["iron-ore"] =
         {
-            amount = 2500,
-            size = 20,
+            amount = 3500,
+            size = 22,
             x_offset = -29,
             y_offset = 16
         },
         ["copper-ore"] =
         {
-            amount = 2500,
-            size = 20,
+            amount = 3500,
+            size = 22,
             x_offset = -28,
             y_offset = -3
         },
         ["stone"] =
         {
-            amount = 2500,
-            size = 20,
+            amount = 3500,
+            size = 22,
             x_offset = -27,
             y_offset = -34
         },
         ["coal"] =
         {
-            amount = 2500,
-            size = 20,
+            amount = 3500,
+            size = 22,
             x_offset = -27,
             y_offset = -20
         }--,

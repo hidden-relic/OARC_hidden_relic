@@ -815,6 +815,16 @@ function CleanupPlayerGlobals(playerName)
     
     local player = game.players[playerName]
     local old_coins = 0
+    local old_items = {}
+    
+    local function get_chest_inv(chest)
+        local chest = chest
+        if chest.get_inventory(defines.inventory.chest) and
+        chest.get_inventory(defines.inventory.chest).valid then
+            return chest.get_inventory(defines.inventory.chest)
+        end
+    end
+    
     if global.markets[player.name] then
         old_coins = global.markets[player.name].balance
         if global.markets[player.name].market_button then
@@ -830,6 +840,12 @@ function CleanupPlayerGlobals(playerName)
             global.markets[player.name].stats_frame.destroy()
         end
         if global.markets[player.name].sell_chest then
+            local sell_chest = global.markets[player.name].sell_chest
+            if not get_chest_inv(sell_chest).is_empty() then
+                for name, count in pairs(get_chest_inv(sell_chest).get_contents()) do
+                    table.insert(old_items, {name=name, count=count})
+                end
+            end
             global.markets[player.name].sell_chest.destroy()
         end
         global.markets[player.name] = nil
@@ -869,6 +885,16 @@ function CleanupPlayerGlobals(playerName)
             local newOwnerName = table.remove(teamMates) -- Remove 1 to use as new owner.
             TransferOwnershipOfSharedSpawn(playerName, newOwnerName)
             if global.markets[newOwnerName] then market.deposit(game.players[newOwnerName], old_coins) end
+            if global.markets[newOwnerName].sell_chest then
+                local sell_chest = global.markets[newOwnerName].sell_chest
+                if #old_items > 0 then
+                    for _, item in pairs(old_items) do
+                        if sell_chest.can_insert(item) then
+                            sell_chest.insert(item)
+                        end
+                    end
+                end
+            end
             SendBroadcastMsg(playerName .. " has left so " .. newOwnerName ..
             " now owns their base.")
         else
