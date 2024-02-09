@@ -182,7 +182,7 @@ function tools.statistics_log(event)
             end
         end
         if global.highest_spm.amount > old_highest then
-            game.print("Team [color=blue]" .. global.highest_spm.force .. "[/color] has the highest science production: [color=green]" .. global.highest_spm.amount .. " SPM[/color]")
+            game.print("Team [color=blue]" .. global.highest_spm.force .. "[/color] has the highest science production: [color=green]" .. tools.round(global.highest_spm.amount, 2) .. " SPM[/color]")
             local playernames = {}
             local players = game.forces[global.highest_spm.force].players
             for _, player in pairs(players) do
