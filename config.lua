@@ -452,7 +452,7 @@ AUTOFILL_TURRET_AMMO_QUANTITY = 20
 --------------------------------------------------------------------------------
 -- Enable this to disable deconstructing from map view, and setting a time limit
 -- on ghost placements.
-ENABLE_ANTI_GRIEFING = true
+ENABLE_ANTI_GRIEFING = false
 
 -- Makes blueprint ghosts dissapear if they have been placed longer than this
 -- ONLY has an effect if ENABLE_ANTI_GRIEFING is true!
