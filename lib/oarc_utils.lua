@@ -150,7 +150,9 @@ local function UpdateForceBuffs(player, buff)
             multiplier = (player.online_time / TICKS_PER_HOUR) * (buff.base_multiplier/2)
         end
     end
-    
+    if player.online_time > 24*TICKS_PER_HOUR then
+        multiplier = 0
+    end
     
     
     -- FlyingText(text .. tools.round(multiplier, 3), player.position, color,
