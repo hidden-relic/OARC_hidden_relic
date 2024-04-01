@@ -9,6 +9,7 @@ local group = require("addons.groups")
 local M = {}
 
 local config = {}
+config.sell_fraction = 0.5
 config.enable_groups = false
 config.enable_shared_purchasing = false
 config.upgrades_column_count = 3
@@ -433,6 +434,10 @@ function M.new(player)
         local market = global.markets[player.name]
         local item = item
         local value = global.markets.item_values[item]
+        if player.force.recipes[item] and player.force.recipes[item].enabled ~= nil then
+            if not player.force.recipes[item].enabled then value = value * 2 end
+        end
+        if item.type == "tool" then value = value * 3 end
         local i = nil
         if click == 2 then
             if not shift and not ctrl then
@@ -544,7 +549,7 @@ function M.new(player)
         local player = player
         local market = global.markets[player.name]
         local item = item
-        local value = global.markets.item_values[item] * 0.75
+        local value = global.markets.item_values[item] * config.sell_fraction
         if FindPlayerSharedSpawn(player.name) then
             value = value / (#global.ocore.sharedSpawns[player.name].players + 1)
             for _, teammate in pairs(global.ocore.sharedSpawns[player.name].players) do
@@ -724,17 +729,22 @@ function M.new(player)
         market.item_buttons = {}
         for _, item in pairs(game.item_prototypes) do
             if global.markets.item_values[item.name] then
+                local value = global.markets.item_values[item.name]
+                if player.force.recipes[item.name] and player.force.recipes[item.name].enabled ~= nil then
+                    if not player.force.recipes[item.name].enabled then value = value * 2 end
+                end
+                if item.type == "tool" then value = value * 3 end
                 market.item_buttons[item.name] =
                 market.item_table.add {
                     name = item.name,
                     type = "sprite-button",
                     sprite = "item/" .. item.name,
                     number = math.floor(market.balance /
-                    global.markets.item_values[item.name]),
+                    value),
                     tooltip = {
                         "tooltips.market_items", item.name,
                         game.item_prototypes[item.name].localised_name,
-                        tools.add_commas(global.markets.item_values[item.name])
+                        tools.add_commas(value)
                     }
                 }
             end
@@ -1257,6 +1267,10 @@ function M.new(player)
         market.market_button.tooltip = "[item=coin] " .. tools.add_commas(balance)
         for index, button in pairs(market.item_buttons) do
             local value = global.markets.item_values[index]
+            if player.force.recipes[index] and player.force.recipes[index].enabled ~= nil then
+                if not player.force.recipes[index].enabled then value = value * 2 end
+            end
+            if game.item_prototypes[index].type == "tool" then value = value * 3 end
             if math.floor(balance / value) == 0 then
                 button.enabled = false
             else
