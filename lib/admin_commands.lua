@@ -158,11 +158,7 @@ end)
 
 commands.add_command("reset", "reset player", function(command)
     local player = game.players[command.player_index]
-    local target = player.name
-    if command.parameter and game.players[command.parameter] and player.admin then
-        target = command.parameter
-    end
-    if game.players[target].valid and game.players[target].character then ResetPlayer(target) end
+    if player.valid and player.character then ResetPlayer(player.name) end
 end)
 
 local function format_chat_colour(message, color)
