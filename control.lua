@@ -7,24 +7,6 @@ local console = {
 
 local color = require("utils/color_presets")
 
-local Builder = require('addons/builder')
-local spawner = Builder:new({position={x=0, y=0}, tick=1})
-
-commands.add_command("builder", "builder", function(command)
-    local player = game.players[command.player_index]
-    spawner.position = {x=player.position.x-32, y=player.position.y-32}
-    spawner.last_tick = game.tick
-    for i = 1, 10 do
-        spawner:addbuild{tick=60, name="small-biter"}
-    end
-    for i = 1, 10 do
-        spawner:addbuild{tick=60, name="medium-biter"}
-    end
-    for i = 1, 10 do
-        spawner:addbuild{tick=60, name="big-biter"}
-    end
-end)
-
 -- control.lua
 -- Mar 2019
 -- Oarc's Separated Spawn Scenario
@@ -492,7 +474,7 @@ end)
 script.on_nth_tick(60*60*15, function(event) logger.logStats(event) end)
 
 script.on_event(defines.events.on_tick, function(event)
-    spawner:update(event.tick)
+    -- spawner:update(event.tick)
     -- SharedPowerOnTick()
     if global.ocfg.enable_regrowth then
         RegrowthOnTick()
