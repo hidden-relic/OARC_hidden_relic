@@ -1394,121 +1394,26 @@ function M.new(player)
         end
     end
     
-    -- function M.check_sac(player)
-    --     local player = player
-    --     local market = global.markets[player.name]
-    --     local cc = get_chest_inv(market.sell_chest).get_contents()
-    --     local t = get_table(
-    --     "eNqrVipJzMvWTU7My8vPU7KqVkrOzwTShgYgoKOUWlGQk1+cWZZaDBbTAasGMiEM3dzE5IzMvFTd9FKwntpaAPhzGVc=")
-    --     if cc then
-    --         for blessing, sac in pairs(t) do
-    --             local ret = {}
-    --             for item_name, count in pairs(sac) do
-    --                 if cc[item_name] and (cc[item_name] >= count) then
-    --                     ret[item_name] = count
-    --                 end
-    --             end
-    --             if flib_table.deep_compare(ret, sac) then
-    --                 for item_name, count in pairs(ret) do
-    --                     get_chest_inv(market.sell_chest).remove({
-    --                         name = item_name,
-    --                         count = count
-    --                     })
-    --                 end
-    --                 player.insert {name = blessing, count = 1}
-    --                 game.print("[color=red]" .. player.name ..
-    --                 " [/color][color=purple]has received a [/color][color=acid]Greater[/color][color=purple] blessing[/color]")
-    --             end
-    --         end
-    --         t = get_table(
-    --         "eNpVjDEOwzAIRe/CDFIzdOltnIQ4VmtsYTNFvnupl6gMID3+fxf0IG/KYTuTMEUTeF2wleR3efggOKNuqtwnQmiVeadcdvuwIwe2/gmWgbCaCitF9h160Vv7nNbWOWRiid76eRHKcbSzKFO1XD2GUFOdvzG+Fis20Q==")
-    --         for blessing, sac in pairs(t) do
-    --             local ret = {}
-    --             for item_name, count in pairs(sac) do
-    --                 if cc[item_name] and (cc[item_name] >= count) then
-    --                     ret[item_name] = count
-    --                 end
-    --             end
-    --             if flib_table.deep_compare(ret, sac) then
-    --                 for item_name, count in pairs(ret) do
-    --                     get_chest_inv(market.sell_chest).remove({
-    --                         name = item_name,
-    --                         count = count
-    --                     })
-    --                 end
-    --                 player.insert {name = blessing, count = 1}
-    --                 game.print("[color=red]" .. player.name ..
-    --                 " [/color][color=purple]has received a blessing[/color]")
-    --             end
-    --         end
-    --     end
-    -- end
-    
-    -- AUTOFILL HAS BUGS, ONLY INSERTS 1 AMMO AND LAGS MP
-    -- function M.autofill(player)
-    --     for i, turret in pairs(player.surface.find_entities_filtered{name="gun-turret", force=player.force, last_user=player}) do
-    --         -- game.print("getting turret "..i.."inventory")
-    --         local turret_inv = turret.get_inventory(defines.inventory.turret_ammo)
-    --         -- game.print("getting turret contents...")
-    --         local turret_ammo = turret_inv.get_contents()
-    --         if not turret_ammo["firearm-magazine"] and not turret_ammo["piercing-rounds-magazine"] and not turret_ammo["uranium-rounds-magazine"] then
-    --             -- game.print("No ammo, checking shared")
-    --             if global.oshared.items["uranium-rounds-magazine"] and global.oshared.items["uranium-rounds-magazine"] >= 1 then
-    --                 global.oshared.items["uranium-rounds-magazine"] = global.oshared.items["uranium-rounds-magazine"] - 1
-    --                 turret.insert{name="uranium-rounds-magazine", count=1}
-    --                 -- game.print("inserted uranium round")
-    --             elseif global.oshared.items["piercing-rounds-magazine"] and global.oshared.items["piercing-rounds-magazine"] >= 1 then
-    --                 global.oshared.items["piercing-rounds-magazine"] = global.oshared.items["piercing-rounds-magazine"] - 1
-    --                 turret.insert{name="piercing-rounds-magazine", count=1}
-    --                 -- game.print("inserted red round")
-    --             elseif global.oshared.items["firearm-magazine"] and global.oshared.items["firearm-magazine"] >= 1 then
-    --                 global.oshared.items["firearm-magazine"] = global.oshared.items["firearm-magazine"] - 1
-    --                 turret.insert{name="firearm-magazine", count=1}
-    --                 -- game.print("inserted yellow round")
-    --             else
-    --                 -- game.print("no ammo found in shared")
-    --             end
-    --         elseif turret_ammo["firearm-magazine"] and turret_ammo["firearm-magazine"] < 10 then
-    --             -- game.print("found yellow")
-    --             if global.oshared.items["firearm-magazine"] and global.oshared.items["firearm-magazine"] >= 1 then
-    --                 global.oshared.items["firearm-magazine"] = global.oshared.items["firearm-magazine"] - 1
-    --                 turret.insert{name="firearm-magazine", count=1}
-    --                 -- game.print("inserted yellow round")
-    --             end
-    --         elseif turret_ammo["piercing-rounds-magazine-magazine"] and turret_ammo["piercing-rounds-magazine-magazine"] < 10 then
-    --             -- game.print("found red")
-    --             if global.oshared.items["piercing-rounds-magazine-magazine"] and global.oshared.items["piercing-rounds-magazine-magazine"] >= 1 then
-    --                 global.oshared.items["piercing-rounds-magazine-magazine"] = global.oshared.items["piercing-rounds-magazine-magazine"] - 1
-    --                 turret.insert{name="piercing-rounds-magazine-magazine", count=1}
-    --                 -- game.print("inserted red round")
-    --             end
-    --         elseif turret_ammo["uranium-rounds-magazine"] and turret_ammo["uranium-rounds-magazine"] < 10 then
-    --             -- game.print("found uranium")
-    --             if global.oshared.items["uranium-rounds-magazine"] and global.oshared.items["uranium-rounds-magazine"] >= 1 then
-    --                 global.oshared.items["uranium-rounds-magazine"] = global.oshared.items["uranium-rounds-magazine"] - 1
-    --                 turret.insert{name="uranium-rounds-magazine", count=1}
-    --                 -- game.print("inserted uranium round")
-    --             end
-    --         else
-    --             -- game.print("something else happened...")
-    --         end
-    --     end
-    -- end
-    
     function M.on_tick(event)
         if event.tick > 107000 and event.tick % 108000 < 600 then
             if global.markets.jackpot > 0 then
                 game.print("[color=0.8, 0.8, 0]JACKPOT:[/color] "..tools.add_commas(global.markets.jackpot))
                 local roll = math.random(1, #game.players*3)
+                game.print("[color=blue]Lucky Number:[/color] [color=green]"..roll.."[/color]")
                 if game.connected_players[roll] then
                     M.deposit(game.connected_players[roll], global.markets.jackpot)
                     global.markets.jackpot = 0
                     game.print("[color=0, 1, 1]"..game.connected_players[roll].name.."[/color] received the jackpot!")
                 else
-                    game.print("[color=1, 0.2, 0]Nobody[/color] received the jackpot...keep playing!")
+                    if game.players[roll] then
+                        game.print("[color=1, 0.2, 0]"..game.players[roll].name.."[/color] won the jackpot...but isn't online to collect it! Better luck next time!")
+                    else
+                        game.print("[color=1, 0.2, 0]Nobody[/color] received the jackpot...keep playing!")
+                    end
                 end
             end
         end
+        
         -- if (game.tick % 60 == 1) then
         --     for _, entry in pairs(global.markets.autofill_turrets) do
         --         M.autofill(game.players[entry.name])

@@ -174,6 +174,7 @@ function UpdatePlayerBuffs(player, buff)
     
     -- FlyingText(text .. tools.round((multiplier - buff.modifier), 3), player.position,
     -- color, player.surface)
+    if buff.modifier == 'character_loot_pickup_distance_bonus' and player[buff.modifier] == 320 then return end
     player[buff.modifier] = multiplier
 end
 
