@@ -9,6 +9,7 @@ local group = require("addons.groups")
 local M = {}
 
 local config = {}
+config.locked_tech_multiplier = 5
 config.sell_fraction = 0.5
 config.enable_groups = false
 config.enable_shared_purchasing = false
@@ -21,6 +22,10 @@ if config.enable_groups then
     config.shared_column_count = 6
     config.special_column_count = 6
 end
+config.disabled_items =
+{
+    ['space-science-pack'] = true
+}
 -- function M:new(o)
 --     o = o or {}             -- this sets o to itself (if arg o is passed in) if not, create empty table called o
 --     setmetatable(o, self)   -- set o's metatable to M's metatable
@@ -35,7 +40,8 @@ function M.init()
         ["electric-energy-interface"] = true,
         ["rocket-part"] = true,
         ["discharge-defense-equipment"] = true,
-        ["discharge-defense-remote"] = true
+        ["discharge-defense-remote"] = true,
+        ["space-science-pack"] = true
     }
     markets.item_values = {}
     for name, value in pairs(pre_item_values) do
@@ -154,26 +160,26 @@ M.upgrade_func_table = {
         player.character_health_bonus = player.character_health_bonus + 25
     end,
     ["gun"] = function(player)
-        player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet")+0.01)
-        player.force.set_turret_attack_modifier("gun-turret", player.force.get_turret_attack_modifier("gun-turret")+0.01)
-        player.force.set_gun_speed_modifier("bullet", player.force.get_gun_speed_modifier("bullet")+0.01)
+        player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet")+0.04)
+        player.force.set_turret_attack_modifier("gun-turret", player.force.get_turret_attack_modifier("gun-turret")+0.04)
+        player.force.set_gun_speed_modifier("bullet", player.force.get_gun_speed_modifier("bullet")+0.04)
     end,
     ["tank-flame"] = function(player)
-        player.force.set_ammo_damage_modifier("flamethrower", player.force.get_ammo_damage_modifier("flamethrower")+0.01)
-        player.force.set_ammo_damage_modifier("cannon-shell", player.force.get_ammo_damage_modifier("cannon-shell")+0.01)
-        player.force.set_turret_attack_modifier("flamethrower-turret", player.force.get_turret_attack_modifier("flamethrower-turret")+0.01)
-        player.force.set_gun_speed_modifier("cannon-shell", player.force.get_gun_speed_modifier("cannon-shell")+0.01)
+        player.force.set_ammo_damage_modifier("flamethrower", player.force.get_ammo_damage_modifier("flamethrower")+0.04)
+        player.force.set_ammo_damage_modifier("cannon-shell", player.force.get_ammo_damage_modifier("cannon-shell")+0.04)
+        player.force.set_turret_attack_modifier("flamethrower-turret", player.force.get_turret_attack_modifier("flamethrower-turret")+0.04)
+        player.force.set_gun_speed_modifier("cannon-shell", player.force.get_gun_speed_modifier("cannon-shell")+0.04)
     end,
     ["rocketry"] = function(player)
-        player.force.set_ammo_damage_modifier("rocket", player.force.get_ammo_damage_modifier("rocket")+0.01)
-        player.force.set_gun_speed_modifier("rocket", player.force.get_gun_speed_modifier("rocket")+0.01)
+        player.force.set_ammo_damage_modifier("rocket", player.force.get_ammo_damage_modifier("rocket")+0.04)
+        player.force.set_gun_speed_modifier("rocket", player.force.get_gun_speed_modifier("rocket")+0.04)
     end,
     ["laser"] = function(player)
-        player.force.set_ammo_damage_modifier("laser", player.force.get_ammo_damage_modifier("laser")+0.01)
-        player.force.set_ammo_damage_modifier("electric", player.force.get_ammo_damage_modifier("electric")+0.01)
-        player.force.set_ammo_damage_modifier("beam", player.force.get_ammo_damage_modifier("beam")+0.01)
-        player.force.set_turret_attack_modifier("laser-turret", player.force.get_turret_attack_modifier("laser-turret")+0.01)
-        player.force.set_gun_speed_modifier("laser", player.force.get_gun_speed_modifier("laser")+0.01)
+        player.force.set_ammo_damage_modifier("laser", player.force.get_ammo_damage_modifier("laser")+0.04)
+        player.force.set_ammo_damage_modifier("electric", player.force.get_ammo_damage_modifier("electric")+0.04)
+        player.force.set_ammo_damage_modifier("beam", player.force.get_ammo_damage_modifier("beam")+0.04)
+        player.force.set_turret_attack_modifier("laser-turret", player.force.get_turret_attack_modifier("laser-turret")+0.04)
+        player.force.set_gun_speed_modifier("laser", player.force.get_gun_speed_modifier("laser")+0.04)
     end,
     ["mining-drill-productivity-bonus"] = function(player)
         local upgrades = global.markets[player.name].upgrades
@@ -364,7 +370,7 @@ function M.new(player)
             ["mining-drill-productivity-bonus"] = {
                 name = "Mining Drill Productivity",
                 lvl = 1,
-                max_lvl = 11,
+                max_lvl = 26,
                 cost = 1000000,
                 sprite = "technology/mining-productivity-1",
                 t = {{type = "mining-drill-productivity-bonus", modifier = 0.05}},
@@ -728,10 +734,10 @@ function M.new(player)
         }
         market.item_buttons = {}
         for _, item in pairs(game.item_prototypes) do
-            if global.markets.item_values[item.name] then
+            if global.markets.item_values[item.name] and not config.disabled_items[item.name] then
                 local value = global.markets.item_values[item.name]
                 if player.force.recipes[item.name] and player.force.recipes[item.name].enabled ~= nil then
-                    if not player.force.recipes[item.name].enabled then value = value * 2 end
+                    if not player.force.recipes[item.name].enabled then value = value * config.locked_tech_multiplier end
                 end
                 if item.type == "tool" then value = value * 3 end
                 market.item_buttons[item.name] =
