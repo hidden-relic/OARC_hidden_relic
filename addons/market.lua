@@ -320,42 +320,42 @@ function M.new(player)
         ["gun"] = {
             name = "Weaponry",
             lvl = 1,
-            max_lvl = 26,
+            max_lvl = 51,
             cost = 10000,
             sprite = "item/submachine-gun",
             hovered_sprite = "item/gun-turret",
             t = {},
-            tooltip = "+1% Bullet Damage\n+1% Gun Turret Attack\n +1% Bullet Speed\n[img=item/firearm-magazine] [img=item/piercing-rounds-magazine] [img=item/uranium-rounds-magazine] [img=item/gun-turret]"
+            tooltip = "+4% Bullet Damage\n+4% Gun Turret Attack\n +4% Bullet Speed\n[img=item/firearm-magazine] [img=item/piercing-rounds-magazine] [img=item/uranium-rounds-magazine] [img=item/gun-turret]"
         },
         ["tank-flame"] = {
             name = "Hot & Heavy",
             lvl = 1,
-            max_lvl = 26,
+            max_lvl = 51,
             cost = 10000,
             sprite = "item/flamethrower",
             hovered_sprite = "item/tank",
             t = {},
-            tooltip = "+1% Tank Shell Damage\n+1%Tank Shell Speed\n+1% Flamethrower Damage\n+1% Flamethrower Turret Attack\n [img=item/flamethrower-ammo] [img=item/flamethrower-turret] [img=item/cannon-shell]"
+            tooltip = "+4% Tank Shell Damage\n+4%Tank Shell Speed\n+4% Flamethrower Damage\n+4% Flamethrower Turret Attack\n [img=item/flamethrower-ammo] [img=item/flamethrower-turret] [img=item/cannon-shell]"
         },
         ["rocketry"] = {
             name = "Rocketry",
             lvl = 1,
-            max_lvl = 26,
+            max_lvl = 51,
             cost = 10000,
             sprite = "item/rocket",
             hovered_sprite = "item/explosive-rocket",
             t = {},
-            tooltip = "+1% Rocket Damage\n+1% Rocket Speed\n[img=item/rocket] [img=item/explosive-rocket]"
+            tooltip = "+4% Rocket Damage\n+4% Rocket Speed\n[img=item/rocket] [img=item/explosive-rocket]"
         },
         ["laser"] = {
             name = "Lasers",
             lvl = 1,
-            max_lvl = 26,
+            max_lvl = 51,
             cost = 10000,
             sprite = "item/laser-turret",
             hovered_sprite = "item/personal-laser-defense-equipment",
             t = {},
-            tooltip = "+1% Laser Damage\n+1% Laser Speed\n+1% Laser Turret Attack\n+1% Electric+Beam Attack\n[img=item/laser-turret] [img=item/personal-laser-defense-equipment] [img=entity/destroyer] [img=entity/distractor] [img=item/discharge-defense-equipment]"
+            tooltip = "+4% Laser Damage\n+4% Laser Speed\n+4% Laser Turret Attack\n+4% Electric+Beam Attack\n[img=item/laser-turret] [img=item/personal-laser-defense-equipment] [img=entity/destroyer] [img=entity/distractor] [img=item/discharge-defense-equipment]"
         },
         ["autolvl-turret"] = {
             name = "Gun Turret Combat Training",
