@@ -263,10 +263,12 @@ end
 
 function M.new(player)
     local player = player
-    global.markets[player.name] = {
+    global.markets[player.name] =
+    {
         player = player,
         balance = 0,
-        stats = {
+        stats =
+        {
             total_coin_earned = 0,
             total_coin_spent = 0,
             items_purchased = {},
@@ -280,8 +282,10 @@ function M.new(player)
         }
     }
     local market = global.markets[player.name]
-    market.upgrades = {
-        ["sell-speed"] = {
+    market.upgrades =
+    {
+        ["sell-speed"] =
+        {
             name = "Sell Speed",
             lvl = 1,
             max_lvl = 26,
@@ -357,7 +361,8 @@ function M.new(player)
             t = {},
             tooltip = "+4% Laser Damage\n+4% Laser Speed\n+4% Laser Turret Attack\n+4% Electric+Beam Attack\n[img=item/laser-turret] [img=item/personal-laser-defense-equipment] [img=entity/destroyer] [img=entity/distractor] [img=item/discharge-defense-equipment]"
         },
-        ["autolvl-turret"] = {
+        ["autolvl-turret"] =
+        {
             name = "Gun Turret Combat Training",
             lvl = 0,
             max_lvl = 1,
@@ -366,6 +371,7 @@ function M.new(player)
             hovered_sprite = "utility/turret_attack_modifier_constant",
             t = {},
             tooltip = "Enable Combat Training on your gun turrets.\nThe more damage they deal, the more damage they do.\nAffects entire team"
+                
             },
             ["mining-drill-productivity-bonus"] = {
                 name = "Mining Drill Productivity",
@@ -1401,30 +1407,6 @@ function M.new(player)
     end
     
     function M.on_tick(event)
-        if event.tick > 107000 and event.tick % 108000 < 600 then
-            if global.markets.jackpot > 0 then
-                game.print("[color=0.8, 0.8, 0]JACKPOT:[/color] "..tools.add_commas(global.markets.jackpot))
-                local roll = math.random(1, #game.players*3)
-                game.print("[color=blue]Lucky Number:[/color] [color=green]"..roll.."[/color]")
-                if game.connected_players[roll] then
-                    M.deposit(game.connected_players[roll], global.markets.jackpot)
-                    global.markets.jackpot = 0
-                    game.print("[color=0, 1, 1]"..game.connected_players[roll].name.."[/color] received the jackpot!")
-                else
-                    if game.players[roll] then
-                        game.print("[color=1, 0.2, 0]"..game.players[roll].name.."[/color] won the jackpot...but isn't online to collect it! Better luck next time!")
-                    else
-                        game.print("[color=1, 0.2, 0]Nobody[/color] received the jackpot...keep playing!")
-                    end
-                end
-            end
-        end
-        
-        -- if (game.tick % 60 == 1) then
-        --     for _, entry in pairs(global.markets.autofill_turrets) do
-        --         M.autofill(game.players[entry.name])
-        --     end
-        -- end
         if event.tick > 10 then
             for _, player in pairs(game.players) do
                 player = tools.get_player(player)
@@ -1434,6 +1416,27 @@ function M.new(player)
                             M.check_sell_chest(player)
                         end
                     end
+                end
+            end
+        end
+        if event.tick > 107000 and event.tick % 108000 < 600 then
+            if global.markets.jackpot > 0 then
+                game.print("[color=0.8, 0.8, 0]JACKPOT:[/color] "..tools.add_commas(global.markets.jackpot))
+                local roll = math.random(1, #game.players*3)
+                game.print("[color=blue]Lucky Number:[/color] [color=green]"..roll.."[/color]")
+                if not game.players[roll] then
+                    game.print("[color=1, 0.2, 0]Nobody[/color] received the jackpot...keep playing!")
+                else
+                    local winning_player = game.players[roll]
+                    for _, player in pairs(game.connected_players) do
+                        if player.name == winning_player.name then
+                            M.deposit(player, global.markets.jackpot)
+                            global.markets.jackpot = 0
+                            game.print("[color=0, 1, 1]"..player.name.."[/color] received the jackpot!")
+                            return
+                        end
+                    end
+                    game.print("[color=1, 0.2, 0]"..winning_player.name.."[/color] won the jackpot...but isn't online to collect it! Better luck next time!")
                 end
             end
         end
