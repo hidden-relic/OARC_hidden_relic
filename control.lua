@@ -50,7 +50,7 @@ require("lib/map_features")
 -- require("lib/oarc_buy")
 require("lib/auto_decon_miners")
 
-local Profiler = require("scripts/profiler")
+-- local Profiler = require("scripts/profiler")
 
 -- For Philip. I currently do not use this and need to add proper support for
 -- commands like this in the future.

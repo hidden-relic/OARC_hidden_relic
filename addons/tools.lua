@@ -158,9 +158,52 @@ local function get_total_last_hour(force)
     return total
 end
 
+local function get_total_spm(force)
+    local t = {
+        ["automation-science-pack"] = 0,
+        ["logistic-science-pack"] = 0,
+        ["chemical-science-pack"] = 0,
+        ["production-science-pack"] = 0,
+        ["utility-science-pack"] = 0,
+        ["space-science-pack"] = 0,
+        ["military-science-pack"] = 0
+    }
+    for science, _ in pairs(t) do
+        t[science] = get_item_last_hour(force, science)
+    end
+    local count = 0
+    local r = sort_table_highest_value(t)
+    for _, amount in pairs(r) do
+        if amount > 0 then
+            count = count + 1
+        end
+    end
+    local total = 0
+    if count < 5 then
+        for i = 1, count, 1 do
+            total = total + r[i]
+        end
+    else
+        count = 5
+        for i = 1, count, 1 do
+            total = total + r[i]
+        end
+    end
+    return total, count
+end
+
 local function get_avg_last_hour(force) 
     local total = get_total_last_hour(force)
     return total/5
+end
+
+local function get_avg_spm(force)
+    local total, count = get_total_spm(force)
+    return total/count
+end
+
+function tools.get_spm(force)
+    return get_avg_spm(force)
 end
 
 function tools.statistics_log(event)
@@ -219,21 +262,21 @@ function tools.get_keys_sorted_by_value(tbl)
     for key in pairs(tbl) do
         table.insert(keys, key)
     end
-
-
-
-
-
-
+    
+    
+    
+    
+    
+    
     table.sort(keys, function(a, b)
         return sort_func(tbl[a], tbl[b])
     end)
-
-
-
-
-
-
+    
+    
+    
+    
+    
+    
     return keys
 end
 
@@ -300,12 +343,12 @@ function tools.get_player(o) -- pass in table, string, or int
     elseif o_type == 'string' or o_type == 'number' then -- if its a string or int
         p = game.players[o] -- get the player by game.players[string or int]
     end
-
-
-
-
-
-
+    
+    
+    
+    
+    
+    
     if p and p.valid and p.is_player() then return p end -- do all validity checks and return valid player object
 end
 
@@ -390,12 +433,12 @@ function tools.floating_text_on_player_offset(player, text, color, x_offset,
     y_offset)
     player = tools.get_player(player)
     if not player or not player.valid then return end
-
-
-
-
-
-
+    
+    
+    
+    
+    
+    
     local position = player.position
     return tools.floating_text(player.surface, {
         x = position.x + x_offset,
@@ -458,12 +501,12 @@ function tools.make(player, sharedobject, flow)
         ["accumulator"] = true
     }
     local flows = {["in"] = true, ["out"] = true}
-
-
-
-
-
-
+    
+    
+    
+    
+    
+    
     if not player.admin then
         tools.error(player, "You're not admin!")
         return
@@ -631,12 +674,12 @@ function swap_ore()
         
         return keys
     end
-
-
-
-
-
-
+    
+    
+    
+    
+    
+    
     local p = game.player
     local t = {}
     t["iron-ore"] = find(p, "iron-ore")
@@ -648,19 +691,19 @@ function swap_ore()
     sorted_names["copper-ore"] = t["copper-ore"][1].position.y
     sorted_names["coal"] = t["coal"][1].position.y
     sorted_names["stone"] = t["stone"][1].position.y
-
-
-
-
-
-
+    
+    
+    
+    
+    
+    
     sorted_names = get_keys_sorted_by_value(sorted_names)
-
-
-
-
-
-
+    
+    
+    
+    
+    
+    
     local desired = {"coal", "iron-ore", "copper-ore", "stone"}
     for i, name in pairs(sorted_names) do
         for _, ore in pairs(t[name]) do
@@ -762,12 +805,12 @@ function tools.run_tests(player, cursor_stack)
             close = "[/color]"
         }
     }
-
-
-
-
-
-
+    
+    
+    
+    
+    
+    
     for index, test in pairs(tests.funcs) do
         if test then
             local msg = tests.truthy.parent .. tests.parent[index] ..
@@ -828,11 +871,11 @@ function tools.replace(player, e1, e2)
     end
     local p, cs, bp_ent_count, bp_tile_count = player.print,
     player.cursor_stack, 0, 0
-
-
+    
+    
     -- tools.run_tests(player, cs)
-
-
+    
+    
     if game.entity_prototypes[e1] or game.tile_prototypes[e1] then
         local bp, bp_ents, bp_tiles = {}, {}, {}
         if not player.is_cursor_blueprint() then
@@ -874,12 +917,12 @@ function tools.replace(player, e1, e2)
         -- end
         -- bp.clear_blueprint()
     end
-
-
-
-
-
-
+    
+    
+    
+    
+    
+    
     p("entity replacements: " .. bp_ent_count)
     p("tile replacements: " .. bp_tile_count)
     -- else
