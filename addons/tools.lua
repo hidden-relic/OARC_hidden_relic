@@ -118,7 +118,7 @@ function tools.remove_commas(amount)
     return string.gsub(amount, ",", "")
 end
 
-local function sort_table_highest_value(t)
+function tools.sort_table_highest_value(t)
     local r = {}
     for _, val in pairs(t) do
         table.insert(r, val)
@@ -137,6 +137,73 @@ local function get_item_last_hour(force, item)
     }
 end
 
+local function get_item_last_minute(force, item)
+    return force.item_production_statistics.get_flow_count{
+        name=item,
+        input=false,
+        precision_index = defines.flow_precision_index.one_minute
+    }
+end
+
+local function get_item_all_time(force, item)
+    return force.item_production_statistics.get_output_count(item)
+end
+
+local function get_total_all_time(force)
+    local total = 0
+    local t = {
+        ["automation-science-pack"] = 0,
+        ["logistic-science-pack"] = 0,
+        ["chemical-science-pack"] = 0,
+        ["production-science-pack"] = 0,
+        ["utility-science-pack"] = 0,
+        ["space-science-pack"] = 0,
+        ["military-science-pack"] = 0
+    }
+    for science, _ in pairs(t) do
+        t[science] = get_item_all_time(force, science)
+        total = total + t[science]
+    end
+    return total, t
+end
+
+local function get_total_last_minute(force)
+    local t = {
+        ["automation-science-pack"] = 0,
+        ["logistic-science-pack"] = 0,
+        ["chemical-science-pack"] = 0,
+        ["production-science-pack"] = 0,
+        ["utility-science-pack"] = 0,
+        ["space-science-pack"] = 0,
+        ["military-science-pack"] = 0
+    }
+    for science, _ in pairs(t) do
+        t[science] = get_item_last_minute(force, science)
+    end
+    local count = 0
+    local r = tools.sort_table_highest_value(t)
+    for _, amount in pairs(r) do
+        if amount > 0 then
+            count = count + 1
+        end
+    end
+    local total = 0
+    
+    -- not sure the 'max of 5' thing is necessary here?
+    
+    -- if count < 5 then
+    for i = 1, count, 1 do
+        total = total + r[i]
+    end
+    -- else
+    -- count = 5
+    -- for i = 1, count, 1 do
+    -- total = total + r[i]
+    -- end
+    -- end
+    return total, count
+end
+
 local function get_total_last_hour(force)
     local t = {
         ["automation-science-pack"] = 0,
@@ -150,12 +217,28 @@ local function get_total_last_hour(force)
     for science, _ in pairs(t) do
         t[science] = get_item_last_hour(force, science)
     end
-    local r = sort_table_highest_value(t)
+    local count = 0
+    local r = tools.sort_table_highest_value(t)
+    for _, amount in pairs(r) do
+        if amount > 0 then
+            count = count + 1
+        end
+    end
     local total = 0
-    for i = 1, 5, 1 do
+    
+    -- not sure the 'max of 5' thing is necessary here?
+    
+    -- if count < 5 then
+    for i = 1, count, 1 do
         total = total + r[i]
     end
-    return total
+    -- else
+    -- count = 5
+    -- for i = 1, count, 1 do
+    -- total = total + r[i]
+    -- end
+    -- end
+    return total, count
 end
 
 local function get_total_spm(force)
@@ -172,7 +255,7 @@ local function get_total_spm(force)
         t[science] = get_item_last_hour(force, science)
     end
     local count = 0
-    local r = sort_table_highest_value(t)
+    local r = tools.sort_table_highest_value(t)
     for _, amount in pairs(r) do
         if amount > 0 then
             count = count + 1
@@ -192,9 +275,14 @@ local function get_total_spm(force)
     return total, count
 end
 
+local function get_avg_last_minute(force)
+    local total, count = get_total_last_minute(force)
+    return total/count
+end
+
 local function get_avg_last_hour(force) 
-    local total = get_total_last_hour(force)
-    return total/5
+    local total, count = get_total_last_hour(force)
+    return total/count
 end
 
 local function get_avg_spm(force)
@@ -204,6 +292,46 @@ end
 
 function tools.get_spm(force)
     return get_avg_spm(force)
+end
+
+function tools.get_spm_last_minute(force)
+    return get_avg_last_minute(force)
+end
+
+function tools.get_spm_last_hour(force)
+    return get_avg_last_hour(force)
+end
+
+function tools.track_spm()
+    if game.tick > 10 then
+        if not global.spm_tracker then
+            global.spm_tracker = {}
+        end
+        local nil_forces = {
+            ['player'] = true,
+            ['enemy'] = true,
+            ['neutral'] = true,
+            ['_ABANDONED_'] = true,
+            ['_DESTROYED_'] = true,
+            ['shared'] = true
+        }
+        
+        for _, force in pairs(game.forces) do
+            if not nil_forces[force.name] then
+                if not global.spm_tracker[force.name] then
+                    global.spm_tracker[force.name] = 0
+                end
+                local spm = get_avg_spm(force)
+                if spm > global.spm_tracker[force.name] then 
+                    global.spm_tracker[force.name] = spm
+                end
+            end
+        end
+    end
+end
+
+function tools.get_total_science_consumed(force)
+    return get_total_all_time(force)
 end
 
 function tools.statistics_log(event)

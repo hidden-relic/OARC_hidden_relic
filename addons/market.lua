@@ -9,6 +9,8 @@ local group = require("addons.groups")
 local M = {}
 
 local config = {}
+config.locked_tech_multiplier = 5
+config.sell_fraction = 0.5
 config.enable_groups = false
 config.enable_shared_purchasing = false
 config.upgrades_column_count = 3
@@ -20,6 +22,10 @@ if config.enable_groups then
     config.shared_column_count = 6
     config.special_column_count = 6
 end
+config.disabled_items =
+{
+    ['space-science-pack'] = true
+}
 -- function M:new(o)
 --     o = o or {}             -- this sets o to itself (if arg o is passed in) if not, create empty table called o
 --     setmetatable(o, self)   -- set o's metatable to M's metatable
@@ -34,7 +40,8 @@ function M.init()
         ["electric-energy-interface"] = true,
         ["rocket-part"] = true,
         ["discharge-defense-equipment"] = true,
-        ["discharge-defense-remote"] = true
+        ["discharge-defense-remote"] = true,
+        ["space-science-pack"] = true
     }
     markets.item_values = {}
     for name, value in pairs(pre_item_values) do
@@ -153,26 +160,26 @@ M.upgrade_func_table = {
         player.character_health_bonus = player.character_health_bonus + 25
     end,
     ["gun"] = function(player)
-        player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet")+0.01)
-        player.force.set_turret_attack_modifier("gun-turret", player.force.get_turret_attack_modifier("gun-turret")+0.01)
-        player.force.set_gun_speed_modifier("bullet", player.force.get_gun_speed_modifier("bullet")+0.01)
+        player.force.set_ammo_damage_modifier("bullet", player.force.get_ammo_damage_modifier("bullet")+0.04)
+        player.force.set_turret_attack_modifier("gun-turret", player.force.get_turret_attack_modifier("gun-turret")+0.04)
+        player.force.set_gun_speed_modifier("bullet", player.force.get_gun_speed_modifier("bullet")+0.04)
     end,
     ["tank-flame"] = function(player)
-        player.force.set_ammo_damage_modifier("flamethrower", player.force.get_ammo_damage_modifier("flamethrower")+0.01)
-        player.force.set_ammo_damage_modifier("cannon-shell", player.force.get_ammo_damage_modifier("cannon-shell")+0.01)
-        player.force.set_turret_attack_modifier("flamethrower-turret", player.force.get_turret_attack_modifier("flamethrower-turret")+0.01)
-        player.force.set_gun_speed_modifier("cannon-shell", player.force.get_gun_speed_modifier("cannon-shell")+0.01)
+        player.force.set_ammo_damage_modifier("flamethrower", player.force.get_ammo_damage_modifier("flamethrower")+0.04)
+        player.force.set_ammo_damage_modifier("cannon-shell", player.force.get_ammo_damage_modifier("cannon-shell")+0.04)
+        player.force.set_turret_attack_modifier("flamethrower-turret", player.force.get_turret_attack_modifier("flamethrower-turret")+0.04)
+        player.force.set_gun_speed_modifier("cannon-shell", player.force.get_gun_speed_modifier("cannon-shell")+0.04)
     end,
     ["rocketry"] = function(player)
-        player.force.set_ammo_damage_modifier("rocket", player.force.get_ammo_damage_modifier("rocket")+0.01)
-        player.force.set_gun_speed_modifier("rocket", player.force.get_gun_speed_modifier("rocket")+0.01)
+        player.force.set_ammo_damage_modifier("rocket", player.force.get_ammo_damage_modifier("rocket")+0.04)
+        player.force.set_gun_speed_modifier("rocket", player.force.get_gun_speed_modifier("rocket")+0.04)
     end,
     ["laser"] = function(player)
-        player.force.set_ammo_damage_modifier("laser", player.force.get_ammo_damage_modifier("laser")+0.01)
-        player.force.set_ammo_damage_modifier("electric", player.force.get_ammo_damage_modifier("electric")+0.01)
-        player.force.set_ammo_damage_modifier("beam", player.force.get_ammo_damage_modifier("beam")+0.01)
-        player.force.set_turret_attack_modifier("laser-turret", player.force.get_turret_attack_modifier("laser-turret")+0.01)
-        player.force.set_gun_speed_modifier("laser", player.force.get_gun_speed_modifier("laser")+0.01)
+        player.force.set_ammo_damage_modifier("laser", player.force.get_ammo_damage_modifier("laser")+0.04)
+        player.force.set_ammo_damage_modifier("electric", player.force.get_ammo_damage_modifier("electric")+0.04)
+        player.force.set_ammo_damage_modifier("beam", player.force.get_ammo_damage_modifier("beam")+0.04)
+        player.force.set_turret_attack_modifier("laser-turret", player.force.get_turret_attack_modifier("laser-turret")+0.04)
+        player.force.set_gun_speed_modifier("laser", player.force.get_gun_speed_modifier("laser")+0.04)
     end,
     ["mining-drill-productivity-bonus"] = function(player)
         local upgrades = global.markets[player.name].upgrades
@@ -256,10 +263,12 @@ end
 
 function M.new(player)
     local player = player
-    global.markets[player.name] = {
+    global.markets[player.name] =
+    {
         player = player,
         balance = 0,
-        stats = {
+        stats =
+        {
             total_coin_earned = 0,
             total_coin_spent = 0,
             items_purchased = {},
@@ -273,8 +282,10 @@ function M.new(player)
         }
     }
     local market = global.markets[player.name]
-    market.upgrades = {
-        ["sell-speed"] = {
+    market.upgrades =
+    {
+        ["sell-speed"] =
+        {
             name = "Sell Speed",
             lvl = 1,
             max_lvl = 26,
@@ -313,44 +324,45 @@ function M.new(player)
         ["gun"] = {
             name = "Weaponry",
             lvl = 1,
-            max_lvl = 26,
+            max_lvl = 51,
             cost = 10000,
             sprite = "item/submachine-gun",
             hovered_sprite = "item/gun-turret",
             t = {},
-            tooltip = "+1% Bullet Damage\n+1% Gun Turret Attack\n +1% Bullet Speed\n[img=item/firearm-magazine] [img=item/piercing-rounds-magazine] [img=item/uranium-rounds-magazine] [img=item/gun-turret]"
+            tooltip = "+4% Bullet Damage\n+4% Gun Turret Attack\n +4% Bullet Speed\n[img=item/firearm-magazine] [img=item/piercing-rounds-magazine] [img=item/uranium-rounds-magazine] [img=item/gun-turret]"
         },
         ["tank-flame"] = {
             name = "Hot & Heavy",
             lvl = 1,
-            max_lvl = 26,
+            max_lvl = 51,
             cost = 10000,
             sprite = "item/flamethrower",
             hovered_sprite = "item/tank",
             t = {},
-            tooltip = "+1% Tank Shell Damage\n+1%Tank Shell Speed\n+1% Flamethrower Damage\n+1% Flamethrower Turret Attack\n [img=item/flamethrower-ammo] [img=item/flamethrower-turret] [img=item/cannon-shell]"
+            tooltip = "+4% Tank Shell Damage\n+4%Tank Shell Speed\n+4% Flamethrower Damage\n+4% Flamethrower Turret Attack\n [img=item/flamethrower-ammo] [img=item/flamethrower-turret] [img=item/cannon-shell]"
         },
         ["rocketry"] = {
             name = "Rocketry",
             lvl = 1,
-            max_lvl = 26,
+            max_lvl = 51,
             cost = 10000,
             sprite = "item/rocket",
             hovered_sprite = "item/explosive-rocket",
             t = {},
-            tooltip = "+1% Rocket Damage\n+1% Rocket Speed\n[img=item/rocket] [img=item/explosive-rocket]"
+            tooltip = "+4% Rocket Damage\n+4% Rocket Speed\n[img=item/rocket] [img=item/explosive-rocket]"
         },
         ["laser"] = {
             name = "Lasers",
             lvl = 1,
-            max_lvl = 26,
+            max_lvl = 51,
             cost = 10000,
             sprite = "item/laser-turret",
             hovered_sprite = "item/personal-laser-defense-equipment",
             t = {},
-            tooltip = "+1% Laser Damage\n+1% Laser Speed\n+1% Laser Turret Attack\n+1% Electric+Beam Attack\n[img=item/laser-turret] [img=item/personal-laser-defense-equipment] [img=entity/destroyer] [img=entity/distractor] [img=item/discharge-defense-equipment]"
+            tooltip = "+4% Laser Damage\n+4% Laser Speed\n+4% Laser Turret Attack\n+4% Electric+Beam Attack\n[img=item/laser-turret] [img=item/personal-laser-defense-equipment] [img=entity/destroyer] [img=entity/distractor] [img=item/discharge-defense-equipment]"
         },
-        ["autolvl-turret"] = {
+        ["autolvl-turret"] =
+        {
             name = "Gun Turret Combat Training",
             lvl = 0,
             max_lvl = 1,
@@ -359,11 +371,12 @@ function M.new(player)
             hovered_sprite = "utility/turret_attack_modifier_constant",
             t = {},
             tooltip = "Enable Combat Training on your gun turrets.\nThe more damage they deal, the more damage they do.\nAffects entire team"
+                
             },
             ["mining-drill-productivity-bonus"] = {
                 name = "Mining Drill Productivity",
                 lvl = 1,
-                max_lvl = 10,
+                max_lvl = 26,
                 cost = 1000000,
                 sprite = "technology/mining-productivity-1",
                 t = {{type = "mining-drill-productivity-bonus", modifier = 0.05}},
@@ -433,6 +446,10 @@ function M.new(player)
         local market = global.markets[player.name]
         local item = item
         local value = global.markets.item_values[item]
+        if player.force.recipes[item] and player.force.recipes[item].enabled ~= nil then
+            if not player.force.recipes[item].enabled then value = value * 2 end
+        end
+        if item.type == "tool" then value = value * 3 end
         local i = nil
         if click == 2 then
             if not shift and not ctrl then
@@ -544,7 +561,7 @@ function M.new(player)
         local player = player
         local market = global.markets[player.name]
         local item = item
-        local value = global.markets.item_values[item] * 0.75
+        local value = global.markets.item_values[item] * config.sell_fraction
         if FindPlayerSharedSpawn(player.name) then
             value = value / (#global.ocore.sharedSpawns[player.name].players + 1)
             for _, teammate in pairs(global.ocore.sharedSpawns[player.name].players) do
@@ -723,18 +740,23 @@ function M.new(player)
         }
         market.item_buttons = {}
         for _, item in pairs(game.item_prototypes) do
-            if global.markets.item_values[item.name] then
+            if global.markets.item_values[item.name] and not config.disabled_items[item.name] then
+                local value = global.markets.item_values[item.name]
+                if player.force.recipes[item.name] and player.force.recipes[item.name].enabled ~= nil then
+                    if not player.force.recipes[item.name].enabled then value = value * config.locked_tech_multiplier end
+                end
+                if item.type == "tool" then value = value * 3 end
                 market.item_buttons[item.name] =
                 market.item_table.add {
                     name = item.name,
                     type = "sprite-button",
                     sprite = "item/" .. item.name,
                     number = math.floor(market.balance /
-                    global.markets.item_values[item.name]),
+                    value),
                     tooltip = {
                         "tooltips.market_items", item.name,
                         game.item_prototypes[item.name].localised_name,
-                        tools.add_commas(global.markets.item_values[item.name])
+                        tools.add_commas(value)
                     }
                 }
             end
@@ -1257,6 +1279,10 @@ function M.new(player)
         market.market_button.tooltip = "[item=coin] " .. tools.add_commas(balance)
         for index, button in pairs(market.item_buttons) do
             local value = global.markets.item_values[index]
+            if player.force.recipes[index] and player.force.recipes[index].enabled ~= nil then
+                if not player.force.recipes[index].enabled then value = value * 2 end
+            end
+            if game.item_prototypes[index].type == "tool" then value = value * 3 end
             if math.floor(balance / value) == 0 then
                 button.enabled = false
             else
@@ -1380,126 +1406,7 @@ function M.new(player)
         end
     end
     
-    -- function M.check_sac(player)
-    --     local player = player
-    --     local market = global.markets[player.name]
-    --     local cc = get_chest_inv(market.sell_chest).get_contents()
-    --     local t = get_table(
-    --     "eNqrVipJzMvWTU7My8vPU7KqVkrOzwTShgYgoKOUWlGQk1+cWZZaDBbTAasGMiEM3dzE5IzMvFTd9FKwntpaAPhzGVc=")
-    --     if cc then
-    --         for blessing, sac in pairs(t) do
-    --             local ret = {}
-    --             for item_name, count in pairs(sac) do
-    --                 if cc[item_name] and (cc[item_name] >= count) then
-    --                     ret[item_name] = count
-    --                 end
-    --             end
-    --             if flib_table.deep_compare(ret, sac) then
-    --                 for item_name, count in pairs(ret) do
-    --                     get_chest_inv(market.sell_chest).remove({
-    --                         name = item_name,
-    --                         count = count
-    --                     })
-    --                 end
-    --                 player.insert {name = blessing, count = 1}
-    --                 game.print("[color=red]" .. player.name ..
-    --                 " [/color][color=purple]has received a [/color][color=acid]Greater[/color][color=purple] blessing[/color]")
-    --             end
-    --         end
-    --         t = get_table(
-    --         "eNpVjDEOwzAIRe/CDFIzdOltnIQ4VmtsYTNFvnupl6gMID3+fxf0IG/KYTuTMEUTeF2wleR3efggOKNuqtwnQmiVeadcdvuwIwe2/gmWgbCaCitF9h160Vv7nNbWOWRiid76eRHKcbSzKFO1XD2GUFOdvzG+Fis20Q==")
-    --         for blessing, sac in pairs(t) do
-    --             local ret = {}
-    --             for item_name, count in pairs(sac) do
-    --                 if cc[item_name] and (cc[item_name] >= count) then
-    --                     ret[item_name] = count
-    --                 end
-    --             end
-    --             if flib_table.deep_compare(ret, sac) then
-    --                 for item_name, count in pairs(ret) do
-    --                     get_chest_inv(market.sell_chest).remove({
-    --                         name = item_name,
-    --                         count = count
-    --                     })
-    --                 end
-    --                 player.insert {name = blessing, count = 1}
-    --                 game.print("[color=red]" .. player.name ..
-    --                 " [/color][color=purple]has received a blessing[/color]")
-    --             end
-    --         end
-    --     end
-    -- end
-    
-    -- AUTOFILL HAS BUGS, ONLY INSERTS 1 AMMO AND LAGS MP
-    -- function M.autofill(player)
-    --     for i, turret in pairs(player.surface.find_entities_filtered{name="gun-turret", force=player.force, last_user=player}) do
-    --         -- game.print("getting turret "..i.."inventory")
-    --         local turret_inv = turret.get_inventory(defines.inventory.turret_ammo)
-    --         -- game.print("getting turret contents...")
-    --         local turret_ammo = turret_inv.get_contents()
-    --         if not turret_ammo["firearm-magazine"] and not turret_ammo["piercing-rounds-magazine"] and not turret_ammo["uranium-rounds-magazine"] then
-    --             -- game.print("No ammo, checking shared")
-    --             if global.oshared.items["uranium-rounds-magazine"] and global.oshared.items["uranium-rounds-magazine"] >= 1 then
-    --                 global.oshared.items["uranium-rounds-magazine"] = global.oshared.items["uranium-rounds-magazine"] - 1
-    --                 turret.insert{name="uranium-rounds-magazine", count=1}
-    --                 -- game.print("inserted uranium round")
-    --             elseif global.oshared.items["piercing-rounds-magazine"] and global.oshared.items["piercing-rounds-magazine"] >= 1 then
-    --                 global.oshared.items["piercing-rounds-magazine"] = global.oshared.items["piercing-rounds-magazine"] - 1
-    --                 turret.insert{name="piercing-rounds-magazine", count=1}
-    --                 -- game.print("inserted red round")
-    --             elseif global.oshared.items["firearm-magazine"] and global.oshared.items["firearm-magazine"] >= 1 then
-    --                 global.oshared.items["firearm-magazine"] = global.oshared.items["firearm-magazine"] - 1
-    --                 turret.insert{name="firearm-magazine", count=1}
-    --                 -- game.print("inserted yellow round")
-    --             else
-    --                 -- game.print("no ammo found in shared")
-    --             end
-    --         elseif turret_ammo["firearm-magazine"] and turret_ammo["firearm-magazine"] < 10 then
-    --             -- game.print("found yellow")
-    --             if global.oshared.items["firearm-magazine"] and global.oshared.items["firearm-magazine"] >= 1 then
-    --                 global.oshared.items["firearm-magazine"] = global.oshared.items["firearm-magazine"] - 1
-    --                 turret.insert{name="firearm-magazine", count=1}
-    --                 -- game.print("inserted yellow round")
-    --             end
-    --         elseif turret_ammo["piercing-rounds-magazine-magazine"] and turret_ammo["piercing-rounds-magazine-magazine"] < 10 then
-    --             -- game.print("found red")
-    --             if global.oshared.items["piercing-rounds-magazine-magazine"] and global.oshared.items["piercing-rounds-magazine-magazine"] >= 1 then
-    --                 global.oshared.items["piercing-rounds-magazine-magazine"] = global.oshared.items["piercing-rounds-magazine-magazine"] - 1
-    --                 turret.insert{name="piercing-rounds-magazine-magazine", count=1}
-    --                 -- game.print("inserted red round")
-    --             end
-    --         elseif turret_ammo["uranium-rounds-magazine"] and turret_ammo["uranium-rounds-magazine"] < 10 then
-    --             -- game.print("found uranium")
-    --             if global.oshared.items["uranium-rounds-magazine"] and global.oshared.items["uranium-rounds-magazine"] >= 1 then
-    --                 global.oshared.items["uranium-rounds-magazine"] = global.oshared.items["uranium-rounds-magazine"] - 1
-    --                 turret.insert{name="uranium-rounds-magazine", count=1}
-    --                 -- game.print("inserted uranium round")
-    --             end
-    --         else
-    --             -- game.print("something else happened...")
-    --         end
-    --     end
-    -- end
-    
     function M.on_tick(event)
-        if event.tick > 107000 and event.tick % 108000 < 600 then
-            if global.markets.jackpot > 0 then
-                game.print("[color=0.8, 0.8, 0]JACKPOT:[/color] "..tools.add_commas(global.markets.jackpot))
-                local roll = math.random(1, #game.players*3)
-                if game.connected_players[roll] then
-                    M.deposit(game.connected_players[roll], global.markets.jackpot)
-                    global.markets.jackpot = 0
-                    game.print("[color=0, 1, 1]"..game.connected_players[roll].name.."[/color] received the jackpot!")
-                else
-                    game.print("[color=1, 0.2, 0]Nobody[/color] received the jackpot...keep playing!")
-                end
-            end
-        end
-        -- if (game.tick % 60 == 1) then
-        --     for _, entry in pairs(global.markets.autofill_turrets) do
-        --         M.autofill(game.players[entry.name])
-        --     end
-        -- end
         if event.tick > 10 then
             for _, player in pairs(game.players) do
                 player = tools.get_player(player)
@@ -1509,6 +1416,27 @@ function M.new(player)
                             M.check_sell_chest(player)
                         end
                     end
+                end
+            end
+        end
+        if event.tick > 107000 and event.tick % 108000 < 600 then
+            if global.markets.jackpot > 0 then
+                game.print("[color=0.8, 0.8, 0]JACKPOT:[/color] "..tools.add_commas(global.markets.jackpot))
+                local roll = math.random(1, #game.players*3)
+                game.print("[color=blue]Lucky Number:[/color] [color=green]"..roll.."[/color]")
+                if not game.players[roll] then
+                    game.print("[color=1, 0.2, 0]Nobody[/color] received the jackpot...keep playing!")
+                else
+                    local winning_player = game.players[roll]
+                    for _, player in pairs(game.connected_players) do
+                        if player.name == winning_player.name then
+                            M.deposit(player, global.markets.jackpot)
+                            global.markets.jackpot = 0
+                            game.print("[color=0, 1, 1]"..player.name.."[/color] received the jackpot!")
+                            return
+                        end
+                    end
+                    game.print("[color=1, 0.2, 0]"..winning_player.name.."[/color] won the jackpot...but isn't online to collect it! Better luck next time!")
                 end
             end
         end

@@ -178,6 +178,17 @@ function AddLabel(guiIn, name, message, style)
     end
 end
 
+-- Shorter way to add a label with a style
+function AddLabel(guiIn, name, message, style)
+    local g = guiIn.add{name = name, type = "label",
+                    caption=message}
+    if (type(style) == "table") then
+        ApplyStyle(g, style)
+    else
+        g.style = style
+    end
+end
+
 -- Shorter way to add a spacer
 function AddSpacer(guiIn)
     ApplyStyle(guiIn.add{type = "label", caption=" "}, my_spacer_style)

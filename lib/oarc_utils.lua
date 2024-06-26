@@ -150,7 +150,9 @@ local function UpdateForceBuffs(player, buff)
             multiplier = (player.online_time / TICKS_PER_HOUR) * (buff.base_multiplier/2)
         end
     end
-    
+    if player.online_time > 24*TICKS_PER_HOUR then
+        multiplier = 0
+    end
     
     
     -- FlyingText(text .. tools.round(multiplier, 3), player.position, color,
@@ -172,6 +174,7 @@ function UpdatePlayerBuffs(player, buff)
     
     -- FlyingText(text .. tools.round((multiplier - buff.modifier), 3), player.position,
     -- color, player.surface)
+    if buff.modifier == 'character_loot_pickup_distance_bonus' and player[buff.modifier] == 320 then return end
     player[buff.modifier] = multiplier
 end
 

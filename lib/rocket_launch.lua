@@ -101,15 +101,31 @@ function RocketLaunchEvent(event)
 end
 
 function CreateScienceGuiTab(tab_container, player)
+
+
     -- local frame = tab_container.add{type="frame", name="science-panel", caption="Satellites Launched:", direction = "vertical"}
     
     AddLabel(tab_container, nil, "SPM:", my_label_header_style)
+    AddLabel(tab_container, nil, "'Current' is the average over the last minute. 'Highest' is your highest recorded SPM sustained for 1 hour. 'Total' is total bottles consumed.", my_label_style)
     
     local spm_table = tab_container.add {
         name = 'spm_table',
         type = 'table',
-        column_count = 2
+        column_count = 4
     }
+    
+    local headers = {
+        'force',
+        'current',
+        'highest',
+        'total'
+    }
+    for _, name in pairs(headers) do
+        spm_table.add {
+            type = 'label',
+            caption = name
+        }
+    end
     
     local nil_forces = {
         ['player'] = true,
@@ -120,16 +136,42 @@ function CreateScienceGuiTab(tab_container, player)
         ['shared'] = true
     }
     
+    local force_table = {}
+    local current_table = {}
+    
     for _, force in pairs(game.forces) do
         if not nil_forces[force.name] then
-            spm_table.add {
-                type = 'label',
-                caption = force.name
+            force_table[force.name] = {
+                current = tools.round(tools.get_spm_last_minute(force), 2),
+                highest = tools.round(global.spm_tracker[force.name], 2),
+                total = tools.get_total_science_consumed(force)
             }
-            spm_table.add {
-                type = 'label',
-                caption = tools.round(tools.get_spm(force), 2)
-            }
+        end
+    end
+    for force, _ in pairs(force_table) do
+        current_table[force] = force_table[force].current
+    end
+    current_table = tools.sort_table_highest_value(current_table)
+    for _, val in pairs(current_table) do
+        for name, _ in pairs(force_table) do
+            if force_table[name].current == val then
+                spm_table.add {
+                    type = 'label',
+                    caption = name
+                }
+                spm_table.add {
+                    type = 'label',
+                    caption = force_table[name].current
+                }
+                spm_table.add {
+                    type = 'label',
+                    caption = force_table[name].highest
+                }
+                spm_table.add {
+                    type = 'label',
+                    caption = force_table[name].total
+                }
+            end
         end
     end
     
