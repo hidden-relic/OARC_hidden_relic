@@ -201,7 +201,7 @@ local function get_total_last_minute(force)
     -- total = total + r[i]
     -- end
     -- end
-    return total, count
+    if total == 0 and count == 0 then return 0, 0 else return total, count end
 end
 
 local function get_total_last_hour(force)
@@ -238,7 +238,7 @@ local function get_total_last_hour(force)
     -- total = total + r[i]
     -- end
     -- end
-    return total, count
+    if total == 0 and count == 0 then return 0, 0 else return total, count end
 end
 
 local function get_total_spm(force)
@@ -277,12 +277,12 @@ end
 
 local function get_avg_last_minute(force)
     local total, count = get_total_last_minute(force)
-    return total/count
+    if total == 0 and count == 0 then return 0 else return total/count end
 end
 
 local function get_avg_last_hour(force) 
     local total, count = get_total_last_hour(force)
-    return total/count
+    if total == 0 and count == 0 then return 0 else return total/count end
 end
 
 local function get_avg_spm(force)

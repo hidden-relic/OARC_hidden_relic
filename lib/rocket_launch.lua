@@ -101,8 +101,9 @@ function RocketLaunchEvent(event)
 end
 
 function CreateScienceGuiTab(tab_container, player)
-
-
+    
+    if not global.force_spm_table then global.force_spm_table = {} end
+    
     -- local frame = tab_container.add{type="frame", name="science-panel", caption="Satellites Launched:", direction = "vertical"}
     
     AddLabel(tab_container, nil, "SPM:", my_label_header_style)
@@ -152,17 +153,27 @@ function CreateScienceGuiTab(tab_container, player)
         current_table[force] = force_table[force].current
     end
     current_table = tools.sort_table_highest_value(current_table)
-    for _, val in pairs(current_table) do
+    for i, val in pairs(current_table) do
         for name, _ in pairs(force_table) do
             if force_table[name].current == val then
+                game.print(i .. ': ' .. name .. ' @ ' .. val)
                 spm_table.add {
                     type = 'label',
                     caption = name
                 }
-                spm_table.add {
-                    type = 'label',
-                    caption = force_table[name].current
-                }
+                if not global.force_spm_table[name] then global.force_spm_table[name] = 0 end
+                if global.ocfg.spm_colors == true then
+                    if force_table[name].current > global.force_spm_table[name] then
+                        AddLabel(spm_table, nil, force_table[name].current, my_green_label_style)
+                    else
+                        AddLabel(spm_table, nil, force_table[name].current, my_red_label_style)
+                    end
+                else
+                    spm_table.add {
+                        type = 'label',
+                        caption = force_table[name].current
+                    }
+                end
                 spm_table.add {
                     type = 'label',
                     caption = force_table[name].highest
@@ -170,10 +181,33 @@ function CreateScienceGuiTab(tab_container, player)
                 spm_table.add {
                     type = 'label',
                     caption = force_table[name].total
-                }
+                }   
+                global.force_spm_table[name] = force_table[name].current
+                force_table[name] = nil
+                break
             end
         end
     end
+    -- for name, _ in pairs(force_table) do
+    --     if force_table[name].current == 0 then
+    --         spm_table.add {
+    --             type = 'label',
+    --             caption = name
+    --         }
+    --         spm_table.add {
+    --             type = 'label',
+    --             caption = force_table[name].current
+    --         }
+    --         spm_table.add {
+    --             type = 'label',
+    --             caption = force_table[name].highest
+    --         }
+    --         spm_table.add {
+    --             type = 'label',
+    --             caption = force_table[name].total
+    --         }
+    --     end
+    -- end
     
     AddLabel(tab_container, nil, "Satellites Launched:", my_label_header_style)
     

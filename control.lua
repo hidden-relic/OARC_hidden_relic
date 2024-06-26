@@ -467,8 +467,8 @@ script.on_nth_tick(60, function(event)
     TimeoutSpeechBubblesOnTick(event)
     RegrowthOnTick(event)
     tools.track_spm()
-    for _, player in pairs(game.connected_players) do
-        if player.opened and player.opened.name == OARC_GUI then
+    if game.tick > 10 then
+        for _, player in pairs(game.connected_players) do
             SetOarcGuiTabContent(player, OARC_SCIENCE_GUI_TAB_NAME)
         end
     end
