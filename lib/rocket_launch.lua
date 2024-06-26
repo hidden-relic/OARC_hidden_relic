@@ -156,7 +156,6 @@ function CreateScienceGuiTab(tab_container, player)
     for i, val in pairs(current_table) do
         for name, _ in pairs(force_table) do
             if force_table[name].current == val then
-                game.print(i .. ': ' .. name .. ' @ ' .. val)
                 spm_table.add {
                     type = 'label',
                     caption = name
