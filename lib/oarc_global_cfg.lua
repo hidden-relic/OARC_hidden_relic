@@ -13,6 +13,7 @@ function InitOarcConfig()
     
     global.ocfg = {}
     global.ocfg.debug = DEBUG_MODE
+
     
     global.ocore = {}
     global.markets = {}
@@ -34,6 +35,7 @@ function InitOarcConfig()
     end
     
     -- SCENARIO VERSION (ONLY - no more mod version.)
+    global.ocfg.spm_colors = true
     global.ocfg.enable_groups = false
     global.ocfg.enable_shared_purchasing = false
     global.ocfg.enable_accumulator_charge_player = false

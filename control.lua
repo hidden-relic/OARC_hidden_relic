@@ -50,7 +50,7 @@ require("lib/map_features")
 -- require("lib/oarc_buy")
 require("lib/auto_decon_miners")
 
-local Profiler = require("scripts/profiler")
+-- local Profiler = require("scripts/profiler")
 
 -- For Philip. I currently do not use this and need to add proper support for
 -- commands like this in the future.
@@ -177,6 +177,7 @@ end)
 script.on_event(defines.events.on_force_created, function(event)
     event.force.max_successful_attempts_per_tick_per_construction_queue = 20
     event.force.max_failed_attempts_per_tick_per_construction_queue = 20
+    tools.track_spm()
 end)
 
 script.on_event(defines.events.on_rocket_launched,
@@ -465,6 +466,12 @@ script.on_nth_tick(60, function(event)
     -- SharedChestsOnTick(event)
     TimeoutSpeechBubblesOnTick(event)
     RegrowthOnTick(event)
+    tools.track_spm()
+    if game.tick > 10 then
+        for _, player in pairs(game.connected_players) do
+            SetOarcGuiTabContent(player, OARC_SCIENCE_GUI_TAB_NAME)
+        end
+    end
 end)
 script.on_nth_tick(10, function(event) MagicFactoriesOnTick(event) end)
 script.on_nth_tick(60*60, function(event)

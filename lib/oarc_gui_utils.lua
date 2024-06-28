@@ -19,6 +19,22 @@ my_label_style = {
     top_padding = 0,
     bottom_padding = 0
 }
+my_green_label_style = {
+    -- minimal_width = 450,
+    -- maximal_width = 50,
+    single_line = false,
+    font_color = {r=0.1,g=1,b=0.1},
+    top_padding = 0,
+    bottom_padding = 0
+}
+my_red_label_style = {
+    -- minimal_width = 450,
+    -- maximal_width = 50,
+    single_line = false,
+    font_color = {r=1,g=0.1,b=0.1},
+    top_padding = 0,
+    bottom_padding = 0
+}
 my_other_label_style = {
     -- minimal_width = 450,
     -- maximal_width = 50,
@@ -164,6 +180,17 @@ my_notepad_fixed_width_style = {
 function ApplyStyle (guiIn, styleIn)
     for k,v in pairs(styleIn) do
         guiIn.style[k]=v
+    end
+end
+
+-- Shorter way to add a label with a style
+function AddLabel(guiIn, name, message, style)
+    local g = guiIn.add{name = name, type = "label",
+                    caption=message}
+    if (type(style) == "table") then
+        ApplyStyle(g, style)
+    else
+        g.style = style
     end
 end
 

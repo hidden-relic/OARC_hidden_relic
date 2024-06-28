@@ -13,7 +13,7 @@ OARC_GAME_OPTS_GUI_TAB_NAME = "Server Info"
 OARC_SPAWN_CTRL_GUI_NAME = "Spawn Controls"
 OARC_PLAYER_LIST_GUI_TAB_NAME = "Players"
 OARC_TAGS_GUI_TAB_NAME = "Name Tags"
-OARC_ROCKETS_GUI_TAB_NAME = "Rockets"
+OARC_SCIENCE_GUI_TAB_NAME = "Science"
 OARC_SHARED_ITEMS_GUI_TAB_NAME = "Shared Items"
 OARC_NOTEPAD_GUI_TAB_NAME = "Notepad"
 
@@ -22,7 +22,7 @@ OARC_GUI_TAB_CONTENT_FUNCTIONS["Server Info"] = CreateGameOptionsTab
 OARC_GUI_TAB_CONTENT_FUNCTIONS["Spawn Controls"] = CreateSpawnCtrlGuiTab
 OARC_GUI_TAB_CONTENT_FUNCTIONS["Players"] = CreatePlayerListGuiTab
 OARC_GUI_TAB_CONTENT_FUNCTIONS["Name Tags"] = CreateTagGuiTab
-OARC_GUI_TAB_CONTENT_FUNCTIONS["Rockets"] = CreateRocketGuiTab
+OARC_GUI_TAB_CONTENT_FUNCTIONS["Science"] = CreateScienceGuiTab
 OARC_GUI_TAB_CONTENT_FUNCTIONS["Shared Items"] = CreateSharedItemsGuiTab
 OARC_GUI_TAB_CONTENT_FUNCTIONS["Notepad"] = CreateNotepadGuiTab
 
@@ -48,11 +48,11 @@ function InitOarcGuiTabs(player)
         SetOarcGuiTabEnabled(player, OARC_TAGS_GUI_TAB_NAME, true)
     end
 
-    -- Rockets tab, only enable if one has been launched already
-    AddOarcGuiTab(player, OARC_ROCKETS_GUI_TAB_NAME)
-    if (global.ocore.satellite_sent) then
-        SetOarcGuiTabEnabled(player, OARC_ROCKETS_GUI_TAB_NAME, true)
-    end
+    -- Science tab
+    AddOarcGuiTab(player, OARC_SCIENCE_GUI_TAB_NAME)
+    -- if (global.ocore.satellite_sent) then
+        SetOarcGuiTabEnabled(player, OARC_SCIENCE_GUI_TAB_NAME, true)
+    -- end
 
     if global.ocfg.enable_chest_sharing then
         AddOarcGuiTab(player, OARC_SHARED_ITEMS_GUI_TAB_NAME)
